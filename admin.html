@@ -72,8 +72,7 @@
       color: #5a411b;
     }
 
-    input[type="text"],
-    input[type="url"] {
+    input[type="text"] {
       width: 100%;
       padding: 13px;
       border: 1px solid #d8bd69;
@@ -89,10 +88,30 @@
       box-shadow: 0 0 0 2px rgba(184,138,36,0.15);
     }
 
+    .logo-area {
+      text-align: center;
+    }
+
+    .choose-logo {
+      display: inline-block;
+      padding: 14px 20px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #9a701e, #d4af37);
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(128,91,18,0.20);
+    }
+
+    #logoFile {
+      display: none;
+    }
+
     .logo-preview {
       width: 100%;
-      min-height: 130px;
-      margin-top: 12px;
+      min-height: 150px;
+      margin-top: 15px;
       border: 2px dashed #d3b85e;
       border-radius: 12px;
       display: flex;
@@ -105,7 +124,7 @@
 
     .logo-preview img {
       max-width: 100%;
-      max-height: 150px;
+      max-height: 180px;
       object-fit: contain;
     }
 
@@ -147,6 +166,7 @@
       font-size: 13px;
       color: #776b59;
       line-height: 1.5;
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -165,16 +185,20 @@
       <h2>App Information</h2>
 
       <label>App Name</label>
-      <input type="text" id="app_name" placeholder="Enter App Name">
+      <input type="text" id="app_name"
+             placeholder="Enter App Name">
 
       <label>Church Name</label>
-      <input type="text" id="church_name" placeholder="Enter Church Name">
+      <input type="text" id="church_name"
+             placeholder="Enter Church Name">
 
       <label>Subtitle</label>
-      <input type="text" id="subtitle" placeholder="Enter Subtitle">
+      <input type="text" id="subtitle"
+             placeholder="Enter Subtitle">
 
       <label>Welcome Text</label>
-      <input type="text" id="welcome_text" placeholder="Enter Welcome Text">
+      <input type="text" id="welcome_text"
+             placeholder="Enter Welcome Text">
     </div>
 
     <div class="card">
@@ -196,17 +220,27 @@
     <div class="card">
       <h2>Home Screen Logo</h2>
 
-      <label>Logo Image URL</label>
-      <input type="url" id="logo_url"
-             placeholder="Paste logo image URL">
+      <div class="logo-area">
 
-      <div class="logo-preview" id="logoPreview">
-        No logo selected
+        <label class="choose-logo" for="logoFile">
+          📷 CHOOSE LOGO FROM GALLERY
+        </label>
+
+        <input
+          type="file"
+          id="logoFile"
+          accept="image/png,image/jpeg,image/webp"
+        >
+
+        <div class="logo-preview" id="logoPreview">
+          No logo selected
+        </div>
+
+        <p class="note">
+          Select a PNG, JPG or WEBP logo from your phone gallery.
+        </p>
+
       </div>
-
-      <p class="note">
-        Logo upload will be added later.
-      </p>
     </div>
 
     <div id="message"></div>
@@ -235,6 +269,8 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
+    let selectedLogoFile = null;
+
     async function checkAdmin() {
 
       const { data, error } =
@@ -250,7 +286,10 @@
 
       if (adminError) {
         console.error(adminError);
-        showMessage("Unable to verify administrator access.", true);
+        showMessage(
+          "Unable to verify administrator access.",
+          true
+        );
         return;
       }
 
@@ -301,7 +340,10 @@
 
       if (error) {
         console.error(error);
-        showMessage("Failed to load settings.", true);
+        showMessage(
+          "Failed to load settings.",
+          true
+        );
         return;
       }
 
@@ -326,99 +368,194 @@
       document.getElementById("search_button_text").value =
         data.search_button_text || "";
 
-      document.getElementById("logo_url").value =
-        data.logo_url || "";
-
-      updateLogoPreview(data.logo_url);
+      if (data.logo_url) {
+        showLogoPreview(data.logo_url);
+      }
     }
 
-    function updateLogoPreview(url) {
+    document.getElementById("logoFile")
+      .addEventListener("change", function(event) {
+
+        const file = event.target.files[0];
+
+        if (!file) {
+          return;
+        }
+
+        if (!file.type.startsWith("image/")) {
+          showMessage(
+            "Please select an image file.",
+            true
+          );
+          return;
+        }
+
+        selectedLogoFile = file;
+
+        const reader = new FileReader();
+
+        reader.onload = function(e) {
+          showLogoPreview(e.target.result);
+        };
+
+        reader.readAsDataURL(file);
+      });
+
+    function showLogoPreview(source) {
 
       const preview =
         document.getElementById("logoPreview");
 
-      if (!url) {
-        preview.innerHTML = "No logo selected";
-        return;
-      }
-
       preview.innerHTML = "";
 
       const img = document.createElement("img");
-      img.src = url;
-      img.alt = "Home Screen Logo";
 
-      img.onerror = function() {
-        preview.textContent = "Logo could not be loaded";
-      };
+      img.src = source;
+      img.alt = "Home Screen Logo";
 
       preview.appendChild(img);
     }
 
-    document.getElementById("logo_url")
-      .addEventListener("input", function() {
-        updateLogoPreview(this.value.trim());
-      });
+    async function uploadLogo() {
+
+      if (!selectedLogoFile) {
+        return null;
+      }
+
+      const extension =
+        selectedLogoFile.name
+          .split(".")
+          .pop()
+          .toLowerCase();
+
+      const filePath =
+        "home-logo-" +
+        Date.now() +
+        "." +
+        extension;
+
+      const { error: uploadError } =
+        await supabaseClient.storage
+          .from("app-assets")
+          .upload(
+            filePath,
+            selectedLogoFile,
+            {
+              cacheControl: "3600",
+              upsert: true
+            }
+          );
+
+      if (uploadError) {
+        console.error(uploadError);
+        throw uploadError;
+      }
+
+      const { data } =
+        supabaseClient.storage
+          .from("app-assets")
+          .getPublicUrl(filePath);
+
+      return data.publicUrl;
+    }
 
     async function saveSettings() {
 
-      const values = {
-        app_name:
-          document.getElementById("app_name").value.trim(),
-
-        church_name:
-          document.getElementById("church_name").value.trim(),
-
-        subtitle:
-          document.getElementById("subtitle").value.trim(),
-
-        welcome_text:
-          document.getElementById("welcome_text").value.trim(),
-
-        register_button_text:
-          document.getElementById("register_button_text").value.trim(),
-
-        members_button_text:
-          document.getElementById("members_button_text").value.trim(),
-
-        search_button_text:
-          document.getElementById("search_button_text").value.trim(),
-
-        logo_url:
-          document.getElementById("logo_url").value.trim(),
-
-        updated_at:
-          new Date().toISOString()
-      };
-
-      if (!values.app_name ||
-          !values.church_name ||
-          !values.subtitle) {
+      try {
 
         showMessage(
-          "Please fill in App Name, Church Name and Subtitle.",
-          true
+          "Saving settings...",
+          false
         );
 
-        return;
-      }
+        let logoUrl = null;
 
-      const { error } =
-        await supabaseClient
-          .from("app_settings")
-          .update(values)
-          .eq("id", 1);
+        if (selectedLogoFile) {
+          logoUrl = await uploadLogo();
+        }
 
-      if (error) {
+        const values = {
+          app_name:
+            document.getElementById("app_name")
+              .value.trim(),
+
+          church_name:
+            document.getElementById("church_name")
+              .value.trim(),
+
+          subtitle:
+            document.getElementById("subtitle")
+              .value.trim(),
+
+          welcome_text:
+            document.getElementById("welcome_text")
+              .value.trim(),
+
+          register_button_text:
+            document.getElementById("register_button_text")
+              .value.trim(),
+
+          members_button_text:
+            document.getElementById("members_button_text")
+              .value.trim(),
+
+          search_button_text:
+            document.getElementById("search_button_text")
+              .value.trim(),
+
+          updated_at:
+            new Date().toISOString()
+        };
+
+        if (logoUrl) {
+          values.logo_url = logoUrl;
+        }
+
+        if (!values.app_name ||
+            !values.church_name ||
+            !values.subtitle) {
+
+          showMessage(
+            "Please fill in App Name, Church Name and Subtitle.",
+            true
+          );
+
+          return;
+        }
+
+        const { error } =
+          await supabaseClient
+            .from("app_settings")
+            .update(values)
+            .eq("id", 1);
+
+        if (error) {
+          console.error(error);
+          showMessage(
+            "Failed to save settings.",
+            true
+          );
+          return;
+        }
+
+        selectedLogoFile = null;
+
+        document.getElementById("logoFile").value = "";
+
+        showMessage(
+          "Settings saved successfully.",
+          false
+        );
+
+      } catch (error) {
+
         console.error(error);
-        showMessage("Failed to save settings.", true);
-        return;
-      }
 
-      showMessage(
-        "Settings saved successfully.",
-        false
-      );
+        showMessage(
+          "Logo upload failed. Please try again.",
+          true
+        );
+      }
     }
 
     function showMessage(text, isError) {

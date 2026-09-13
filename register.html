@@ -122,6 +122,11 @@
       color: white;
       font-size: 17px;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    .save-btn:disabled {
+      opacity: 0.6;
     }
 
     .back-btn {
@@ -134,6 +139,7 @@
       color: white;
       font-size: 16px;
       font-weight: bold;
+      cursor: pointer;
     }
 
     #message {
@@ -251,7 +257,6 @@
         id="photoInput"
         type="file"
         accept="image/*"
-        capture="environment"
       >
 
       <label for="notes">Additional Notes</label>
@@ -263,6 +268,7 @@
       <button
         class="save-btn"
         id="saveBtn"
+        type="button"
         onclick="saveMember()"
       >
         SAVE MEMBER
@@ -270,6 +276,7 @@
 
       <button
         class="back-btn"
+        type="button"
         onclick="goBack()"
       >
         BACK TO HOME
@@ -282,144 +289,298 @@
   </div>
 
   <script>
-<script>
-const SUPABASE_URL = "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+    const SUPABASE_URL =
+      "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY
-);
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
-const message = document.getElementById("message");
-const saveBtn = document.getElementById("saveBtn");
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
 
-async function checkLogin() {
-  const { data, error } = await supabaseClient.auth.getSession();
 
-  if (error || !data.session) {
-    window.location.href = "index.html";
-    return false;
-  }
+    const message =
+      document.getElementById("message");
 
-  return true;
-}
+    const saveBtn =
+      document.getElementById("saveBtn");
 
-async function saveMember() {
 
-  message.textContent = "";
+    async function checkLogin() {
 
-  const loggedIn = await checkLogin();
+      const { data, error } =
+        await supabaseClient.auth.getSession();
 
-  if (!loggedIn) return;
+      if (error || !data.session) {
 
-  const fullName = document.getElementById("fullName").value.trim();
-  const dateOfBirth = document.getElementById("dateOfBirth").value || null;
-  const gender = document.getElementById("gender").value;
-  const phone = document.getElementById("phone").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const maritalStatus = document.getElementById("maritalStatus").value || null;
-  const joiningDate = document.getElementById("joiningDate").value || null;
-  const salvationDate = document.getElementById("salvationDate").value || null;
-  const memberType = document.getElementById("memberType").value;
-  const notes = document.getElementById("notes").value.trim();
+        window.location.href =
+          "index.html";
 
-  if (!fullName) {
-    message.textContent = "Please enter the Full Name.";
-    message.style.color = "#b00020";
-    return;
-  }
+        return false;
+      }
 
-  if (!gender) {
-    message.textContent = "Please select Gender.";
-    message.style.color = "#b00020";
-    return;
-  }
-
-  if (!phone) {
-    message.textContent = "Please enter Phone / WhatsApp Number.";
-    message.style.color = "#b00020";
-    return;
-  }
-
-  if (!memberType) {
-    message.textContent = "Please select Member Type.";
-    message.style.color = "#b00020";
-    return;
-  }
-
-  saveBtn.disabled = true;
-  saveBtn.textContent = "SAVING...";
-
-  try {
-
-    const { data: userData, error: userError } =
-      await supabaseClient.auth.getUser();
-
-    if (userError || !userData.user) {
-      throw new Error("Login session expired. Please login again.");
+      return true;
     }
 
-    const { data, error } =
-      await supabaseClient
-        .from("members")
-        .insert({
-          full_name: fullName,
-          date_of_birth: dateOfBirth,
-          gender: gender,
-          phone_whatsapp: phone,
-          address: address,
-          marital_status: maritalStatus,
-          church_joining_date: joiningDate,
-          date_of_salvation: salvationDate,
-          member_type: memberType,
-          additional_notes: notes,
-          created_by: userData.user.id
-        })
-        .select("member_id")
-        .single();
 
-    if (error) {
-      throw new Error(error.message);
+    async function saveMember() {
+
+      message.textContent = "";
+
+      const loggedIn =
+        await checkLogin();
+
+      if (!loggedIn) {
+        return;
+      }
+
+
+      const fullName =
+        document.getElementById("fullName")
+        .value.trim();
+
+      const dateOfBirth =
+        document.getElementById("dateOfBirth")
+        .value || null;
+
+      const gender =
+        document.getElementById("gender")
+        .value;
+
+      const phone =
+        document.getElementById("phone")
+        .value.trim();
+
+      const address =
+        document.getElementById("address")
+        .value.trim();
+
+      const maritalStatus =
+        document.getElementById("maritalStatus")
+        .value || null;
+
+      const joiningDate =
+        document.getElementById("joiningDate")
+        .value || null;
+
+      const salvationDate =
+        document.getElementById("salvationDate")
+        .value || null;
+
+      const memberType =
+        document.getElementById("memberType")
+        .value;
+
+      const notes =
+        document.getElementById("notes")
+        .value.trim();
+
+
+      if (!fullName) {
+
+        message.textContent =
+          "Please enter the Full Name.";
+
+        message.style.color =
+          "#b00020";
+
+        return;
+      }
+
+
+      if (!gender) {
+
+        message.textContent =
+          "Please select Gender.";
+
+        message.style.color =
+          "#b00020";
+
+        return;
+      }
+
+
+      if (!phone) {
+
+        message.textContent =
+          "Please enter Phone / WhatsApp Number.";
+
+        message.style.color =
+          "#b00020";
+
+        return;
+      }
+
+
+      if (!memberType) {
+
+        message.textContent =
+          "Please select Member Type.";
+
+        message.style.color =
+          "#b00020";
+
+        return;
+      }
+
+
+      saveBtn.disabled = true;
+
+      saveBtn.textContent =
+        "SAVING...";
+
+
+      try {
+
+        const {
+          data: userData,
+          error: userError
+        } =
+          await supabaseClient.auth.getUser();
+
+
+        if (
+          userError ||
+          !userData.user
+        ) {
+
+          throw new Error(
+            "Login session expired. Please login again."
+          );
+        }
+
+
+        const {
+          data,
+          error
+        } =
+          await supabaseClient
+          .from("members")
+          .insert({
+
+            full_name:
+              fullName,
+
+            date_of_birth:
+              dateOfBirth,
+
+            gender:
+              gender,
+
+            phone_whatsapp:
+              phone,
+
+            address:
+              address,
+
+            marital_status:
+              maritalStatus,
+
+            church_joining_date:
+              joiningDate,
+
+            date_of_salvation:
+              salvationDate,
+
+            member_type:
+              memberType,
+
+            additional_notes:
+              notes,
+
+            created_by:
+              userData.user.id
+
+          })
+          .select("member_id")
+          .single();
+
+
+        if (error) {
+
+          throw new Error(
+            error.message
+          );
+        }
+
+
+        message.innerHTML =
+          "Member Registered Successfully<br><br>" +
+          "Member ID: " +
+          data.member_id;
+
+        message.style.color =
+          "#183b2b";
+
+
+        saveBtn.textContent =
+          "SAVED";
+
+
+      } catch (error) {
+
+        message.textContent =
+          "Error: " +
+          error.message;
+
+        message.style.color =
+          "#b00020";
+
+        saveBtn.disabled =
+          false;
+
+        saveBtn.textContent =
+          "SAVE MEMBER";
+      }
+
     }
 
-    message.innerHTML =
-      "Member Registered Successfully<br><br>" +
-      "Member ID: " + data.member_id;
 
-    message.style.color = "#183b2b";
+    function takePhoto() {
 
-    saveBtn.textContent = "SAVED";
+      const photoInput =
+        document.getElementById(
+          "photoInput"
+        );
 
-  } catch (error) {
+      photoInput.setAttribute(
+        "capture",
+        "environment"
+      );
 
-    message.textContent = "Error: " + error.message;
-    message.style.color = "#b00020";
+      photoInput.click();
+    }
 
-    saveBtn.disabled = false;
-    saveBtn.textContent = "SAVE MEMBER";
-  }
-}
 
-function takePhoto() {
-  const photoInput = document.getElementById("photoInput");
-  photoInput.setAttribute("capture", "environment");
-  photoInput.click();
-}
+    function choosePhoto() {
 
-function choosePhoto() {
-  const photoInput = document.getElementById("photoInput");
-  photoInput.removeAttribute("capture");
-  photoInput.click();
-}
+      const photoInput =
+        document.getElementById(
+          "photoInput"
+        );
 
-function goBack() {
-  window.location.href = "home.html";
-}
+      photoInput.removeAttribute(
+        "capture"
+      );
 
-checkLogin();
-</script>
+      photoInput.click();
+    }
+
+
+    function goBack() {
+
+      window.location.href =
+        "home.html";
+    }
+
+
+    checkLogin();
+
+  </script>
 
 </body>
 </html>

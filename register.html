@@ -78,16 +78,16 @@
       font-family: Arial, sans-serif;
     }
 
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
     input:focus,
     select:focus,
     textarea:focus {
       outline: none;
       border-color: #183b2b;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
     }
 
     .member-id {
@@ -187,10 +187,7 @@
       >
 
       <label for="dateOfBirth">Date of Birth</label>
-      <input
-        id="dateOfBirth"
-        type="date"
-      >
+      <input id="dateOfBirth" type="date">
 
       <label for="gender">Gender</label>
       <select id="gender">
@@ -222,16 +219,10 @@
       </select>
 
       <label for="joiningDate">Church Joining Date</label>
-      <input
-        id="joiningDate"
-        type="date"
-      >
+      <input id="joiningDate" type="date">
 
       <label for="salvationDate">Date of Salvation</label>
-      <input
-        id="salvationDate"
-        type="date"
-      >
+      <input id="salvationDate" type="date">
 
       <label for="memberType">Member Type</label>
       <select id="memberType">
@@ -285,7 +276,6 @@
       <div id="message"></div>
 
     </div>
-
   </div>
 
   <script>
@@ -302,7 +292,6 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
-
     const message =
       document.getElementById("message");
 
@@ -316,10 +305,7 @@
         await supabaseClient.auth.getSession();
 
       if (error || !data.session) {
-
-        window.location.href =
-          "index.html";
-
+        window.location.href = "index.html";
         return false;
       }
 
@@ -334,104 +320,74 @@
       const loggedIn =
         await checkLogin();
 
-      if (!loggedIn) {
-        return;
-      }
+      if (!loggedIn) return;
 
 
       const fullName =
-        document.getElementById("fullName")
-        .value.trim();
+        document.getElementById("fullName").value.trim();
 
       const dateOfBirth =
-        document.getElementById("dateOfBirth")
-        .value || null;
+        document.getElementById("dateOfBirth").value || null;
 
       const gender =
-        document.getElementById("gender")
-        .value;
+        document.getElementById("gender").value;
 
       const phone =
-        document.getElementById("phone")
-        .value.trim();
+        document.getElementById("phone").value.trim();
 
       const address =
-        document.getElementById("address")
-        .value.trim();
+        document.getElementById("address").value.trim();
 
       const maritalStatus =
-        document.getElementById("maritalStatus")
-        .value || null;
+        document.getElementById("maritalStatus").value || null;
 
       const joiningDate =
-        document.getElementById("joiningDate")
-        .value || null;
+        document.getElementById("joiningDate").value || null;
 
       const salvationDate =
-        document.getElementById("salvationDate")
-        .value || null;
+        document.getElementById("salvationDate").value || null;
 
       const memberType =
-        document.getElementById("memberType")
-        .value;
+        document.getElementById("memberType").value;
 
       const notes =
-        document.getElementById("notes")
-        .value.trim();
+        document.getElementById("notes").value.trim();
 
 
       if (!fullName) {
-
         message.textContent =
           "Please enter the Full Name.";
-
-        message.style.color =
-          "#b00020";
-
+        message.style.color = "#b00020";
         return;
       }
 
 
       if (!gender) {
-
         message.textContent =
           "Please select Gender.";
-
-        message.style.color =
-          "#b00020";
-
+        message.style.color = "#b00020";
         return;
       }
 
 
       if (!phone) {
-
         message.textContent =
           "Please enter Phone / WhatsApp Number.";
-
-        message.style.color =
-          "#b00020";
-
+        message.style.color = "#b00020";
         return;
       }
 
 
       if (!memberType) {
-
         message.textContent =
           "Please select Member Type.";
-
-        message.style.color =
-          "#b00020";
-
+        message.style.color = "#b00020";
         return;
       }
 
 
       saveBtn.disabled = true;
-
-      saveBtn.textContent =
-        "SAVING...";
+      saveBtn.textContent = "SAVING...";
 
 
       try {
@@ -443,11 +399,7 @@
           await supabaseClient.auth.getUser();
 
 
-        if (
-          userError ||
-          !userData.user
-        ) {
-
+        if (userError || !userData.user) {
           throw new Error(
             "Login session expired. Please login again."
           );
@@ -459,52 +411,26 @@
           error
         } =
           await supabaseClient
-          .from("members")
-          .insert({
-
-            full_name:
-              fullName,
-
-            date_of_birth:
-              dateOfBirth,
-
-            gender:
-              gender,
-
-            phone_whatsapp:
-              phone,
-
-            address:
-              address,
-
-            marital_status:
-              maritalStatus,
-
-            church_joining_date:
-              joiningDate,
-
-            date_of_salvation:
-              salvationDate,
-
-            member_type:
-              memberType,
-
-            additional_notes:
-              notes,
-
-            created_by:
-              userData.user.id
-
-          })
-          .select("member_id")
-          .single();
+            .from("members")
+            .insert({
+              full_name: fullName,
+              date_of_birth: dateOfBirth,
+              gender: gender,
+              phone_whatsapp: phone,
+              address: address,
+              marital_status: maritalStatus,
+              church_joining_date: joiningDate,
+              date_of_salvation: salvationDate,
+              member_type: memberType,
+              additional_notes: notes,
+              created_by: userData.user.id
+            })
+            .select("member_id")
+            .single();
 
 
         if (error) {
-
-          throw new Error(
-            error.message
-          );
+          throw new Error(error.message);
         }
 
 
@@ -513,39 +439,28 @@
           "Member ID: " +
           data.member_id;
 
-        message.style.color =
-          "#183b2b";
+        message.style.color = "#183b2b";
 
-
-        saveBtn.textContent =
-          "SAVED";
+        saveBtn.textContent = "SAVED";
 
 
       } catch (error) {
 
         message.textContent =
-          "Error: " +
-          error.message;
+          "Error: " + error.message;
 
-        message.style.color =
-          "#b00020";
+        message.style.color = "#b00020";
 
-        saveBtn.disabled =
-          false;
-
-        saveBtn.textContent =
-          "SAVE MEMBER";
+        saveBtn.disabled = false;
+        saveBtn.textContent = "SAVE MEMBER";
       }
-
     }
 
 
     function takePhoto() {
 
       const photoInput =
-        document.getElementById(
-          "photoInput"
-        );
+        document.getElementById("photoInput");
 
       photoInput.setAttribute(
         "capture",
@@ -559,22 +474,16 @@
     function choosePhoto() {
 
       const photoInput =
-        document.getElementById(
-          "photoInput"
-        );
+        document.getElementById("photoInput");
 
-      photoInput.removeAttribute(
-        "capture"
-      );
+      photoInput.removeAttribute("capture");
 
       photoInput.click();
     }
 
 
     function goBack() {
-
-      window.location.href =
-        "home.html";
+      window.location.href = "home.html";
     }
 
 

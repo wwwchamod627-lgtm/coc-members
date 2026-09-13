@@ -123,10 +123,6 @@
       box-shadow: 0 5px 15px rgba(128,91,18,0.25);
     }
 
-    .save:active {
-      transform: scale(0.99);
-    }
-
     .back {
       width: 100%;
       padding: 14px;
@@ -166,7 +162,6 @@
   <div class="container">
 
     <div class="card">
-
       <h2>App Information</h2>
 
       <label>App Name</label>
@@ -180,11 +175,9 @@
 
       <label>Welcome Text</label>
       <input type="text" id="welcome_text" placeholder="Enter Welcome Text">
-
     </div>
 
     <div class="card">
-
       <h2>Home Screen Buttons</h2>
 
       <label>Register Button</label>
@@ -198,11 +191,9 @@
       <label>Search Button</label>
       <input type="text" id="search_button_text"
              placeholder="Search Members">
-
     </div>
 
     <div class="card">
-
       <h2>Home Screen Logo</h2>
 
       <label>Logo Image URL</label>
@@ -214,10 +205,8 @@
       </div>
 
       <p class="note">
-        Logo upload will be added in the next step.
-        For now, this field can store a logo image URL.
+        Logo upload will be added later.
       </p>
-
     </div>
 
     <div id="message"></div>
@@ -246,8 +235,6 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
-    let sessionData = null;
-
     async function checkAdmin() {
 
       const { data, error } =
@@ -258,14 +245,16 @@
         return;
       }
 
-      sessionData = data.session;
-
       const { data: isAdmin, error: adminError } =
-  await supabaseClient.rpc("is_admin");
+        await supabaseClient.rpc("is_admin");
 
-if (adminError || isAdmin !== true) {
+      if (adminError) {
+        console.error(adminError);
+        showMessage("Unable to verify administrator access.", true);
+        return;
+      }
 
-      if (profileError || !profile || profile.role !== "admin") {
+      if (isAdmin !== true) {
         document.body.innerHTML = `
           <div style="
             min-height:100vh;
@@ -307,12 +296,12 @@ if (adminError || isAdmin !== true) {
         await supabaseClient
           .from("app_settings")
           .select("*")
-          .limit(1)
+          .eq("id", 1)
           .single();
 
       if (error) {
-        showMessage("Failed to load settings.", true);
         console.error(error);
+        showMessage("Failed to load settings.", true);
         return;
       }
 
@@ -353,9 +342,17 @@ if (adminError || isAdmin !== true) {
         return;
       }
 
-      preview.innerHTML =
-        `<img src="${escapeHtml(url)}"
-              onerror="this.parentElement.innerHTML='Logo could not be loaded';">`;
+      preview.innerHTML = "";
+
+      const img = document.createElement("img");
+      img.src = url;
+      img.alt = "Home Screen Logo";
+
+      img.onerror = function() {
+        preview.textContent = "Logo could not be loaded";
+      };
+
+      preview.appendChild(img);
     }
 
     document.getElementById("logo_url")
@@ -390,7 +387,8 @@ if (adminError || isAdmin !== true) {
         logo_url:
           document.getElementById("logo_url").value.trim(),
 
-        updated_at: new Date().toISOString()
+        updated_at:
+          new Date().toISOString()
       };
 
       if (!values.app_name ||
@@ -417,10 +415,13 @@ if (adminError || isAdmin !== true) {
         return;
       }
 
-      showMessage("Settings saved successfully.", false);
+      showMessage(
+        "Settings saved successfully.",
+        false
+      );
     }
 
-    function showMessage(text, error) {
+    function showMessage(text, isError) {
 
       const message =
         document.getElementById("message");
@@ -428,17 +429,7 @@ if (adminError || isAdmin !== true) {
       message.textContent = text;
 
       message.style.color =
-        error ? "#a32626" : "#6d5518";
-    }
-
-    function escapeHtml(value) {
-
-      return String(value)
-        .replace(/&/g, "&amp;")
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/"/g, "&quot;")
-        .replace(/'/g, "&#039;");
+        isError ? "#a32626" : "#6d5518";
     }
 
     function goBack() {

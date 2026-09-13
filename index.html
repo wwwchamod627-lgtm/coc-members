@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     * {
@@ -76,6 +77,17 @@
       color: white;
       font-size: 17px;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: 0.6;
+    }
+
+    #message {
+      margin-top: 15px;
+      font-size: 14px;
+      min-height: 20px;
     }
   </style>
 </head>
@@ -93,15 +105,87 @@
       Members Registration
     </div>
 
-    <label>Email</label>
-    <input type="email" placeholder="Enter your email">
+    <label for="email">Email</label>
+    <input
+      id="email"
+      type="email"
+      placeholder="Enter your email"
+      autocomplete="email"
+    >
 
-    <label>Password</label>
-    <input type="password" placeholder="Enter your password">
+    <label for="password">Password</label>
+    <input
+      id="password"
+      type="password"
+      placeholder="Enter your password"
+      autocomplete="current-password"
+    >
 
-    <button>LOGIN</button>
+    <button id="loginBtn">LOGIN</button>
+
+    <div id="message"></div>
 
   </div>
+
+  <script>
+    const SUPABASE_URL = "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+    /*
+      IMPORTANT:
+      Replace ONLY the text below with your Supabase
+      Publishable key.
+
+      Do NOT use the service_role / secret key.
+    */
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+    const supabaseClient = window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+    const loginBtn = document.getElementById("loginBtn");
+    const message = document.getElementById("message");
+
+    loginBtn.addEventListener("click", async () => {
+
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+
+      message.textContent = "";
+
+      if (!email || !password) {
+        message.textContent = "Please enter your email and password.";
+        message.style.color = "#b00020";
+        return;
+      }
+
+      loginBtn.disabled = true;
+      loginBtn.textContent = "LOGGING IN...";
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+          email: email,
+          password: password
+        });
+
+      if (error) {
+        message.textContent = error.message;
+        message.style.color = "#b00020";
+
+        loginBtn.disabled = false;
+        loginBtn.textContent = "LOGIN";
+        return;
+      }
+
+      message.textContent = "Login successful!";
+      message.style.color = "#183b2b";
+
+      setTimeout(() => {
+        window.location.href = "home.html";
+      }, 500);
+    });
+  </script>
 
 </body>
 </html>

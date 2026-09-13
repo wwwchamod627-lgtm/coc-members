@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Settings - COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f8f3e7;
+      font-family: Arial, sans-serif;
+      color: #4b3515;
+    }
+
+    .header {
+      background: linear-gradient(135deg, #8a641c, #d4af37, #f1d77a);
+      color: white;
+      padding: 28px 20px;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    }
+
+    .header .icon {
+      font-size: 42px;
+    }
+
+    .header h1 {
+      margin: 6px 0;
+      font-size: 26px;
+    }
+
+    .header p {
+      margin: 4px 0;
+      font-size: 14px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      padding: 22px 18px 40px;
+    }
+
+    .card {
+      background: #fffdf8;
+      border: 1px solid #dfc46b;
+      border-radius: 18px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 6px 22px rgba(91, 65, 20, 0.10);
+    }
+
+    .card h2 {
+      margin-top: 0;
+      color: #7a5818;
+      font-size: 20px;
+    }
+
+    label {
+      display: block;
+      margin-top: 15px;
+      margin-bottom: 7px;
+      font-weight: bold;
+      color: #5a411b;
+    }
+
+    input[type="text"],
+    input[type="url"] {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #d8bd69;
+      border-radius: 10px;
+      font-size: 16px;
+      background: white;
+      color: #3e2d14;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #b88a24;
+      box-shadow: 0 0 0 2px rgba(184,138,36,0.15);
+    }
+
+    .logo-preview {
+      width: 100%;
+      min-height: 130px;
+      margin-top: 12px;
+      border: 2px dashed #d3b85e;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      background: #faf6eb;
+      text-align: center;
+    }
+
+    .logo-preview img {
+      max-width: 100%;
+      max-height: 150px;
+      object-fit: contain;
+    }
+
+    .save {
+      width: 100%;
+      padding: 16px;
+      margin-top: 8px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #9a701e, #d4af37);
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 5px 15px rgba(128,91,18,0.25);
+    }
+
+    .save:active {
+      transform: scale(0.99);
+    }
+
+    .back {
+      width: 100%;
+      padding: 14px;
+      border: 1px solid #b99745;
+      border-radius: 12px;
+      background: white;
+      color: #705016;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 12px;
+    }
+
+    #message {
+      text-align: center;
+      margin: 15px 0;
+      font-weight: bold;
+      min-height: 20px;
+    }
+
+    .note {
+      font-size: 13px;
+      color: #776b59;
+      line-height: 1.5;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="icon">⚙️</div>
+    <h1>Admin Settings</h1>
+    <p>COC Members</p>
+  </div>
+
+  <div class="container">
+
+    <div class="card">
+
+      <h2>App Information</h2>
+
+      <label>App Name</label>
+      <input type="text" id="app_name" placeholder="Enter App Name">
+
+      <label>Church Name</label>
+      <input type="text" id="church_name" placeholder="Enter Church Name">
+
+      <label>Subtitle</label>
+      <input type="text" id="subtitle" placeholder="Enter Subtitle">
+
+      <label>Welcome Text</label>
+      <input type="text" id="welcome_text" placeholder="Enter Welcome Text">
+
+    </div>
+
+    <div class="card">
+
+      <h2>Home Screen Buttons</h2>
+
+      <label>Register Button</label>
+      <input type="text" id="register_button_text"
+             placeholder="Register New Member">
+
+      <label>Members List Button</label>
+      <input type="text" id="members_button_text"
+             placeholder="Members List">
+
+      <label>Search Button</label>
+      <input type="text" id="search_button_text"
+             placeholder="Search Members">
+
+    </div>
+
+    <div class="card">
+
+      <h2>Home Screen Logo</h2>
+
+      <label>Logo Image URL</label>
+      <input type="url" id="logo_url"
+             placeholder="Paste logo image URL">
+
+      <div class="logo-preview" id="logoPreview">
+        No logo selected
+      </div>
+
+      <p class="note">
+        Logo upload will be added in the next step.
+        For now, this field can store a logo image URL.
+      </p>
+
+    </div>
+
+    <div id="message"></div>
+
+    <button class="save" onclick="saveSettings()">
+      💾 SAVE SETTINGS
+    </button>
+
+    <button class="back" onclick="goBack()">
+      ← BACK TO HOME
+    </button>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+    let sessionData = null;
+
+    async function checkAdmin() {
+
+      const { data, error } =
+        await supabaseClient.auth.getSession();
+
+      if (error || !data.session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      sessionData = data.session;
+
+      const { data: profile, error: profileError } =
+        await supabaseClient
+          .from("user_profiles")
+          .select("role")
+          .eq("id", sessionData.user.id)
+          .single();
+
+      if (profileError || !profile || profile.role !== "admin") {
+        document.body.innerHTML = `
+          <div style="
+            min-height:100vh;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            text-align:center;
+            padding:30px;
+            font-family:Arial;
+            background:#f8f3e7;
+            color:#5a411b;
+          ">
+            <div>
+              <h2>Access Denied</h2>
+              <p>Only administrators can access this page.</p>
+              <button onclick="window.location.href='home.html'"
+                style="
+                  padding:12px 20px;
+                  border:none;
+                  border-radius:10px;
+                  background:#b88a24;
+                  color:white;
+                  font-weight:bold;
+                ">
+                Back to Home
+              </button>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      await loadSettings();
+    }
+
+    async function loadSettings() {
+
+      const { data, error } =
+        await supabaseClient
+          .from("app_settings")
+          .select("*")
+          .limit(1)
+          .single();
+
+      if (error) {
+        showMessage("Failed to load settings.", true);
+        console.error(error);
+        return;
+      }
+
+      document.getElementById("app_name").value =
+        data.app_name || "";
+
+      document.getElementById("church_name").value =
+        data.church_name || "";
+
+      document.getElementById("subtitle").value =
+        data.subtitle || "";
+
+      document.getElementById("welcome_text").value =
+        data.welcome_text || "";
+
+      document.getElementById("register_button_text").value =
+        data.register_button_text || "";
+
+      document.getElementById("members_button_text").value =
+        data.members_button_text || "";
+
+      document.getElementById("search_button_text").value =
+        data.search_button_text || "";
+
+      document.getElementById("logo_url").value =
+        data.logo_url || "";
+
+      updateLogoPreview(data.logo_url);
+    }
+
+    function updateLogoPreview(url) {
+
+      const preview =
+        document.getElementById("logoPreview");
+
+      if (!url) {
+        preview.innerHTML = "No logo selected";
+        return;
+      }
+
+      preview.innerHTML =
+        `<img src="${escapeHtml(url)}"
+              onerror="this.parentElement.innerHTML='Logo could not be loaded';">`;
+    }
+
+    document.getElementById("logo_url")
+      .addEventListener("input", function() {
+        updateLogoPreview(this.value.trim());
+      });
+
+    async function saveSettings() {
+
+      const values = {
+        app_name:
+          document.getElementById("app_name").value.trim(),
+
+        church_name:
+          document.getElementById("church_name").value.trim(),
+
+        subtitle:
+          document.getElementById("subtitle").value.trim(),
+
+        welcome_text:
+          document.getElementById("welcome_text").value.trim(),
+
+        register_button_text:
+          document.getElementById("register_button_text").value.trim(),
+
+        members_button_text:
+          document.getElementById("members_button_text").value.trim(),
+
+        search_button_text:
+          document.getElementById("search_button_text").value.trim(),
+
+        logo_url:
+          document.getElementById("logo_url").value.trim(),
+
+        updated_at: new Date().toISOString()
+      };
+
+      if (!values.app_name ||
+          !values.church_name ||
+          !values.subtitle) {
+
+        showMessage(
+          "Please fill in App Name, Church Name and Subtitle.",
+          true
+        );
+
+        return;
+      }
+
+      const { error } =
+        await supabaseClient
+          .from("app_settings")
+          .update(values)
+          .eq("id", 1);
+
+      if (error) {
+        console.error(error);
+        showMessage("Failed to save settings.", true);
+        return;
+      }
+
+      showMessage("Settings saved successfully.", false);
+    }
+
+    function showMessage(text, error) {
+
+      const message =
+        document.getElementById("message");
+
+      message.textContent = text;
+
+      message.style.color =
+        error ? "#a32626" : "#6d5518";
+    }
+
+    function escapeHtml(value) {
+
+      return String(value)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    function goBack() {
+      window.location.href = "home.html";
+    }
+
+    checkAdmin();
+
+  </script>
+
+</body>
+</html>

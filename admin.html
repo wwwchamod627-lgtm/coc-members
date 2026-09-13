@@ -260,12 +260,10 @@
 
       sessionData = data.session;
 
-      const { data: profile, error: profileError } =
-        await supabaseClient
-          .from("user_profiles")
-          .select("role")
-          .eq("id", sessionData.user.id)
-          .single();
+      const { data: isAdmin, error: adminError } =
+  await supabaseClient.rpc("is_admin");
+
+if (adminError || isAdmin !== true) {
 
       if (profileError || !profile || profile.role !== "admin") {
         document.body.innerHTML = `

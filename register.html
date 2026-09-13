@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Register Member - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -45,10 +46,10 @@
       width: 100%;
       max-width: 650px;
       margin: auto;
-      padding: 25px 20px 40px;
+      padding: 25px 18px 40px;
     }
 
-    .form-box {
+    .card {
       background: white;
       padding: 25px 20px;
       border-radius: 18px;
@@ -56,14 +57,15 @@
     }
 
     h2 {
-      margin-top: 0;
       text-align: center;
+      margin-top: 0;
+      margin-bottom: 25px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin: 18px 0 7px;
+      margin: 16px 0 7px;
       color: #333;
     }
 
@@ -73,14 +75,9 @@
       width: 100%;
       padding: 13px;
       border: 1px solid #ccc;
-      border-radius: 10px;
+      border-radius: 9px;
       font-size: 16px;
-      font-family: Arial, sans-serif;
-    }
-
-    textarea {
-      min-height: 100px;
-      resize: vertical;
+      background: white;
     }
 
     input:focus,
@@ -90,43 +87,64 @@
       border-color: #183b2b;
     }
 
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
     .member-id {
-      background: #eef2ec;
+      background: #eeeeee;
+      color: #555;
       font-weight: bold;
-      color: #183b2b;
     }
 
     .photo-buttons {
       display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 10px;
+      margin-top: 8px;
     }
 
     .photo-buttons button {
-      width: 100%;
       padding: 13px;
       border: none;
-      border-radius: 10px;
-      background: #eef2ec;
+      border-radius: 9px;
+      background: #e8eee9;
       color: #183b2b;
-      font-size: 15px;
       font-weight: bold;
+      cursor: pointer;
+    }
+
+    #photoInput {
+      display: none;
+    }
+
+    #photoPreview {
+      display: none;
+      width: 140px;
+      height: 140px;
+      object-fit: cover;
+      border-radius: 12px;
+      margin: 15px auto 0;
+      border: 2px solid #183b2b;
     }
 
     .save-btn {
       width: 100%;
-      margin-top: 25px;
+      margin-top: 28px;
       padding: 16px;
       border: none;
       border-radius: 10px;
       background: #183b2b;
       color: white;
-      font-size: 17px;
+      font-size: 18px;
       font-weight: bold;
       cursor: pointer;
     }
 
     .save-btn:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
     }
 
     .back-btn {
@@ -146,11 +164,15 @@
       text-align: center;
       margin-top: 18px;
       font-weight: bold;
-      min-height: 22px;
+      min-height: 24px;
     }
 
-    #photoInput {
-      display: none;
+    .success {
+      color: #187a3b;
+    }
+
+    .error {
+      color: #b00020;
     }
   </style>
 </head>
@@ -166,7 +188,7 @@
 
   <div class="container">
 
-    <div class="form-box">
+    <div class="card">
 
       <h2>Register New Member</h2>
 
@@ -187,7 +209,10 @@
       >
 
       <label for="dateOfBirth">Date of Birth</label>
-      <input id="dateOfBirth" type="date">
+      <input
+        id="dateOfBirth"
+        type="date"
+      >
 
       <label for="gender">Gender</label>
       <select id="gender">
@@ -204,10 +229,11 @@
       >
 
       <label for="address">Address</label>
-      <textarea
+      <input
         id="address"
+        type="text"
         placeholder="Enter Address"
-      ></textarea>
+      >
 
       <label for="maritalStatus">Marital Status</label>
       <select id="maritalStatus">
@@ -218,11 +244,17 @@
         <option value="Widowed">Widowed</option>
       </select>
 
-      <label for="joiningDate">Church Joining Date</label>
-      <input id="joiningDate" type="date">
+      <label for="churchJoiningDate">Church Joining Date</label>
+      <input
+        id="churchJoiningDate"
+        type="date"
+      >
 
-      <label for="salvationDate">Date of Salvation</label>
-      <input id="salvationDate" type="date">
+      <label for="dateOfSalvation">Date of Salvation</label>
+      <input
+        id="dateOfSalvation"
+        type="date"
+      >
 
       <label for="memberType">Member Type</label>
       <select id="memberType">
@@ -235,6 +267,7 @@
       <label>Member Photo</label>
 
       <div class="photo-buttons">
+
         <button type="button" onclick="takePhoto()">
           📷 Take Photo
         </button>
@@ -242,6 +275,7 @@
         <button type="button" onclick="choosePhoto()">
           🖼️ Choose from Gallery
         </button>
+
       </div>
 
       <input
@@ -250,15 +284,18 @@
         accept="image/*"
       >
 
-      <label for="notes">Additional Notes</label>
+      <img id="photoPreview" alt="Member Photo Preview">
+
+      <label for="additionalNotes">Additional Notes</label>
+
       <textarea
-        id="notes"
+        id="additionalNotes"
         placeholder="Enter additional notes..."
       ></textarea>
 
       <button
-        class="save-btn"
         id="saveBtn"
+        class="save-btn"
         type="button"
         onclick="saveMember()"
       >
@@ -276,9 +313,14 @@
       <div id="message"></div>
 
     </div>
+
   </div>
 
   <script>
+
+    /* =========================
+       SUPABASE CONNECTION
+       ========================= */
 
     const SUPABASE_URL =
       "https://djxpqggcpaofkpvcqgvd.supabase.co";
@@ -292,12 +334,10 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
-    const message =
-      document.getElementById("message");
 
-    const saveBtn =
-      document.getElementById("saveBtn");
-
+    /* =========================
+       CHECK LOGIN
+       ========================= */
 
     async function checkLogin() {
 
@@ -305,187 +345,326 @@
         await supabaseClient.auth.getSession();
 
       if (error || !data.session) {
-        window.location.href = "index.html";
-        return false;
-      }
 
-      return true;
+        window.location.href = "index.html";
+
+        return;
+      }
     }
 
 
-    async function saveMember() {
+    /* =========================
+       PHOTO FUNCTIONS
+       ========================= */
 
-      message.textContent = "";
+    function choosePhoto() {
 
-      const loggedIn =
-        await checkLogin();
+      const input =
+        document.getElementById("photoInput");
 
-      if (!loggedIn) return;
+      input.removeAttribute("capture");
 
-
-      const fullName =
-        document.getElementById("fullName").value.trim();
-
-      const dateOfBirth =
-        document.getElementById("dateOfBirth").value || null;
-
-      const gender =
-        document.getElementById("gender").value;
-
-      const phone =
-        document.getElementById("phone").value.trim();
-
-      const address =
-        document.getElementById("address").value.trim();
-
-      const maritalStatus =
-        document.getElementById("maritalStatus").value || null;
-
-      const joiningDate =
-        document.getElementById("joiningDate").value || null;
-
-      const salvationDate =
-        document.getElementById("salvationDate").value || null;
-
-      const memberType =
-        document.getElementById("memberType").value;
-
-      const notes =
-        document.getElementById("notes").value.trim();
-
-
-      if (!fullName) {
-        message.textContent =
-          "Please enter the Full Name.";
-        message.style.color = "#b00020";
-        return;
-      }
-
-
-      if (!gender) {
-        message.textContent =
-          "Please select Gender.";
-        message.style.color = "#b00020";
-        return;
-      }
-
-
-      if (!phone) {
-        message.textContent =
-          "Please enter Phone / WhatsApp Number.";
-        message.style.color = "#b00020";
-        return;
-      }
-
-
-      if (!memberType) {
-        message.textContent =
-          "Please select Member Type.";
-        message.style.color = "#b00020";
-        return;
-      }
-
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = "SAVING...";
-
-
-      try {
-
-        const {
-          data: userData,
-          error: userError
-        } =
-          await supabaseClient.auth.getUser();
-
-
-        if (userError || !userData.user) {
-          throw new Error(
-            "Login session expired. Please login again."
-          );
-        }
-
-
-        const {
-          data,
-          error
-        } =
-          await supabaseClient
-            .from("members")
-            .insert({
-              full_name: fullName,
-              date_of_birth: dateOfBirth,
-              gender: gender,
-              phone_whatsapp: phone,
-              address: address,
-              marital_status: maritalStatus,
-              church_joining_date: joiningDate,
-              date_of_salvation: salvationDate,
-              member_type: memberType,
-              additional_notes: notes,
-              created_by: userData.user.id
-            })
-            .select("member_id")
-            .single();
-
-
-        if (error) {
-          throw new Error(error.message);
-        }
-
-
-        message.innerHTML =
-          "Member Registered Successfully<br><br>" +
-          "Member ID: " +
-          data.member_id;
-
-        message.style.color = "#183b2b";
-
-        saveBtn.textContent = "SAVED";
-
-
-      } catch (error) {
-
-        message.textContent =
-          "Error: " + error.message;
-
-        message.style.color = "#b00020";
-
-        saveBtn.disabled = false;
-        saveBtn.textContent = "SAVE MEMBER";
-      }
+      input.click();
     }
 
 
     function takePhoto() {
 
-      const photoInput =
+      const input =
         document.getElementById("photoInput");
 
-      photoInput.setAttribute(
-        "capture",
-        "environment"
-      );
+      input.setAttribute("capture", "environment");
 
-      photoInput.click();
+      input.click();
     }
 
 
-    function choosePhoto() {
+    document
+      .getElementById("photoInput")
+      .addEventListener("change", function(event) {
 
-      const photoInput =
-        document.getElementById("photoInput");
+        const file = event.target.files[0];
 
-      photoInput.removeAttribute("capture");
+        if (!file) {
+          return;
+        }
 
-      photoInput.click();
+        const preview =
+          document.getElementById("photoPreview");
+
+        preview.src =
+          URL.createObjectURL(file);
+
+        preview.style.display = "block";
+      });
+
+
+    /* =========================
+       SAVE MEMBER
+       ========================= */
+
+    async function saveMember() {
+
+      const saveBtn =
+        document.getElementById("saveBtn");
+
+      const message =
+        document.getElementById("message");
+
+
+      message.textContent = "";
+      message.className = "";
+
+
+      /* GET CURRENT USER */
+
+      const { data: sessionData, error: sessionError } =
+        await supabaseClient.auth.getSession();
+
+
+      if (
+        sessionError ||
+        !sessionData.session
+      ) {
+
+        message.textContent =
+          "Your session has expired. Please login again.";
+
+        message.className = "error";
+
+        return;
+      }
+
+
+      /* GET FORM DATA */
+
+      const fullName =
+        document
+          .getElementById("fullName")
+          .value
+          .trim();
+
+      const dateOfBirth =
+        document
+          .getElementById("dateOfBirth")
+          .value;
+
+      const gender =
+        document
+          .getElementById("gender")
+          .value;
+
+      const phone =
+        document
+          .getElementById("phone")
+          .value
+          .trim();
+
+      const address =
+        document
+          .getElementById("address")
+          .value
+          .trim();
+
+      const maritalStatus =
+        document
+          .getElementById("maritalStatus")
+          .value;
+
+      const churchJoiningDate =
+        document
+          .getElementById("churchJoiningDate")
+          .value;
+
+      const dateOfSalvation =
+        document
+          .getElementById("dateOfSalvation")
+          .value;
+
+      const memberType =
+        document
+          .getElementById("memberType")
+          .value;
+
+      const additionalNotes =
+        document
+          .getElementById("additionalNotes")
+          .value
+          .trim();
+
+
+      /* REQUIRED FIELD */
+
+      if (!fullName) {
+
+        message.textContent =
+          "Please enter the Full Name.";
+
+        message.className = "error";
+
+        return;
+      }
+
+
+      /* DISABLE BUTTON */
+
+      saveBtn.disabled = true;
+
+      saveBtn.textContent =
+        "SAVING...";
+
+
+      /* INSERT INTO SUPABASE */
+
+      const { data, error } =
+        await supabaseClient
+          .from("members")
+          .insert([
+            {
+              full_name: fullName,
+
+              date_of_birth:
+                dateOfBirth || null,
+
+              gender:
+                gender || null,
+
+              phone_whatsapp:
+                phone || null,
+
+              address:
+                address || null,
+
+              marital_status:
+                maritalStatus || null,
+
+              church_joining_date:
+                churchJoiningDate || null,
+
+              date_of_salvation:
+                dateOfSalvation || null,
+
+              member_type:
+                memberType || null,
+
+              additional_notes:
+                additionalNotes || null,
+
+              created_by:
+                sessionData.session.user.id
+            }
+          ])
+          .select()
+          .single();
+
+
+      /* ERROR */
+
+      if (error) {
+
+        console.error(
+          "SAVE ERROR:",
+          error
+        );
+
+        message.textContent =
+          "Error: " + error.message;
+
+        message.className = "error";
+
+        saveBtn.disabled = false;
+
+        saveBtn.textContent =
+          "SAVE MEMBER";
+
+        return;
+      }
+
+
+      /* SUCCESS */
+
+      message.innerHTML =
+        "Member Registered Successfully<br>" +
+        "Member ID: " +
+        "<strong>" +
+        data.member_id +
+        "</strong>";
+
+      message.className =
+        "success";
+
+
+      saveBtn.textContent =
+        "MEMBER SAVED";
+
+
+      /* CLEAR FORM */
+
+      document
+        .getElementById("fullName")
+        .value = "";
+
+      document
+        .getElementById("dateOfBirth")
+        .value = "";
+
+      document
+        .getElementById("gender")
+        .value = "";
+
+      document
+        .getElementById("phone")
+        .value = "";
+
+      document
+        .getElementById("address")
+        .value = "";
+
+      document
+        .getElementById("maritalStatus")
+        .value = "";
+
+      document
+        .getElementById("churchJoiningDate")
+        .value = "";
+
+      document
+        .getElementById("dateOfSalvation")
+        .value = "";
+
+      document
+        .getElementById("memberType")
+        .value = "";
+
+      document
+        .getElementById("additionalNotes")
+        .value = "";
+
+      document
+        .getElementById("photoInput")
+        .value = "";
+
+      document
+        .getElementById("photoPreview")
+        .style.display = "none";
+
     }
 
+
+    /* =========================
+       BACK TO HOME
+       ========================= */
 
     function goBack() {
-      window.location.href = "home.html";
+
+      window.location.href =
+        "home.html";
     }
 
+
+    /* =========================
+       START
+       ========================= */
 
     checkLogin();
 

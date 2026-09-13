@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: #f4f1e8;
+      font-family: Arial, sans-serif;
+      color: #183b2b;
+    }
+
+    .header {
+      background: #183b2b;
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 45px;
+    }
+
+    .header h1 {
+      margin: 5px 0;
+      font-size: 28px;
+    }
+
+    .header p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+      margin: auto;
+      padding: 25px 20px;
+    }
+
+    .welcome {
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .welcome h2 {
+      margin: 0 0 8px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #666;
+    }
+
+    .menu {
+      display: grid;
+      gap: 15px;
+    }
+
+    .menu button {
+      width: 100%;
+      padding: 20px;
+      border: none;
+      border-radius: 14px;
+      background: white;
+      color: #183b2b;
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      cursor: pointer;
+    }
+
+    .menu button:hover {
+      background: #eef2ec;
+    }
+
+    .logout {
+      margin-top: 25px;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #8b2f2f;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 15px;
+      color: #b00020;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="logo">✔️</div>
+    <h1>COC Members</h1>
+    <p>Church Of Christ Sri Lanka</p>
+    <p>Members Registration</p>
+  </div>
+
+  <div class="container">
+
+    <div class="welcome">
+      <h2>Welcome</h2>
+      <p id="userEmail">Loading...</p>
+    </div>
+
+    <div class="menu">
+
+      <button onclick="registerMember()">
+        ➕ Register New Member
+      </button>
+
+      <button onclick="membersList()">
+        👥 Members List
+      </button>
+
+      <button onclick="searchMembers()">
+        🔍 Search Members
+      </button>
+
+    </div>
+
+    <button class="logout" onclick="logout()">
+      LOGOUT
+    </button>
+
+    <div id="message"></div>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+    async function checkLogin() {
+
+      const { data } =
+        await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      document.getElementById("userEmail").textContent =
+        data.session.user.email;
+    }
+
+    function registerMember() {
+      alert("Member Registration screen will be added next.");
+    }
+
+    function membersList() {
+      alert("Members List screen will be added next.");
+    }
+
+    function searchMembers() {
+      alert("Search screen will be added next.");
+    }
+
+    async function logout() {
+
+      await supabaseClient.auth.signOut();
+
+      window.location.href = "index.html";
+    }
+
+    checkLogin();
+
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register Member - COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #f4f1e8;
+      font-family: Arial, sans-serif;
+      color: #183b2b;
+    }
+
+    .header {
+      background: #183b2b;
+      color: white;
+      padding: 22px 20px;
+      text-align: center;
+    }
+
+    .logo {
+      font-size: 42px;
+    }
+
+    .header h1 {
+      margin: 5px 0;
+      font-size: 27px;
+    }
+
+    .header p {
+      margin: 4px 0;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+      margin: auto;
+      padding: 25px 20px 40px;
+    }
+
+    .form-box {
+      background: white;
+      padding: 25px 20px;
+      border-radius: 18px;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+    }
+
+    h2 {
+      margin-top: 0;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin: 18px 0 7px;
+      color: #333;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 13px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+      font-size: 16px;
+      font-family: Arial, sans-serif;
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      outline: none;
+      border-color: #183b2b;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    .member-id {
+      background: #eef2ec;
+      font-weight: bold;
+      color: #183b2b;
+    }
+
+    .photo-buttons {
+      display: grid;
+      gap: 10px;
+    }
+
+    .photo-buttons button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 10px;
+      background: #eef2ec;
+      color: #183b2b;
+      font-size: 15px;
+      font-weight: bold;
+    }
+
+    .save-btn {
+      width: 100%;
+      margin-top: 25px;
+      padding: 16px;
+      border: none;
+      border-radius: 10px;
+      background: #183b2b;
+      color: white;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .back-btn {
+      width: 100%;
+      margin-top: 12px;
+      padding: 14px;
+      border: none;
+      border-radius: 10px;
+      background: #777;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #message {
+      text-align: center;
+      margin-top: 18px;
+      font-weight: bold;
+      min-height: 22px;
+    }
+
+    #photoInput {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <div class="logo">✔️</div>
+    <h1>COC Members</h1>
+    <p>Church Of Christ Sri Lanka</p>
+    <p>Members Registration</p>
+  </div>
+
+  <div class="container">
+
+    <div class="form-box">
+
+      <h2>Register New Member</h2>
+
+      <label for="memberId">Member ID</label>
+      <input
+        id="memberId"
+        class="member-id"
+        type="text"
+        value="Automatic"
+        readonly
+      >
+
+      <label for="fullName">Full Name</label>
+      <input
+        id="fullName"
+        type="text"
+        placeholder="Enter Full Name"
+      >
+
+      <label for="dateOfBirth">Date of Birth</label>
+      <input
+        id="dateOfBirth"
+        type="date"
+      >
+
+      <label for="gender">Gender</label>
+      <select id="gender">
+        <option value="">Select Gender</option>
+        <option value="Male">Male</option>
+        <option value="Female">Female</option>
+      </select>
+
+      <label for="phone">Phone / WhatsApp</label>
+      <input
+        id="phone"
+        type="tel"
+        placeholder="Enter Phone / WhatsApp Number"
+      >
+
+      <label for="address">Address</label>
+      <textarea
+        id="address"
+        placeholder="Enter Address"
+      ></textarea>
+
+      <label for="maritalStatus">Marital Status</label>
+      <select id="maritalStatus">
+        <option value="">Select Marital Status</option>
+        <option value="Single">Single</option>
+        <option value="Married">Married</option>
+        <option value="Divorced">Divorced</option>
+        <option value="Widowed">Widowed</option>
+      </select>
+
+      <label for="joiningDate">Church Joining Date</label>
+      <input
+        id="joiningDate"
+        type="date"
+      >
+
+      <label for="salvationDate">Date of Salvation</label>
+      <input
+        id="salvationDate"
+        type="date"
+      >
+
+      <label for="memberType">Member Type</label>
+      <select id="memberType">
+        <option value="">Select Member Type</option>
+        <option value="Pastor">Pastor</option>
+        <option value="Brother">Brother</option>
+        <option value="Sister">Sister</option>
+      </select>
+
+      <label>Member Photo</label>
+
+      <div class="photo-buttons">
+        <button type="button" onclick="takePhoto()">
+          📷 Take Photo
+        </button>
+
+        <button type="button" onclick="choosePhoto()">
+          🖼️ Choose from Gallery
+        </button>
+      </div>
+
+      <input
+        id="photoInput"
+        type="file"
+        accept="image/*"
+        capture="environment"
+      >
+
+      <label for="notes">Additional Notes</label>
+      <textarea
+        id="notes"
+        placeholder="Enter additional notes..."
+      ></textarea>
+
+      <button
+        class="save-btn"
+        id="saveBtn"
+        onclick="saveMember()"
+      >
+        SAVE MEMBER
+      </button>
+
+      <button
+        class="back-btn"
+        onclick="goBack()"
+      >
+        BACK TO HOME
+      </button>
+
+      <div id="message"></div>
+
+    </div>
+
+  </div>
+
+  <script>
+
+    const SUPABASE_URL =
+      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+    const SUPABASE_PUBLISHABLE_KEY =
+      "<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>";
+
+    const supabaseClient =
+      window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+    const photoInput =
+      document.getElementById("photoInput");
+
+    function takePhoto() {
+      photoInput.setAttribute("capture", "environment");
+      photoInput.click();
+    }
+
+    function choosePhoto() {
+      photoInput.removeAttribute("capture");
+      photoInput.click();
+    }
+
+    async function checkLogin() {
+
+      const { data } =
+        await supabaseClient.auth.getSession();
+
+      if (!data.session) {
+        window.location.href = "index.html";
+        return;
+      }
+    }
+
+    async function saveMember() {
+
+      const message =
+        document.getElementById("message");
+
+      const saveBtn =
+        document.getElementById("saveBtn");
+
+      const fullName =
+        document.getElementById("fullName").value.trim();
+
+      const dateOfBirth =
+        document.getElementById("dateOfBirth").value;
+
+      const gender =
+        document.getElementById("gender").value;
+
+      const phone =
+        document.getElementById("phone").value.trim();
+
+      const address =
+        document.getElementById("address").value.trim();
+
+      const maritalStatus =
+        document.getElementById("maritalStatus").value;
+
+      const joiningDate =
+        document.getElementById("joiningDate").value;
+
+      const salvationDate =
+        document.getElementById("salvationDate").value;
+
+      const memberType =
+        document.getElementById("memberType").value;
+
+      const notes =
+        document.getElementById("notes").value.trim();
+
+      message.textContent = "";
+
+      if (!fullName) {
+        message.textContent =
+          "Please enter the Full Name.";
+        message.style.color = "#b00020";
+        return;
+      }
+
+      if (!gender) {
+        message.textContent =
+          "Please select Gender.";
+        message.style.color = "#b00020";
+        return;
+      }
+
+      if (!phone) {
+        message.textContent =
+          "Please enter Phone / WhatsApp Number.";
+        message.style.color = "#b00020";
+        return;
+      }
+
+      if (!memberType) {
+        message.textContent =
+          "Please select Member Type.";
+        message.style.color = "#b00020";
+        return;
+      }
+
+      saveBtn.disabled = true;
+      saveBtn.textContent = "SAVING...";
+
+      const {
+        data: { user }
+      } = await supabaseClient.auth.getUser();
+
+      if (!user) {
+        window.location.href = "index.html";
+        return;
+      }
+
+      const { data, error } =
+        await supabaseClient
+          .from("members")
+          .insert({
+            full_name: fullName,
+            date_of_birth: dateOfBirth || null,
+            gender: gender,
+            phone_whatsapp: phone,
+            address: address,
+            marital_status: maritalStatus || null,
+            church_joining_date: joiningDate || null,
+            date_of_salvation: salvationDate || null,
+            member_type: memberType,
+            additional_notes: notes,
+            created_by: user.id
+          })
+          .select("member_id")
+          .single();
+
+      if (error) {
+
+        message.textContent =
+          "Error: " + error.message;
+
+        message.style.color = "#b00020";
+
+        saveBtn.disabled = false;
+        saveBtn.textContent = "SAVE MEMBER";
+
+        return;
+      }
+
+      message.innerHTML =
+        "Member Registered Successfully<br>" +
+        "Member ID: " +
+        data.member_id;
+
+      message.style.color = "#183b2b";
+
+      saveBtn.textContent = "SAVED";
+
+    }
+
+    function goBack() {
+      window.location.href = "home.html";
+    }
+
+    checkLogin();
+
+  </script>
+
+</body>
+</html>

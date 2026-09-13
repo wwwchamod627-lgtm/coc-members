@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Admin Settings - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -21,7 +22,13 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #8a641c, #d4af37, #f1d77a);
+      background: linear-gradient(
+        135deg,
+        #7a5415,
+        #b8860b,
+        #d4af37,
+        #f1d77a
+      );
       color: white;
       padding: 28px 20px;
       text-align: center;
@@ -120,6 +127,7 @@
       padding: 15px;
       background: #faf6eb;
       text-align: center;
+      color: #806c4b;
     }
 
     .logo-preview img {
@@ -142,6 +150,10 @@
       box-shadow: 0 5px 15px rgba(128,91,18,0.25);
     }
 
+    .save:disabled {
+      opacity: 0.6;
+    }
+
     .back {
       width: 100%;
       padding: 14px;
@@ -160,6 +172,7 @@
       margin: 15px 0;
       font-weight: bold;
       min-height: 20px;
+      line-height: 1.5;
     }
 
     .note {
@@ -167,6 +180,13 @@
       color: #776b59;
       line-height: 1.5;
       margin-top: 12px;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #806c4b;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -185,37 +205,60 @@
       <h2>App Information</h2>
 
       <label>App Name</label>
-      <input type="text" id="app_name"
-             placeholder="Enter App Name">
+      <input
+        type="text"
+        id="app_name"
+        placeholder="Enter App Name"
+      >
 
       <label>Church Name</label>
-      <input type="text" id="church_name"
-             placeholder="Enter Church Name">
+      <input
+        type="text"
+        id="church_name"
+        placeholder="Enter Church Name"
+      >
 
       <label>Subtitle</label>
-      <input type="text" id="subtitle"
-             placeholder="Enter Subtitle">
+      <input
+        type="text"
+        id="subtitle"
+        placeholder="Enter Subtitle"
+      >
 
       <label>Welcome Text</label>
-      <input type="text" id="welcome_text"
-             placeholder="Enter Welcome Text">
+      <input
+        type="text"
+        id="welcome_text"
+        placeholder="Enter Welcome Text"
+      >
     </div>
+
 
     <div class="card">
       <h2>Home Screen Buttons</h2>
 
       <label>Register Button</label>
-      <input type="text" id="register_button_text"
-             placeholder="Register New Member">
+      <input
+        type="text"
+        id="register_button_text"
+        placeholder="Register New Member"
+      >
 
       <label>Members List Button</label>
-      <input type="text" id="members_button_text"
-             placeholder="Members List">
+      <input
+        type="text"
+        id="members_button_text"
+        placeholder="Members List"
+      >
 
       <label>Search Button</label>
-      <input type="text" id="search_button_text"
-             placeholder="Search Members">
+      <input
+        type="text"
+        id="search_button_text"
+        placeholder="Search Members"
+      >
     </div>
+
 
     <div class="card">
       <h2>Home Screen Logo</h2>
@@ -243,339 +286,638 @@
       </div>
     </div>
 
+
     <div id="message"></div>
 
-    <button class="save" onclick="saveSettings()">
+    <button
+      class="save"
+      id="saveButton"
+      onclick="saveSettings()"
+    >
       💾 SAVE SETTINGS
     </button>
 
-    <button class="back" onclick="goBack()">
+    <button
+      class="back"
+      onclick="goBack()"
+    >
       ← BACK TO HOME
     </button>
 
   </div>
 
-  <script>
 
-    const SUPABASE_URL =
-      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+<script>
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+const SUPABASE_URL =
+  "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+const SUPABASE_PUBLISHABLE_KEY =
+  "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
+
+
+let selectedLogoFile = null;
+let settingsId = null;
+
+
+/* =========================
+   MESSAGE
+========================= */
+
+function showMessage(text, isError = false) {
+
+  const message =
+    document.getElementById("message");
+
+  message.textContent = text;
+
+  message.style.color =
+    isError ? "#a32626" : "#6d5518";
+}
+
+
+/* =========================
+   CHECK ADMIN
+========================= */
+
+async function checkAdmin() {
+
+  try {
+
+    showMessage("Checking administrator access...");
+
+
+    const {
+      data: sessionData,
+      error: sessionError
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if (
+      sessionError ||
+      !sessionData ||
+      !sessionData.session
+    ) {
+
+      window.location.href = "index.html";
+
+      return;
+    }
+
+
+    const {
+      data: isAdmin,
+      error: adminError
+    } =
+      await supabaseClient.rpc("is_admin");
+
+
+    if (adminError) {
+
+      console.error(
+        "Admin check error:",
+        adminError
       );
 
-    let selectedLogoFile = null;
+      showMessage(
+        "Admin check failed: " +
+        adminError.message,
+        true
+      );
 
-    async function checkAdmin() {
+      return;
+    }
 
-      const { data, error } =
-        await supabaseClient.auth.getSession();
 
-      if (error || !data.session) {
-        window.location.href = "index.html";
-        return;
-      }
+    if (isAdmin !== true) {
 
-      const { data: isAdmin, error: adminError } =
-        await supabaseClient.rpc("is_admin");
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          text-align:center;
+          padding:30px;
+          font-family:Arial;
+          background:#f8f3e7;
+          color:#5a411b;
+        ">
 
-      if (adminError) {
-        console.error(adminError);
-        showMessage(
-          "Unable to verify administrator access.",
-          true
-        );
-        return;
-      }
+          <div>
 
-      if (isAdmin !== true) {
-        document.body.innerHTML = `
-          <div style="
-            min-height:100vh;
-            display:flex;
-            align-items:center;
-            justify-content:center;
-            text-align:center;
-            padding:30px;
-            font-family:Arial;
-            background:#f8f3e7;
-            color:#5a411b;
-          ">
-            <div>
-              <h2>Access Denied</h2>
-              <p>Only administrators can access this page.</p>
-              <button onclick="window.location.href='home.html'"
-                style="
-                  padding:12px 20px;
-                  border:none;
-                  border-radius:10px;
-                  background:#b88a24;
-                  color:white;
-                  font-weight:bold;
-                ">
-                Back to Home
-              </button>
-            </div>
+            <h2>Access Denied</h2>
+
+            <p>
+              Only administrators can access this page.
+            </p>
+
+            <button
+              onclick="window.location.href='home.html'"
+              style="
+                padding:12px 20px;
+                border:none;
+                border-radius:10px;
+                background:#b88a24;
+                color:white;
+                font-weight:bold;
+              "
+            >
+              Back to Home
+            </button>
+
           </div>
-        `;
+
+        </div>
+      `;
+
+      return;
+    }
+
+
+    await loadSettings();
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "System error: " + error.message,
+      true
+    );
+  }
+}
+
+
+/* =========================
+   LOAD SETTINGS
+========================= */
+
+async function loadSettings() {
+
+  showMessage("Loading settings...");
+
+
+  const {
+    data,
+    error
+  } =
+    await supabaseClient
+      .from("app_settings")
+      .select("*")
+      .order("id", {
+        ascending: true
+      })
+      .limit(1);
+
+
+  if (error) {
+
+    console.error(
+      "Load settings error:",
+      error
+    );
+
+    showMessage(
+      "Failed to load settings: " +
+      error.message,
+      true
+    );
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    showMessage(
+      "No app settings found.",
+      true
+    );
+
+    return;
+  }
+
+
+  const settings = data[0];
+
+  settingsId = settings.id;
+
+
+  document.getElementById("app_name").value =
+    settings.app_name || "";
+
+  document.getElementById("church_name").value =
+    settings.church_name || "";
+
+  document.getElementById("subtitle").value =
+    settings.subtitle || "";
+
+  document.getElementById("welcome_text").value =
+    settings.welcome_text || "";
+
+  document.getElementById("register_button_text").value =
+    settings.register_button_text || "";
+
+  document.getElementById("members_button_text").value =
+    settings.members_button_text || "";
+
+  document.getElementById("search_button_text").value =
+    settings.search_button_text || "";
+
+
+  if (settings.logo_url) {
+
+    showLogoPreview(
+      settings.logo_url
+    );
+
+  } else {
+
+    document.getElementById(
+      "logoPreview"
+    ).textContent =
+      "No logo selected";
+  }
+
+
+  showMessage(
+    "Settings loaded successfully.",
+    false
+  );
+}
+
+
+/* =========================
+   LOGO SELECT
+========================= */
+
+document
+  .getElementById("logoFile")
+  .addEventListener(
+    "change",
+    function(event) {
+
+      const file =
+        event.target.files[0];
+
+
+      if (!file) {
         return;
       }
 
-      await loadSettings();
-    }
 
-    async function loadSettings() {
+      if (!file.type.startsWith("image/")) {
 
-      const { data, error } =
-        await supabaseClient
-          .from("app_settings")
-          .select("*")
-          .eq("id", 1)
-          .single();
-
-      if (error) {
-        console.error(error);
         showMessage(
-          "Failed to load settings.",
+          "Please select an image file.",
           true
         );
+
         return;
       }
 
-      document.getElementById("app_name").value =
-        data.app_name || "";
 
-      document.getElementById("church_name").value =
-        data.church_name || "";
+      selectedLogoFile = file;
 
-      document.getElementById("subtitle").value =
-        data.subtitle || "";
 
-      document.getElementById("welcome_text").value =
-        data.welcome_text || "";
+      const reader =
+        new FileReader();
 
-      document.getElementById("register_button_text").value =
-        data.register_button_text || "";
 
-      document.getElementById("members_button_text").value =
-        data.members_button_text || "";
+      reader.onload =
+        function(e) {
 
-      document.getElementById("search_button_text").value =
-        data.search_button_text || "";
-
-      if (data.logo_url) {
-        showLogoPreview(data.logo_url);
-      }
-    }
-
-    document.getElementById("logoFile")
-      .addEventListener("change", function(event) {
-
-        const file = event.target.files[0];
-
-        if (!file) {
-          return;
-        }
-
-        if (!file.type.startsWith("image/")) {
-          showMessage(
-            "Please select an image file.",
-            true
+          showLogoPreview(
+            e.target.result
           );
-          return;
-        }
 
-        selectedLogoFile = file;
-
-        const reader = new FileReader();
-
-        reader.onload = function(e) {
-          showLogoPreview(e.target.result);
+          showMessage(
+            "Logo selected. Press SAVE SETTINGS.",
+            false
+          );
         };
 
-        reader.readAsDataURL(file);
-      });
 
-    function showLogoPreview(source) {
-
-      const preview =
-        document.getElementById("logoPreview");
-
-      preview.innerHTML = "";
-
-      const img = document.createElement("img");
-
-      img.src = source;
-      img.alt = "Home Screen Logo";
-
-      preview.appendChild(img);
+      reader.readAsDataURL(file);
     }
+  );
 
-    async function uploadLogo() {
 
-      if (!selectedLogoFile) {
-        return null;
-      }
+/* =========================
+   LOGO PREVIEW
+========================= */
 
-      const extension =
-        selectedLogoFile.name
-          .split(".")
-          .pop()
-          .toLowerCase();
+function showLogoPreview(source) {
 
-      const filePath =
-        "home-logo-" +
-        Date.now() +
-        "." +
-        extension;
+  const preview =
+    document.getElementById(
+      "logoPreview"
+    );
 
-      const { error: uploadError } =
-        await supabaseClient.storage
-          .from("app-assets")
-          .upload(
-            filePath,
-            selectedLogoFile,
-            {
-              cacheControl: "3600",
-              upsert: true
-            }
-          );
 
-      if (uploadError) {
-        console.error(uploadError);
-        throw uploadError;
-      }
+  preview.innerHTML = "";
 
-      const { data } =
-        supabaseClient.storage
-          .from("app-assets")
-          .getPublicUrl(filePath);
 
-      return data.publicUrl;
-    }
+  const img =
+    document.createElement("img");
 
-    async function saveSettings() {
 
-      try {
+  img.src = source;
 
-        showMessage(
-          "Saving settings...",
-          false
-        );
+  img.alt =
+    "Home Screen Logo";
 
-        let logoUrl = null;
 
-        if (selectedLogoFile) {
-          logoUrl = await uploadLogo();
+  img.onerror =
+    function() {
+
+      preview.innerHTML =
+        "Unable to display logo.";
+
+    };
+
+
+  preview.appendChild(img);
+}
+
+
+/* =========================
+   UPLOAD LOGO
+========================= */
+
+async function uploadLogo() {
+
+  if (!selectedLogoFile) {
+    return null;
+  }
+
+
+  const extension =
+    selectedLogoFile.name
+      .split(".")
+      .pop()
+      .toLowerCase();
+
+
+  const filePath =
+    "home-logo-" +
+    Date.now() +
+    "." +
+    extension;
+
+
+  const {
+    error: uploadError
+  } =
+    await supabaseClient.storage
+      .from("app-assets")
+      .upload(
+        filePath,
+        selectedLogoFile,
+        {
+          cacheControl: "3600",
+          upsert: true
         }
+      );
 
-        const values = {
-          app_name:
-            document.getElementById("app_name")
-              .value.trim(),
 
-          church_name:
-            document.getElementById("church_name")
-              .value.trim(),
+  if (uploadError) {
 
-          subtitle:
-            document.getElementById("subtitle")
-              .value.trim(),
+    console.error(
+      "Logo upload error:",
+      uploadError
+    );
 
-          welcome_text:
-            document.getElementById("welcome_text")
-              .value.trim(),
+    throw uploadError;
+  }
 
-          register_button_text:
-            document.getElementById("register_button_text")
-              .value.trim(),
 
-          members_button_text:
-            document.getElementById("members_button_text")
-              .value.trim(),
+  const {
+    data
+  } =
+    supabaseClient.storage
+      .from("app-assets")
+      .getPublicUrl(
+        filePath
+      );
 
-          search_button_text:
-            document.getElementById("search_button_text")
-              .value.trim(),
 
-          updated_at:
-            new Date().toISOString()
-        };
+  if (!data || !data.publicUrl) {
 
-        if (logoUrl) {
-          values.logo_url = logoUrl;
-        }
+    throw new Error(
+      "Could not create logo URL."
+    );
+  }
 
-        if (!values.app_name ||
-            !values.church_name ||
-            !values.subtitle) {
 
-          showMessage(
-            "Please fill in App Name, Church Name and Subtitle.",
-            true
-          );
+  return (
+    data.publicUrl +
+    "?v=" +
+    Date.now()
+  );
+}
 
-          return;
-        }
 
-        const { error } =
-          await supabaseClient
-            .from("app_settings")
-            .update(values)
-            .eq("id", 1);
+/* =========================
+   SAVE SETTINGS
+========================= */
 
-        if (error) {
-          console.error(error);
-          showMessage(
-            "Failed to save settings.",
-            true
-          );
-          return;
-        }
+async function saveSettings() {
 
-        selectedLogoFile = null;
+  const saveButton =
+    document.getElementById(
+      "saveButton"
+    );
 
-        document.getElementById("logoFile").value = "";
 
-        showMessage(
-          "Settings saved successfully.",
-          false
-        );
+  try {
 
-      } catch (error) {
+    saveButton.disabled = true;
 
-        console.error(error);
+    showMessage(
+      "Saving settings..."
+    );
 
-        showMessage(
-          "Logo upload failed. Please try again.",
-          true
-        );
-      }
+
+    if (!settingsId) {
+
+      showMessage(
+        "Settings record was not loaded.",
+        true
+      );
+
+      return;
     }
 
-    function showMessage(text, isError) {
 
-      const message =
-        document.getElementById("message");
+    let logoUrl = null;
 
-      message.textContent = text;
 
-      message.style.color =
-        isError ? "#a32626" : "#6d5518";
+    if (selectedLogoFile) {
+
+      showMessage(
+        "Uploading logo..."
+      );
+
+      logoUrl =
+        await uploadLogo();
     }
 
-    function goBack() {
-      window.location.href = "home.html";
+
+    const values = {
+
+      app_name:
+        document
+          .getElementById("app_name")
+          .value
+          .trim(),
+
+      church_name:
+        document
+          .getElementById("church_name")
+          .value
+          .trim(),
+
+      subtitle:
+        document
+          .getElementById("subtitle")
+          .value
+          .trim(),
+
+      welcome_text:
+        document
+          .getElementById("welcome_text")
+          .value
+          .trim(),
+
+      register_button_text:
+        document
+          .getElementById("register_button_text")
+          .value
+          .trim(),
+
+      members_button_text:
+        document
+          .getElementById("members_button_text")
+          .value
+          .trim(),
+
+      search_button_text:
+        document
+          .getElementById("search_button_text")
+          .value
+          .trim()
+    };
+
+
+    if (
+      !values.app_name ||
+      !values.church_name ||
+      !values.subtitle
+    ) {
+
+      showMessage(
+        "Please fill in App Name, Church Name and Subtitle.",
+        true
+      );
+
+      return;
     }
 
-    checkAdmin();
 
-  </script>
+    if (logoUrl) {
+
+      values.logo_url =
+        logoUrl;
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update(values)
+        .eq("id", settingsId);
+
+
+    if (error) {
+
+      console.error(
+        "Save settings error:",
+        error
+      );
+
+      showMessage(
+        "Failed to save settings: " +
+        error.message,
+        true
+      );
+
+      return;
+    }
+
+
+    selectedLogoFile = null;
+
+    document.getElementById(
+      "logoFile"
+    ).value = "";
+
+
+    showMessage(
+      "✅ Settings saved successfully.",
+      false
+    );
+
+
+    await loadSettings();
+
+
+  } catch (error) {
+
+    console.error(error);
+
+    showMessage(
+      "❌ Error: " +
+      error.message,
+      true
+    );
+
+  } finally {
+
+    saveButton.disabled = false;
+  }
+}
+
+
+/* =========================
+   BACK
+========================= */
+
+function goBack() {
+
+  window.location.href =
+    "home.html";
+}
+
+
+/* =========================
+   START
+========================= */
+
+checkAdmin();
+
+</script>
 
 </body>
 </html>

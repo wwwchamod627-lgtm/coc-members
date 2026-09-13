@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Register Member - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -187,7 +186,6 @@
   </div>
 
   <div class="container">
-
     <div class="card">
 
       <h2>Register New Member</h2>
@@ -267,7 +265,6 @@
       <label>Member Photo</label>
 
       <div class="photo-buttons">
-
         <button type="button" onclick="takePhoto()">
           📷 Take Photo
         </button>
@@ -275,7 +272,6 @@
         <button type="button" onclick="choosePhoto()">
           🖼️ Choose from Gallery
         </button>
-
       </div>
 
       <input
@@ -284,7 +280,10 @@
         accept="image/*"
       >
 
-      <img id="photoPreview" alt="Member Photo Preview">
+      <img
+        id="photoPreview"
+        alt="Member Photo Preview"
+      >
 
       <label for="additionalNotes">Additional Notes</label>
 
@@ -313,14 +312,10 @@
       <div id="message"></div>
 
     </div>
-
   </div>
 
-  <script>
 
-    /* =========================
-       SUPABASE CONNECTION
-       ========================= */
+  <script>
 
     const SUPABASE_URL =
       "https://djxpqggcpaofkpvcqgvd.supabase.co";
@@ -335,27 +330,17 @@
       );
 
 
-    /* =========================
-       CHECK LOGIN
-       ========================= */
-
     async function checkLogin() {
 
       const { data, error } =
         await supabaseClient.auth.getSession();
 
       if (error || !data.session) {
-
         window.location.href = "index.html";
-
         return;
       }
     }
 
-
-    /* =========================
-       PHOTO FUNCTIONS
-       ========================= */
 
     function choosePhoto() {
 
@@ -363,7 +348,6 @@
         document.getElementById("photoInput");
 
       input.removeAttribute("capture");
-
       input.click();
     }
 
@@ -374,7 +358,6 @@
         document.getElementById("photoInput");
 
       input.setAttribute("capture", "environment");
-
       input.click();
     }
 
@@ -399,10 +382,6 @@
       });
 
 
-    /* =========================
-       SAVE MEMBER
-       ========================= */
-
     async function saveMember() {
 
       const saveBtn =
@@ -416,16 +395,11 @@
       message.className = "";
 
 
-      /* GET CURRENT USER */
-
       const { data: sessionData, error: sessionError } =
         await supabaseClient.auth.getSession();
 
 
-      if (
-        sessionError ||
-        !sessionData.session
-      ) {
+      if (sessionError || !sessionData.session) {
 
         message.textContent =
           "Your session has expired. Please login again.";
@@ -436,64 +410,36 @@
       }
 
 
-      /* GET FORM DATA */
-
       const fullName =
-        document
-          .getElementById("fullName")
-          .value
-          .trim();
+        document.getElementById("fullName").value.trim();
 
       const dateOfBirth =
-        document
-          .getElementById("dateOfBirth")
-          .value;
+        document.getElementById("dateOfBirth").value;
 
       const gender =
-        document
-          .getElementById("gender")
-          .value;
+        document.getElementById("gender").value;
 
       const phone =
-        document
-          .getElementById("phone")
-          .value
-          .trim();
+        document.getElementById("phone").value.trim();
 
       const address =
-        document
-          .getElementById("address")
-          .value
-          .trim();
+        document.getElementById("address").value.trim();
 
       const maritalStatus =
-        document
-          .getElementById("maritalStatus")
-          .value;
+        document.getElementById("maritalStatus").value;
 
       const churchJoiningDate =
-        document
-          .getElementById("churchJoiningDate")
-          .value;
+        document.getElementById("churchJoiningDate").value;
 
       const dateOfSalvation =
-        document
-          .getElementById("dateOfSalvation")
-          .value;
+        document.getElementById("dateOfSalvation").value;
 
       const memberType =
-        document
-          .getElementById("memberType")
-          .value;
+        document.getElementById("memberType").value;
 
       const additionalNotes =
-        document
-          .getElementById("additionalNotes")
-          .value
-          .trim();
+        document.getElementById("additionalNotes").value.trim();
 
-
-      /* REQUIRED FIELD */
 
       if (!fullName) {
 
@@ -506,15 +452,9 @@
       }
 
 
-      /* DISABLE BUTTON */
-
       saveBtn.disabled = true;
+      saveBtn.textContent = "SAVING...";
 
-      saveBtn.textContent =
-        "SAVING...";
-
-
-      /* INSERT INTO SUPABASE */
 
       const { data, error } =
         await supabaseClient
@@ -522,50 +462,25 @@
           .insert([
             {
               full_name: fullName,
-
-              date_of_birth:
-                dateOfBirth || null,
-
-              gender:
-                gender || null,
-
-              phone_whatsapp:
-                phone || null,
-
-              address:
-                address || null,
-
-              marital_status:
-                maritalStatus || null,
-
-              church_joining_date:
-                churchJoiningDate || null,
-
-              date_of_salvation:
-                dateOfSalvation || null,
-
-              member_type:
-                memberType || null,
-
-              additional_notes:
-                additionalNotes || null,
-
-              created_by:
-                sessionData.session.user.id
+              date_of_birth: dateOfBirth || null,
+              gender: gender || null,
+              phone_whatsapp: phone || null,
+              address: address || null,
+              marital_status: maritalStatus || null,
+              church_joining_date: churchJoiningDate || null,
+              date_of_salvation: dateOfSalvation || null,
+              member_type: memberType || null,
+              additional_notes: additionalNotes || null,
+              created_by: sessionData.session.user.id
             }
           ])
           .select()
           .single();
 
 
-      /* ERROR */
-
       if (error) {
 
-        console.error(
-          "SAVE ERROR:",
-          error
-        );
+        console.error("SAVE ERROR:", error);
 
         message.textContent =
           "Error: " + error.message;
@@ -573,98 +488,42 @@
         message.className = "error";
 
         saveBtn.disabled = false;
-
-        saveBtn.textContent =
-          "SAVE MEMBER";
+        saveBtn.textContent = "SAVE MEMBER";
 
         return;
       }
 
 
-      /* SUCCESS */
-
       message.innerHTML =
         "Member Registered Successfully<br>" +
-        "Member ID: " +
-        "<strong>" +
+        "Member ID: <strong>" +
         data.member_id +
         "</strong>";
 
-      message.className =
-        "success";
+      message.className = "success";
+
+      saveBtn.textContent = "MEMBER SAVED";
 
 
-      saveBtn.textContent =
-        "MEMBER SAVED";
-
-
-      /* CLEAR FORM */
-
-      document
-        .getElementById("fullName")
-        .value = "";
-
-      document
-        .getElementById("dateOfBirth")
-        .value = "";
-
-      document
-        .getElementById("gender")
-        .value = "";
-
-      document
-        .getElementById("phone")
-        .value = "";
-
-      document
-        .getElementById("address")
-        .value = "";
-
-      document
-        .getElementById("maritalStatus")
-        .value = "";
-
-      document
-        .getElementById("churchJoiningDate")
-        .value = "";
-
-      document
-        .getElementById("dateOfSalvation")
-        .value = "";
-
-      document
-        .getElementById("memberType")
-        .value = "";
-
-      document
-        .getElementById("additionalNotes")
-        .value = "";
-
-      document
-        .getElementById("photoInput")
-        .value = "";
-
-      document
-        .getElementById("photoPreview")
-        .style.display = "none";
-
+      document.getElementById("fullName").value = "";
+      document.getElementById("dateOfBirth").value = "";
+      document.getElementById("gender").value = "";
+      document.getElementById("phone").value = "";
+      document.getElementById("address").value = "";
+      document.getElementById("maritalStatus").value = "";
+      document.getElementById("churchJoiningDate").value = "";
+      document.getElementById("dateOfSalvation").value = "";
+      document.getElementById("memberType").value = "";
+      document.getElementById("additionalNotes").value = "";
+      document.getElementById("photoInput").value = "";
+      document.getElementById("photoPreview").style.display = "none";
     }
 
-
-    /* =========================
-       BACK TO HOME
-       ========================= */
 
     function goBack() {
-
-      window.location.href =
-        "home.html";
+      window.location.href = "home.html";
     }
 
-
-    /* =========================
-       START
-       ========================= */
 
     checkLogin();
 

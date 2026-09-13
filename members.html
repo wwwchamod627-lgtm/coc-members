@@ -136,16 +136,29 @@
       line-height: 1.7;
     }
 
-    .view-btn {
+    .view-btn,
+    .edit-btn,
+    .delete-btn {
       width: 100%;
-      margin-top: 12px;
+      margin-top: 10px;
       padding: 11px;
       border: none;
       border-radius: 9px;
-      background: #183b2b;
       color: white;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .view-btn {
+      background: #183b2b;
+    }
+
+    .edit-btn {
+      background: #b8860b;
+    }
+
+    .delete-btn {
+      background: #8b2f2f;
     }
 
     .empty {
@@ -184,9 +197,8 @@
       cursor: pointer;
     }
 
-    /* Member Details */
-
-    .details {
+    .details,
+    .edit-panel {
       display: none;
       background: white;
       padding: 22px;
@@ -195,7 +207,8 @@
       margin-bottom: 20px;
     }
 
-    .details h2 {
+    .details h2,
+    .edit-panel h2 {
       margin-top: 0;
       text-align: center;
     }
@@ -217,16 +230,63 @@
       word-break: break-word;
     }
 
-    .close-details {
+    .close-details,
+    .save-edit,
+    .cancel-edit {
       width: 100%;
-      margin-top: 18px;
+      margin-top: 15px;
       padding: 13px;
       border: none;
       border-radius: 10px;
-      background: #777;
       color: white;
       font-weight: bold;
       cursor: pointer;
+    }
+
+    .close-details,
+    .cancel-edit {
+      background: #777;
+    }
+
+    .save-edit {
+      background: #b8860b;
+    }
+
+    .edit-group {
+      margin-bottom: 14px;
+    }
+
+    .edit-group label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    .edit-group input,
+    .edit-group select,
+    .edit-group textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 9px;
+      font-size: 15px;
+      font-family: Arial, sans-serif;
+    }
+
+    .edit-group textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+
+    .readonly {
+      background: #eeeeee;
+      color: #777;
+    }
+
+    #editMessage {
+      text-align: center;
+      margin-top: 10px;
+      font-weight: bold;
     }
   </style>
 </head>
@@ -234,22 +294,15 @@
 <body>
 
   <div class="header">
-
     <div class="logo">✔️</div>
-
     <h1>COC Members</h1>
-
     <p>Church Of Christ Sri Lanka</p>
-
     <p>Members Registration</p>
-
   </div>
-
 
   <div class="container">
 
     <div class="top-buttons">
-
       <button type="button" onclick="loadMembers()">
         🔄 Refresh
       </button>
@@ -257,15 +310,10 @@
       <button type="button" onclick="goHome()">
         🏠 Home
       </button>
-
     </div>
 
-
     <div class="search-box">
-
-      <label for="search">
-        Search Members
-      </label>
+      <label for="search">Search Members</label>
 
       <input
         id="search"
@@ -273,14 +321,13 @@
         placeholder="Search by Name or Member ID..."
         oninput="searchMembers()"
       >
-
     </div>
-
 
     <div id="memberCount" class="member-count">
       Loading Members...
     </div>
 
+    <!-- MEMBER DETAILS -->
 
     <div id="details" class="details">
 
@@ -298,6 +345,140 @@
 
     </div>
 
+    <!-- EDIT MEMBER -->
+
+    <div id="editPanel" class="edit-panel">
+
+      <h2>Edit Member</h2>
+
+      <div class="edit-group">
+        <label>Member ID</label>
+
+        <input
+          id="editMemberId"
+          class="readonly"
+          type="text"
+          readonly
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Full Name</label>
+
+        <input
+          id="editFullName"
+          type="text"
+          placeholder="Enter Full Name"
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Date of Birth</label>
+
+        <input
+          id="editDob"
+          type="date"
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Gender</label>
+
+        <select id="editGender">
+          <option value="">Select Gender</option>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select>
+      </div>
+
+      <div class="edit-group">
+        <label>Phone / WhatsApp</label>
+
+        <input
+          id="editPhone"
+          type="text"
+          placeholder="Enter Phone / WhatsApp Number"
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Address</label>
+
+        <textarea
+          id="editAddress"
+          placeholder="Enter Address"
+        ></textarea>
+      </div>
+
+      <div class="edit-group">
+        <label>Marital Status</label>
+
+        <select id="editMarital">
+          <option value="">Select Marital Status</option>
+          <option value="Single">Single</option>
+          <option value="Married">Married</option>
+          <option value="Divorced">Divorced</option>
+          <option value="Widowed">Widowed</option>
+        </select>
+      </div>
+
+      <div class="edit-group">
+        <label>Church Joining Date</label>
+
+        <input
+          id="editJoiningDate"
+          type="date"
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Date of Salvation</label>
+
+        <input
+          id="editSalvationDate"
+          type="date"
+        >
+      </div>
+
+      <div class="edit-group">
+        <label>Member Type</label>
+
+        <select id="editMemberType">
+          <option value="">Select Member Type</option>
+          <option value="Pastor">Pastor</option>
+          <option value="Brother">Brother</option>
+          <option value="Sister">Sister</option>
+        </select>
+      </div>
+
+      <div class="edit-group">
+        <label>Additional Notes</label>
+
+        <textarea
+          id="editNotes"
+          placeholder="Enter additional notes..."
+        ></textarea>
+      </div>
+
+      <button
+        class="save-edit"
+        type="button"
+        onclick="saveEdit()"
+      >
+        SAVE CHANGES
+      </button>
+
+      <button
+        class="cancel-edit"
+        type="button"
+        onclick="closeEdit()"
+      >
+        CANCEL
+      </button>
+
+      <div id="editMessage"></div>
+
+    </div>
 
     <div id="membersContainer">
 
@@ -306,7 +487,6 @@
       </div>
 
     </div>
-
 
     <button
       class="back-home"
@@ -317,7 +497,6 @@
     </button>
 
   </div>
-
 
   <script>
 
@@ -333,13 +512,9 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
-
     let allMembers = [];
+    let editingMemberId = null;
 
-
-    /* =========================
-       CHECK LOGIN
-       ========================= */
 
     async function checkLogin() {
 
@@ -348,8 +523,7 @@
 
       if (error || !data.session) {
 
-        window.location.href =
-          "index.html";
+        window.location.href = "index.html";
 
         return false;
       }
@@ -357,10 +531,6 @@
       return true;
     }
 
-
-    /* =========================
-       LOAD MEMBERS
-       ========================= */
 
     async function loadMembers() {
 
@@ -370,13 +540,11 @@
       const count =
         document.getElementById("memberCount");
 
-
       container.innerHTML =
         '<div class="loading">Loading members...</div>';
 
       count.textContent =
         "Loading Members...";
-
 
       const loggedIn =
         await checkLogin();
@@ -384,7 +552,6 @@
       if (!loggedIn) {
         return;
       }
-
 
       const { data, error } =
         await supabaseClient
@@ -394,13 +561,9 @@
             ascending: false
           });
 
-
       if (error) {
 
-        console.error(
-          "LOAD ERROR:",
-          error
-        );
+        console.error("LOAD ERROR:", error);
 
         container.innerHTML =
           '<div class="error">' +
@@ -414,18 +577,11 @@
         return;
       }
 
-
       allMembers = data || [];
 
-
       displayMembers(allMembers);
-
     }
 
-
-    /* =========================
-       DISPLAY MEMBERS
-       ========================= */
 
     function displayMembers(members) {
 
@@ -435,24 +591,18 @@
       const count =
         document.getElementById("memberCount");
 
-
       count.textContent =
         "Total Members: " + members.length;
-
 
       if (!members.length) {
 
         container.innerHTML =
-          '<div class="empty">' +
-          "No members found." +
-          "</div>";
+          '<div class="empty">No members found.</div>';
 
         return;
       }
 
-
       container.innerHTML = "";
-
 
       members.forEach(function(member) {
 
@@ -461,7 +611,6 @@
 
         card.className =
           "member-card";
-
 
         const id =
           member.member_id || "N/A";
@@ -477,7 +626,6 @@
 
         const phone =
           member.phone_whatsapp || "Not specified";
-
 
         card.innerHTML =
 
@@ -502,8 +650,15 @@
 
           '<button class="view-btn" type="button">' +
           "VIEW DETAILS" +
-          "</button>";
+          "</button>" +
 
+          '<button class="edit-btn" type="button">' +
+          "✏️ EDIT MEMBER" +
+          "</button>" +
+
+          '<button class="delete-btn" type="button">' +
+          "🗑️ DELETE MEMBER" +
+          "</button>";
 
         card
           .querySelector(".view-btn")
@@ -514,6 +669,23 @@
             }
           );
 
+        card
+          .querySelector(".edit-btn")
+          .addEventListener(
+            "click",
+            function() {
+              openEdit(member);
+            }
+          );
+
+        card
+          .querySelector(".delete-btn")
+          .addEventListener(
+            "click",
+            function() {
+              deleteMember(member);
+            }
+          );
 
         container.appendChild(card);
 
@@ -521,10 +693,6 @@
 
     }
 
-
-    /* =========================
-       SEARCH
-       ========================= */
 
     function searchMembers() {
 
@@ -535,14 +703,12 @@
           .trim()
           .toLowerCase();
 
-
       if (!search) {
 
         displayMembers(allMembers);
 
         return;
       }
-
 
       const filtered =
         allMembers.filter(function(member) {
@@ -555,7 +721,6 @@
             (member.member_id || "")
               .toLowerCase();
 
-
           return (
             name.includes(search) ||
             id.includes(search)
@@ -563,15 +728,10 @@
 
         });
 
-
       displayMembers(filtered);
 
     }
 
-
-    /* =========================
-       SHOW DETAILS
-       ========================= */
 
     function showDetails(member) {
 
@@ -581,38 +741,25 @@
       const content =
         document.getElementById("detailsContent");
 
-
       content.innerHTML =
 
-        detailRow(
-          "Member ID",
-          member.member_id
-        ) +
+        detailRow("Member ID", member.member_id) +
 
-        detailRow(
-          "Full Name",
-          member.full_name
-        ) +
+        detailRow("Full Name", member.full_name) +
 
         detailRow(
           "Date of Birth",
           formatDate(member.date_of_birth)
         ) +
 
-        detailRow(
-          "Gender",
-          member.gender
-        ) +
+        detailRow("Gender", member.gender) +
 
         detailRow(
           "Phone / WhatsApp",
           member.phone_whatsapp
         ) +
 
-        detailRow(
-          "Address",
-          member.address
-        ) +
+        detailRow("Address", member.address) +
 
         detailRow(
           "Marital Status",
@@ -639,10 +786,8 @@
           member.additional_notes
         );
 
-
       details.style.display =
         "block";
-
 
       details.scrollIntoView({
         behavior: "smooth",
@@ -675,9 +820,211 @@
     }
 
 
-    /* =========================
-       FORMAT DATE
-       ========================= */
+    function openEdit(member) {
+
+      editingMemberId =
+        member.id;
+
+      document.getElementById("editMemberId").value =
+        member.member_id || "";
+
+      document.getElementById("editFullName").value =
+        member.full_name || "";
+
+      document.getElementById("editDob").value =
+        member.date_of_birth || "";
+
+      document.getElementById("editGender").value =
+        member.gender || "";
+
+      document.getElementById("editPhone").value =
+        member.phone_whatsapp || "";
+
+      document.getElementById("editAddress").value =
+        member.address || "";
+
+      document.getElementById("editMarital").value =
+        member.marital_status || "";
+
+      document.getElementById("editJoiningDate").value =
+        member.church_joining_date || "";
+
+      document.getElementById("editSalvationDate").value =
+        member.date_of_salvation || "";
+
+      document.getElementById("editMemberType").value =
+        member.member_type || "";
+
+      document.getElementById("editNotes").value =
+        member.additional_notes || "";
+
+      document.getElementById("editMessage").textContent =
+        "";
+
+      document.getElementById("details").style.display =
+        "none";
+
+      document.getElementById("editPanel").style.display =
+        "block";
+
+      document.getElementById("editPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+
+    }
+
+
+    async function saveEdit() {
+
+      if (!editingMemberId) {
+        return;
+      }
+
+      const fullName =
+        document
+          .getElementById("editFullName")
+          .value
+          .trim();
+
+      if (!fullName) {
+
+        document.getElementById("editMessage").textContent =
+          "Full Name is required.";
+
+        return;
+      }
+
+      const editMessage =
+        document.getElementById("editMessage");
+
+      editMessage.textContent =
+        "Saving changes...";
+
+      const { error } =
+        await supabaseClient
+          .from("members")
+          .update({
+
+            full_name:
+              fullName,
+
+            date_of_birth:
+              document.getElementById("editDob").value || null,
+
+            gender:
+              document.getElementById("editGender").value || null,
+
+            phone_whatsapp:
+              document.getElementById("editPhone").value.trim() || null,
+
+            address:
+              document.getElementById("editAddress").value.trim() || null,
+
+            marital_status:
+              document.getElementById("editMarital").value || null,
+
+            church_joining_date:
+              document.getElementById("editJoiningDate").value || null,
+
+            date_of_salvation:
+              document.getElementById("editSalvationDate").value || null,
+
+            member_type:
+              document.getElementById("editMemberType").value || null,
+
+            additional_notes:
+              document.getElementById("editNotes").value.trim() || null,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+
+          .eq("id", editingMemberId);
+
+
+      if (error) {
+
+        console.error("UPDATE ERROR:", error);
+
+        editMessage.textContent =
+          "Error: " + error.message;
+
+        return;
+      }
+
+      editMessage.textContent =
+        "Member Updated Successfully";
+
+      editingMemberId =
+        null;
+
+      await loadMembers();
+
+      setTimeout(function() {
+
+        closeEdit();
+
+      }, 700);
+
+    }
+
+
+    async function deleteMember(member) {
+
+      const confirmed =
+        confirm(
+          "Are you sure you want to delete " +
+          (member.full_name || "this member") +
+          "?\n\nMember ID: " +
+          (member.member_id || "N/A")
+        );
+
+      if (!confirmed) {
+        return;
+      }
+
+      const { error } =
+        await supabaseClient
+          .from("members")
+          .delete()
+          .eq("id", member.id);
+
+      if (error) {
+
+        console.error("DELETE ERROR:", error);
+
+        alert(
+          "Unable to delete member.\n\n" +
+          error.message
+        );
+
+        return;
+      }
+
+      alert(
+        "Member Deleted Successfully"
+      );
+
+      closeDetails();
+      closeEdit();
+
+      await loadMembers();
+
+    }
+
+
+    function closeEdit() {
+
+      document.getElementById("editPanel").style.display =
+        "none";
+
+      editingMemberId =
+        null;
+
+    }
+
 
     function formatDate(date) {
 
@@ -705,15 +1052,12 @@
     }
 
 
-    /* =========================
-       SECURITY
-       ========================= */
-
     function escapeHtml(value) {
 
-      if (value === null ||
-          value === undefined) {
-
+      if (
+        value === null ||
+        value === undefined
+      ) {
         return "";
       }
 
@@ -727,22 +1071,13 @@
     }
 
 
-    /* =========================
-       CLOSE DETAILS
-       ========================= */
-
     function closeDetails() {
 
-      document
-        .getElementById("details")
-        .style.display = "none";
+      document.getElementById("details").style.display =
+        "none";
 
     }
 
-
-    /* =========================
-       HOME
-       ========================= */
 
     function goHome() {
 
@@ -751,10 +1086,6 @@
 
     }
 
-
-    /* =========================
-       START
-       ========================= */
 
     loadMembers();
 

@@ -314,7 +314,6 @@
     </div>
   </div>
 
-
   <script>
 
     const SUPABASE_URL =
@@ -390,7 +389,6 @@
       const message =
         document.getElementById("message");
 
-
       message.textContent = "";
       message.className = "";
 
@@ -456,24 +454,46 @@
       saveBtn.textContent = "SAVING...";
 
 
+      const memberData = {
+
+        full_name: fullName,
+
+        date_of_birth:
+          dateOfBirth || null,
+
+        gender:
+          gender || null,
+
+        phone_whatsapp:
+          phone || null,
+
+        address:
+          address || null,
+
+        marital_status:
+          maritalStatus || null,
+
+        "church joining date":
+          churchJoiningDate || null,
+
+        date_of_salvation:
+          dateOfSalvation || null,
+
+        "member type":
+          memberType || null,
+
+        additional_notes:
+          additionalNotes || null,
+
+        created_by:
+          sessionData.session.user.id
+      };
+
+
       const { data, error } =
         await supabaseClient
           .from("members")
-          .insert([
-            {
-              full_name: fullName,
-              date_of_birth: dateOfBirth || null,
-              gender: gender || null,
-              phone_whatsapp: phone || null,
-              address: address || null,
-              marital_status: maritalStatus || null,
-              church_joining_date: churchJoiningDate || null,
-              date_of_salvation: dateOfSalvation || null,
-              member_type: memberType || null,
-              additional_notes: additionalNotes || null,
-              created_by: sessionData.session.user.id
-            }
-          ])
+          .insert([memberData])
           .select()
           .single();
 

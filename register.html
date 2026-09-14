@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Register Member - COC Members</title>
+  <title>Register New Member - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -14,76 +14,59 @@
 
     body {
       margin: 0;
-      background: #f4f1e8;
       font-family: Arial, sans-serif;
-      color: #183b2b;
+      background: #f5f1e8;
+      color: #222;
     }
 
     .header {
-      background: #183b2b;
+      background: #174d3c;
       color: white;
-      padding: 22px 20px;
+      padding: 20px;
       text-align: center;
     }
 
-    .logo {
-      font-size: 42px;
-    }
-
     .header h1 {
-      margin: 5px 0;
-      font-size: 27px;
+      margin: 0;
+      font-size: 24px;
     }
 
     .header p {
-      margin: 4px 0;
+      margin: 6px 0 0;
       font-size: 14px;
-      opacity: 0.9;
     }
 
     .container {
-      width: 100%;
-      max-width: 650px;
-      margin: auto;
-      padding: 25px 18px 40px;
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
     }
 
     .card {
       background: white;
-      padding: 25px 20px;
-      border-radius: 18px;
-      box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
     }
 
-    h2 {
-      text-align: center;
-      margin-top: 0;
-      margin-bottom: 25px;
+    .field {
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      margin: 16px 0 7px;
-      color: #333;
+      margin-bottom: 7px;
     }
 
     input,
     select,
     textarea {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 9px;
+      border-radius: 8px;
       font-size: 16px;
-      background: white;
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      outline: none;
-      border-color: #183b2b;
     }
 
     textarea {
@@ -91,87 +74,59 @@
       resize: vertical;
     }
 
-    .member-id {
-      background: #eeeeee;
-      color: #555;
-      font-weight: bold;
+    input[readonly] {
+      background: #eee;
     }
 
-    .photo-buttons {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      margin-top: 8px;
+    .photo-preview {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      display: none;
+      margin-top: 10px;
     }
 
-    .photo-buttons button {
-      padding: 13px;
+    button {
+      width: 100%;
+      padding: 14px;
       border: none;
       border-radius: 9px;
-      background: #e8eee9;
-      color: #183b2b;
+      font-size: 17px;
       font-weight: bold;
       cursor: pointer;
-    }
-
-    #photoInput {
-      display: none;
-    }
-
-    #photoPreview {
-      display: none;
-      width: 140px;
-      height: 140px;
-      object-fit: cover;
-      border-radius: 12px;
-      margin: 15px auto 0;
-      border: 2px solid #183b2b;
-    }
-
-    .save-btn {
-      width: 100%;
-      margin-top: 28px;
-      padding: 16px;
-      border: none;
-      border-radius: 10px;
-      background: #183b2b;
+      background: #174d3c;
       color: white;
-      font-size: 18px;
-      font-weight: bold;
-      cursor: pointer;
     }
 
-    .save-btn:disabled {
-      opacity: 0.6;
+    button:disabled {
+      background: #999;
       cursor: not-allowed;
     }
 
     .back-btn {
-      width: 100%;
-      margin-top: 12px;
-      padding: 14px;
-      border: none;
-      border-radius: 10px;
       background: #777;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
+      margin-bottom: 15px;
     }
 
-    #message {
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
       text-align: center;
-      margin-top: 18px;
       font-weight: bold;
-      min-height: 24px;
     }
 
     .success {
-      color: #187a3b;
+      background: #dff3e7;
+      color: #176b3a;
     }
 
     .error {
-      color: #b00020;
+      background: #f8dddd;
+      color: #a00000;
     }
   </style>
 </head>
@@ -179,375 +134,345 @@
 <body>
 
   <div class="header">
-    <div class="logo">✔️</div>
     <h1>COC Members</h1>
     <p>Church Of Christ Sri Lanka</p>
     <p>Members Registration</p>
   </div>
 
   <div class="container">
+
+    <button class="back-btn" onclick="window.location.href='home.html'">
+      ← Back to Dashboard
+    </button>
+
     <div class="card">
 
       <h2>Register New Member</h2>
 
-      <label for="memberId">Member ID</label>
-      <input
-        id="memberId"
-        class="member-id"
-        type="text"
-        value="Automatic"
-        readonly
-      >
+      <form id="memberForm">
 
-      <label for="fullName">Full Name</label>
-      <input
-        id="fullName"
-        type="text"
-        placeholder="Enter Full Name"
-      >
+        <div class="field">
+          <label>Member ID</label>
+          <input
+            type="text"
+            id="memberId"
+            placeholder="Automatic"
+            readonly
+          >
+        </div>
 
-      <label for="dateOfBirth">Date of Birth</label>
-      <input
-        id="dateOfBirth"
-        type="date"
-      >
+        <div class="field">
+          <label>Full Name</label>
+          <input
+            type="text"
+            id="fullName"
+            placeholder="Enter Full Name"
+            required
+          >
+        </div>
 
-      <label for="gender">Gender</label>
-      <select id="gender">
-        <option value="">Select Gender</option>
-        <option value="Male">Male</option>
-        <option value="Female">Female</option>
-      </select>
+        <div class="field">
+          <label>Date of Birth</label>
+          <input
+            type="date"
+            id="dateOfBirth"
+          >
+        </div>
 
-      <label for="phone">Phone / WhatsApp</label>
-      <input
-        id="phone"
-        type="tel"
-        placeholder="Enter Phone / WhatsApp Number"
-      >
+        <div class="field">
+          <label>Gender</label>
+          <select id="gender">
+            <option value="">Select...</option>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+          </select>
+        </div>
 
-      <label for="address">Address</label>
-      <input
-        id="address"
-        type="text"
-        placeholder="Enter Address"
-      >
+        <div class="field">
+          <label>Phone / WhatsApp</label>
+          <input
+            type="tel"
+            id="phoneWhatsapp"
+            placeholder="Enter Phone / WhatsApp Number"
+          >
+        </div>
 
-      <label for="maritalStatus">Marital Status</label>
-      <select id="maritalStatus">
-        <option value="">Select Marital Status</option>
-        <option value="Single">Single</option>
-        <option value="Married">Married</option>
-        <option value="Divorced">Divorced</option>
-        <option value="Widowed">Widowed</option>
-      </select>
+        <div class="field">
+          <label>Address</label>
+          <textarea
+            id="address"
+            placeholder="Enter Address"
+          ></textarea>
+        </div>
 
-      <label for="churchJoiningDate">Church Joining Date</label>
-      <input
-        id="churchJoiningDate"
-        type="date"
-      >
+        <div class="field">
+          <label>Marital Status</label>
+          <select id="maritalStatus">
+            <option value="">Select...</option>
+            <option value="Single">Single</option>
+            <option value="Married">Married</option>
+            <option value="Divorced">Divorced</option>
+            <option value="Widowed">Widowed</option>
+          </select>
+        </div>
 
-      <label for="dateOfSalvation">Date of Salvation</label>
-      <input
-        id="dateOfSalvation"
-        type="date"
-      >
+        <div class="field">
+          <label>Church Joining Date</label>
+          <input
+            type="date"
+            id="churchJoiningDate"
+          >
+        </div>
 
-      <label for="memberType">Member Type</label>
-      <select id="memberType">
-        <option value="">Select Member Type</option>
-        <option value="Pastor">Pastor</option>
-        <option value="Brother">Brother</option>
-        <option value="Sister">Sister</option>
-      </select>
+        <div class="field">
+          <label>Date of Salvation</label>
+          <input
+            type="date"
+            id="dateOfSalvation"
+          >
+        </div>
 
-      <label>Member Photo</label>
+        <div class="field">
+          <label>Member Type</label>
+          <select id="memberType">
+            <option value="">Select...</option>
+            <option value="Pastor">Pastor</option>
+            <option value="Brother">Brother</option>
+            <option value="Sister">Sister</option>
+          </select>
+        </div>
 
-      <div class="photo-buttons">
-        <button type="button" onclick="takePhoto()">
-          📷 Take Photo
+        <div class="field">
+          <label>Member Photo</label>
+          <input
+            type="file"
+            id="memberPhoto"
+            accept="image/*"
+            capture="environment"
+          >
+          <img
+            id="photoPreview"
+            class="photo-preview"
+            alt="Member Photo Preview"
+          >
+        </div>
+
+        <div class="field">
+          <label>Additional Notes</label>
+          <textarea
+            id="additionalNotes"
+            placeholder="Enter additional notes..."
+          ></textarea>
+        </div>
+
+        <button type="submit" id="saveButton">
+          SAVE MEMBER
         </button>
 
-        <button type="button" onclick="choosePhoto()">
-          🖼️ Choose from Gallery
-        </button>
-      </div>
+      </form>
 
-      <input
-        id="photoInput"
-        type="file"
-        accept="image/*"
-      >
-
-      <img
-        id="photoPreview"
-        alt="Member Photo Preview"
-      >
-
-      <label for="additionalNotes">Additional Notes</label>
-
-      <textarea
-        id="additionalNotes"
-        placeholder="Enter additional notes..."
-      ></textarea>
-
-      <button
-        id="saveBtn"
-        class="save-btn"
-        type="button"
-        onclick="saveMember()"
-      >
-        SAVE MEMBER
-      </button>
-
-      <button
-        class="back-btn"
-        type="button"
-        onclick="goBack()"
-      >
-        BACK TO HOME
-      </button>
-
-      <div id="message"></div>
+      <div id="message" class="message"></div>
 
     </div>
   </div>
 
-  <script>
+<script>
+  const SUPABASE_URL = "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-    const SUPABASE_URL =
-      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+  const supabaseClient = supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+  );
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
-      );
+  const form = document.getElementById("memberForm");
+  const saveButton = document.getElementById("saveButton");
+  const message = document.getElementById("message");
+  const photoInput = document.getElementById("memberPhoto");
+  const photoPreview = document.getElementById("photoPreview");
 
+  let selectedPhoto = null;
 
-    async function checkLogin() {
+  function showMessage(text, type) {
+    message.textContent = text;
+    message.className = "message " + type;
+    message.style.display = "block";
+  }
 
-      const { data, error } =
-        await supabaseClient.auth.getSession();
+  function clearMessage() {
+    message.textContent = "";
+    message.style.display = "none";
+  }
 
-      if (error || !data.session) {
+  photoInput.addEventListener("change", function () {
+    const file = this.files[0];
+
+    if (!file) {
+      selectedPhoto = null;
+      photoPreview.style.display = "none";
+      return;
+    }
+
+    selectedPhoto = file;
+
+    const reader = new FileReader();
+
+    reader.onload = function (event) {
+      photoPreview.src = event.target.result;
+      photoPreview.style.display = "block";
+    };
+
+    reader.readAsDataURL(file);
+  });
+
+  async function checkLogin() {
+    const {
+      data: { session },
+      error
+    } = await supabaseClient.auth.getSession();
+
+    if (error || !session) {
+      window.location.href = "index.html";
+      return null;
+    }
+
+    return session;
+  }
+
+  async function getCurrentUser() {
+    const {
+      data: { user },
+      error
+    } = await supabaseClient.auth.getUser();
+
+    if (error) {
+      return null;
+    }
+
+    return user;
+  }
+
+  checkLogin();
+
+  form.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    clearMessage();
+
+    saveButton.disabled = true;
+    saveButton.textContent = "SAVING...";
+
+    try {
+      const user = await getCurrentUser();
+
+      if (!user) {
         window.location.href = "index.html";
         return;
       }
-    }
-
-
-    function choosePhoto() {
-
-      const input =
-        document.getElementById("photoInput");
-
-      input.removeAttribute("capture");
-      input.click();
-    }
-
-
-    function takePhoto() {
-
-      const input =
-        document.getElementById("photoInput");
-
-      input.setAttribute("capture", "environment");
-      input.click();
-    }
-
-
-    document
-      .getElementById("photoInput")
-      .addEventListener("change", function(event) {
-
-        const file = event.target.files[0];
-
-        if (!file) {
-          return;
-        }
-
-        const preview =
-          document.getElementById("photoPreview");
-
-        preview.src =
-          URL.createObjectURL(file);
-
-        preview.style.display = "block";
-      });
-
-
-    async function saveMember() {
-
-      const saveBtn =
-        document.getElementById("saveBtn");
-
-      const message =
-        document.getElementById("message");
-
-      message.textContent = "";
-      message.className = "";
-
-
-      const { data: sessionData, error: sessionError } =
-        await supabaseClient.auth.getSession();
-
-
-      if (sessionError || !sessionData.session) {
-
-        message.textContent =
-          "Your session has expired. Please login again.";
-
-        message.className = "error";
-
-        return;
-      }
-
 
       const fullName =
         document.getElementById("fullName").value.trim();
 
       const dateOfBirth =
-        document.getElementById("dateOfBirth").value;
+        document.getElementById("dateOfBirth").value || null;
 
       const gender =
-        document.getElementById("gender").value;
+        document.getElementById("gender").value || null;
 
-      const phone =
-        document.getElementById("phone").value.trim();
+      const phoneWhatsapp =
+        document.getElementById("phoneWhatsapp").value.trim() || null;
 
       const address =
-        document.getElementById("address").value.trim();
+        document.getElementById("address").value.trim() || null;
 
       const maritalStatus =
-        document.getElementById("maritalStatus").value;
+        document.getElementById("maritalStatus").value || null;
 
       const churchJoiningDate =
-        document.getElementById("churchJoiningDate").value;
+        document.getElementById("churchJoiningDate").value || null;
 
       const dateOfSalvation =
-        document.getElementById("dateOfSalvation").value;
+        document.getElementById("dateOfSalvation").value || null;
 
       const memberType =
-        document.getElementById("memberType").value;
+        document.getElementById("memberType").value || null;
 
       const additionalNotes =
-        document.getElementById("additionalNotes").value.trim();
-
+        document.getElementById("additionalNotes").value.trim() || null;
 
       if (!fullName) {
-
-        message.textContent =
-          "Please enter the Full Name.";
-
-        message.className = "error";
-
-        return;
+        throw new Error("Please enter Full Name.");
       }
-
-
-      saveBtn.disabled = true;
-      saveBtn.textContent = "SAVING...";
-
 
       const memberData = {
-
         full_name: fullName,
-
-        date_of_birth:
-          dateOfBirth || null,
-
-        gender:
-          gender || null,
-
-        phone_whatsapp:
-          phone || null,
-
-        address:
-          address || null,
-
-        marital_status:
-          maritalStatus || null,
-
-        "church joining date":
-          churchJoiningDate || null,
-
-        date_of_salvation:
-          dateOfSalvation || null,
-
-        "member type":
-          memberType || null,
-
-        additional_notes:
-          additionalNotes || null,
-
-        created_by:
-          sessionData.session.user.id
+        date_of_birth: dateOfBirth,
+        gender: gender,
+        phone_whatsapp: phoneWhatsapp,
+        address: address,
+        marital_status: maritalStatus,
+        church_joining_date: churchJoiningDate,
+        "date of salvation": dateOfSalvation,
+        member_type: memberType,
+        additional_notes: additionalNotes,
+        created_by: user.id
       };
 
+      /*
+        Member ID is NOT included here.
+        Supabase automatically generates it using the database sequence.
+      */
 
-      const { data, error } =
-        await supabaseClient
-          .from("members")
-          .insert([memberData])
-          .select()
-          .single();
-
+      const {
+        data,
+        error
+      } = await supabaseClient
+        .from("members")
+        .insert([memberData])
+        .select("id, member_id, full_name")
+        .single();
 
       if (error) {
-
-        console.error("SAVE ERROR:", error);
-
-        message.textContent =
-          "Error: " + error.message;
-
-        message.className = "error";
-
-        saveBtn.disabled = false;
-        saveBtn.textContent = "SAVE MEMBER";
-
-        return;
+        throw error;
       }
 
+      document.getElementById("memberId").value =
+        data.member_id || "";
 
-      message.innerHTML =
-        "Member Registered Successfully<br>" +
-        "Member ID: <strong>" +
-        data.member_id +
-        "</strong>";
+      showMessage(
+        "Member Registered Successfully — Member ID: " +
+        data.member_id,
+        "success"
+      );
 
-      message.className = "success";
+      form.reset();
 
-      saveBtn.textContent = "MEMBER SAVED";
+      document.getElementById("memberId").value =
+        data.member_id || "";
 
+      photoPreview.style.display = "none";
+      photoPreview.src = "";
+      selectedPhoto = null;
 
-      document.getElementById("fullName").value = "";
-      document.getElementById("dateOfBirth").value = "";
-      document.getElementById("gender").value = "";
-      document.getElementById("phone").value = "";
-      document.getElementById("address").value = "";
-      document.getElementById("maritalStatus").value = "";
-      document.getElementById("churchJoiningDate").value = "";
-      document.getElementById("dateOfSalvation").value = "";
-      document.getElementById("memberType").value = "";
-      document.getElementById("additionalNotes").value = "";
-      document.getElementById("photoInput").value = "";
-      document.getElementById("photoPreview").style.display = "none";
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Error: " + (error.message || "Failed to register member."),
+        "error"
+      );
+
+    } finally {
+
+      saveButton.disabled = false;
+      saveButton.textContent = "SAVE MEMBER";
+
     }
-
-
-    function goBack() {
-      window.location.href = "home.html";
-    }
-
-
-    checkLogin();
-
-  </script>
+  });
+</script>
 
 </body>
 </html>

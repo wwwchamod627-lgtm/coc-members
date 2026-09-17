@@ -168,6 +168,76 @@
       margin-top: 6px;
     }
 
+    /* =========================
+       LOGO SECTION
+    ========================= */
+
+    .logo-box {
+      border: 2px dashed #c9c1ae;
+      border-radius: 12px;
+      padding: 18px;
+      text-align: center;
+      background: #faf9f5;
+    }
+
+    .logo-preview {
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+      display: none;
+      margin: 0 auto 15px;
+      border-radius: 12px;
+      background: white;
+      padding: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .no-logo {
+      color: #888;
+      font-size: 14px;
+      margin-bottom: 15px;
+    }
+
+    .logo-btn {
+      display: inline-block;
+      padding: 13px 20px;
+      border: none;
+      border-radius: 9px;
+      background: #174d3c;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .logo-btn:active {
+      transform: scale(0.98);
+    }
+
+    .logo-file {
+      display: none;
+    }
+
+    .remove-logo-btn {
+      display: none;
+      margin-top: 10px;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 8px;
+      background: #8b2f2f;
+      color: white;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .upload-status {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #666;
+      display: none;
+    }
+
     @media (max-width: 600px) {
 
       .container {
@@ -311,22 +381,69 @@
         </div>
 
 
-        <!-- LOGO URL -->
+        <!-- LOGO -->
 
         <div class="form-group">
 
-          <label for="logoUrl">
-            Logo URL
+          <label>
+            🖼️ App Logo
           </label>
 
-          <input
-            type="text"
-            id="logoUrl"
-            placeholder="Enter Logo URL"
-          >
+          <div class="logo-box">
+
+            <img
+              id="logoPreview"
+              class="logo-preview"
+              alt="Logo Preview"
+            >
+
+            <div
+              id="noLogo"
+              class="no-logo"
+            >
+              No logo selected
+            </div>
+
+
+            <button
+              type="button"
+              class="logo-btn"
+              onclick="openLogoPicker()"
+            >
+              🖼️ Choose Logo from Gallery
+            </button>
+
+
+            <input
+              type="file"
+              id="logoFile"
+              class="logo-file"
+              accept="image/*"
+            >
+
+
+            <br>
+
+
+            <button
+              type="button"
+              id="removeLogoButton"
+              class="remove-logo-btn"
+              onclick="removeLogo()"
+            >
+              🗑️ Remove Logo
+            </button>
+
+
+            <div
+              id="uploadStatus"
+              class="upload-status"
+            ></div>
+
+          </div>
 
           <div class="hint">
-            Enter the public URL of your church/app logo.
+            Select an image from your phone Gallery. The logo will be uploaded automatically when you save settings.
           </div>
 
         </div>
@@ -423,95 +540,292 @@
   ========================================================= */
 
   const loading =
-    document.getElementById(
-      "loading"
-    );
+    document.getElementById("loading");
 
 
   const settingsForm =
-    document.getElementById(
-      "settingsForm"
-    );
+    document.getElementById("settingsForm");
 
 
   const message =
-    document.getElementById(
-      "message"
-    );
+    document.getElementById("message");
 
 
   const saveButton =
-    document.getElementById(
-      "saveButton"
-    );
+    document.getElementById("saveButton");
 
 
   const appName =
-    document.getElementById(
-      "appName"
-    );
+    document.getElementById("appName");
 
 
   const churchName =
-    document.getElementById(
-      "churchName"
-    );
+    document.getElementById("churchName");
 
 
   const subtitle =
-    document.getElementById(
-      "subtitle"
-    );
+    document.getElementById("subtitle");
 
 
   const welcomeText =
-    document.getElementById(
-      "welcomeText"
-    );
-
-
-  const logoUrl =
-    document.getElementById(
-      "logoUrl"
-    );
+    document.getElementById("welcomeText");
 
 
   const registerButtonText =
-    document.getElementById(
-      "registerButtonText"
-    );
+    document.getElementById("registerButtonText");
 
 
   const membersButtonText =
-    document.getElementById(
-      "membersButtonText"
-    );
+    document.getElementById("membersButtonText");
 
 
   const searchButtonText =
-    document.getElementById(
-      "searchButtonText"
-    );
+    document.getElementById("searchButtonText");
+
+
+  const logoFile =
+    document.getElementById("logoFile");
+
+
+  const logoPreview =
+    document.getElementById("logoPreview");
+
+
+  const noLogo =
+    document.getElementById("noLogo");
+
+
+  const removeLogoButton =
+    document.getElementById("removeLogoButton");
+
+
+  const uploadStatus =
+    document.getElementById("uploadStatus");
+
+
+  /* =========================================================
+     LOGO VARIABLES
+  ========================================================= */
+
+  let currentLogoUrl = "";
+
+  let selectedLogoFile = null;
+
+  let removeLogoRequested = false;
 
 
   /* =========================================================
      MESSAGE
   ========================================================= */
 
-  function showMessage(
-    text,
-    type
-  ) {
+  function showMessage(text, type) {
 
-    message.textContent =
-      text;
+    message.textContent = text;
 
     message.className =
-      "message " +
-      type;
+      "message " + type;
 
     message.style.display =
       "block";
+
+  }
+
+
+  /* =========================================================
+     OPEN GALLERY
+  ========================================================= */
+
+  function openLogoPicker() {
+
+    logoFile.click();
+
+  }
+
+
+  /* =========================================================
+     LOGO SELECTED
+  ========================================================= */
+
+  logoFile.addEventListener(
+    "change",
+    function(event) {
+
+      const file =
+        event.target.files[0];
+
+
+      if (!file) {
+        return;
+      }
+
+
+      /* Validate image */
+
+      if (!file.type.startsWith("image/")) {
+
+        showMessage(
+          "Please select an image file.",
+          "error"
+        );
+
+        logoFile.value = "";
+
+        return;
+
+      }
+
+
+      /* Maximum 5MB */
+
+      if (file.size > 5 * 1024 * 1024) {
+
+        showMessage(
+          "Logo image must be less than 5MB.",
+          "error"
+        );
+
+        logoFile.value = "";
+
+        return;
+
+      }
+
+
+      selectedLogoFile =
+        file;
+
+      removeLogoRequested =
+        false;
+
+
+      /* Preview */
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(e) {
+
+          logoPreview.src =
+            e.target.result;
+
+          logoPreview.style.display =
+            "block";
+
+          noLogo.style.display =
+            "none";
+
+          removeLogoButton.style.display =
+            "inline-block";
+
+          uploadStatus.style.display =
+            "block";
+
+          uploadStatus.textContent =
+            "New logo selected. Click Save Settings to upload.";
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+
+  /* =========================================================
+     REMOVE LOGO
+  ========================================================= */
+
+  function removeLogo() {
+
+    selectedLogoFile =
+      null;
+
+    removeLogoRequested =
+      true;
+
+    currentLogoUrl =
+      "";
+
+    logoFile.value =
+      "";
+
+    logoPreview.src =
+      "";
+
+    logoPreview.style.display =
+      "none";
+
+    noLogo.style.display =
+      "block";
+
+    noLogo.textContent =
+      "Logo will be removed when you save.";
+
+    removeLogoButton.style.display =
+      "none";
+
+    uploadStatus.style.display =
+      "block";
+
+    uploadStatus.textContent =
+      "Logo removal is pending. Click Save Settings.";
+
+  }
+
+
+  /* =========================================================
+     SHOW CURRENT LOGO
+  ========================================================= */
+
+  function showCurrentLogo(url) {
+
+    if (url) {
+
+      currentLogoUrl =
+        url;
+
+      logoPreview.src =
+        url;
+
+      logoPreview.style.display =
+        "block";
+
+      noLogo.style.display =
+        "none";
+
+      removeLogoButton.style.display =
+        "inline-block";
+
+      uploadStatus.style.display =
+        "none";
+
+    } else {
+
+      currentLogoUrl =
+        "";
+
+      logoPreview.src =
+        "";
+
+      logoPreview.style.display =
+        "none";
+
+      noLogo.style.display =
+        "block";
+
+      noLogo.textContent =
+        "No logo selected";
+
+      removeLogoButton.style.display =
+        "none";
+
+      uploadStatus.style.display =
+        "none";
+
+    }
 
   }
 
@@ -640,9 +954,6 @@
         welcomeText.value =
           data.welcome_text || "";
 
-        logoUrl.value =
-          data.logo_url || "";
-
         registerButtonText.value =
           data.register_button_text || "";
 
@@ -651,6 +962,11 @@
 
         searchButtonText.value =
           data.search_button_text || "";
+
+
+        showCurrentLogo(
+          data.logo_url || ""
+        );
 
       }
 
@@ -676,6 +992,129 @@
       );
 
     }
+
+  }
+
+
+  /* =========================================================
+     GET FILE EXTENSION
+  ========================================================= */
+
+  function getFileExtension(file) {
+
+    const name =
+      file.name || "";
+
+    const parts =
+      name.split(".");
+
+
+    if (parts.length > 1) {
+
+      return parts
+        .pop()
+        .toLowerCase();
+
+    }
+
+
+    if (file.type === "image/png") {
+      return "png";
+    }
+
+    if (file.type === "image/jpeg") {
+      return "jpg";
+    }
+
+    if (file.type === "image/webp") {
+      return "webp";
+    }
+
+    return "jpg";
+
+  }
+
+
+  /* =========================================================
+     UPLOAD LOGO
+  ========================================================= */
+
+  async function uploadLogo(user) {
+
+    if (!selectedLogoFile) {
+
+      return currentLogoUrl;
+
+    }
+
+
+    const extension =
+      getFileExtension(
+        selectedLogoFile
+      );
+
+
+    const filePath =
+      "logo-" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+
+    uploadStatus.style.display =
+      "block";
+
+    uploadStatus.textContent =
+      "⏳ Uploading logo...";
+
+
+    const {
+      error: uploadError
+    } =
+      await supabaseClient.storage
+        .from("app-assets")
+        .upload(
+          filePath,
+          selectedLogoFile,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType:
+              selectedLogoFile.type
+          }
+        );
+
+
+    if (uploadError) {
+
+      throw uploadError;
+
+    }
+
+
+    const {
+      data
+    } =
+      supabaseClient.storage
+        .from("app-assets")
+        .getPublicUrl(
+          filePath
+        );
+
+
+    if (!data || !data.publicUrl) {
+
+      throw new Error(
+        "Could not create logo URL."
+      );
+
+    }
+
+
+    uploadStatus.textContent =
+      "Logo uploaded successfully.";
+
+    return data.publicUrl;
 
   }
 
@@ -710,13 +1149,15 @@
       }
 
 
+      /* Find existing settings row */
+
       const {
         data: existing,
         error: existingError
       } =
       await supabaseClient
         .from("app_settings")
-        .select("id")
+        .select("id, logo_url")
         .limit(1)
         .maybeSingle();
 
@@ -724,6 +1165,30 @@
       if (existingError) {
 
         throw existingError;
+
+      }
+
+
+      let logoUrl =
+        existing?.logo_url || currentLogoUrl || "";
+
+
+      /* Upload new logo */
+
+      if (selectedLogoFile) {
+
+        logoUrl =
+          await uploadLogo(user);
+
+      }
+
+
+      /* Remove logo */
+
+      if (removeLogoRequested) {
+
+        logoUrl =
+          "";
 
       }
 
@@ -743,7 +1208,7 @@
           welcomeText.value.trim(),
 
         logo_url:
-          logoUrl.value.trim(),
+          logoUrl,
 
         register_button_text:
           registerButtonText.value.trim(),
@@ -793,6 +1258,26 @@
         throw result.error;
 
       }
+
+
+      /* Reset temporary states */
+
+      currentLogoUrl =
+        logoUrl;
+
+      selectedLogoFile =
+        null;
+
+      removeLogoRequested =
+        false;
+
+      logoFile.value =
+        "";
+
+
+      showCurrentLogo(
+        logoUrl
+      );
 
 
       showMessage(

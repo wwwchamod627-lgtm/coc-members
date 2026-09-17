@@ -352,6 +352,121 @@
       padding: 20px;
     }
 
+    /* =========================
+       REGISTRATION FORM BUILDER
+    ========================= */
+
+    .builder-card {
+      border: 1px solid #e4dfd4;
+      border-radius: 12px;
+      padding: 15px;
+      margin-bottom: 14px;
+      background: #faf9f5;
+    }
+
+    .builder-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .builder-title {
+      font-weight: bold;
+      color: #174d3c;
+      font-size: 16px;
+    }
+
+    .builder-key {
+      font-size: 11px;
+      color: #999;
+      margin-top: 4px;
+    }
+
+    .builder-type {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #eee7d7;
+      color: #76591e;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .builder-field {
+      margin-top: 12px;
+    }
+
+    .builder-field label {
+      margin-bottom: 5px;
+    }
+
+    .builder-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      padding-top: 12px;
+      margin-top: 12px;
+      border-top: 1px solid #e5e0d6;
+    }
+
+    .toggle-label {
+      font-weight: bold;
+      color: #444;
+      font-size: 14px;
+    }
+
+    .toggle-description {
+      font-size: 11px;
+      color: #888;
+      margin-top: 3px;
+    }
+
+    .builder-order {
+      width: 90px;
+    }
+
+    .builder-order input {
+      text-align: center;
+    }
+
+    .required-badge {
+      display: inline-block;
+      margin-left: 5px;
+      color: #a00000;
+      font-size: 12px;
+    }
+
+    .automatic-note {
+      background: #edf4f0;
+      color: #376351;
+      padding: 9px;
+      border-radius: 8px;
+      font-size: 12px;
+      line-height: 1.5;
+      margin-top: 10px;
+    }
+
+    .builder-save-btn {
+      width: 100%;
+      padding: 15px;
+      border: none;
+      border-radius: 9px;
+      background: #8b6b2e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+
+    .builder-save-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
+    }
+
   </style>
 </head>
 
@@ -655,6 +770,36 @@
 
 
         <!-- =========================
+             REGISTRATION FORM BUILDER
+        ========================= -->
+
+        <div class="section-title">
+          📝 Registration Form Builder
+        </div>
+
+        <div class="description">
+          Manage registration form fields without editing GitHub code.
+          You can change field labels, visibility, required status and order.
+        </div>
+
+        <div id="formBuilder">
+
+          <div class="loading">
+            Loading Registration Form Fields...
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          id="saveFormButton"
+          class="builder-save-btn"
+        >
+          💾 Save Registration Form Settings
+        </button>
+
+
+        <!-- =========================
              EXISTING SETTINGS SAVE
         ========================= -->
 
@@ -714,8 +859,14 @@
   const saveControlButton =
     document.getElementById("saveControlButton");
 
+  const saveFormButton =
+    document.getElementById("saveFormButton");
+
   const controlCenter =
     document.getElementById("controlCenter");
+
+  const formBuilder =
+    document.getElementById("formBuilder");
 
 
   const appName =
@@ -794,6 +945,13 @@
   ========================================================= */
 
   let appConfigs = [];
+
+
+  /* =========================================================
+     FORM FIELDS
+  ========================================================= */
+
+  let formFields = [];
 
 
   /* =========================================================
@@ -1246,7 +1404,7 @@
         `
         <div class="empty-control">
           Failed to load App Controls.<br>
-          ${error.message}
+          ${escapeHtml(error.message)}
         </div>
         `;
 
@@ -1439,6 +1597,428 @@
       .replace(/\b\w/g, function(char) {
         return char.toUpperCase();
       });
+
+  }
+
+
+  /* =========================================================
+     LOAD FORM FIELDS
+  ========================================================= */
+
+  async function loadFormFields() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("form_fields")
+        .select(
+          "id, field_key, field_label, field_type, is_visible, is_required, display_order, options"
+        )
+        .order(
+          "display_order",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Form Fields Error:",
+        error
+      );
+
+      formBuilder.innerHTML =
+        `
+        <div class="empty-control">
+          Failed to load Registration Form Fields.<br>
+          ${escapeHtml(error.message)}
+        </div>
+        `;
+
+      return;
+
+    }
+
+
+    formFields =
+      data || [];
+
+
+    renderFormBuilder();
+
+  }
+
+
+  /* =========================================================
+     RENDER FORM BUILDER
+  ========================================================= */
+
+  function renderFormBuilder() {
+
+    if (!formFields.length) {
+
+      formBuilder.innerHTML =
+        `
+        <div class="empty-control">
+          No Registration Form Fields found.
+        </div>
+        `;
+
+      return;
+
+    }
+
+
+    let html = "";
+
+
+    formFields.forEach(
+      function(field) {
+
+        const type =
+          field.field_type || "text";
+
+        const visible =
+          field.is_visible === true;
+
+        const required =
+          field.is_required === true;
+
+        const automatic =
+          type === "automatic";
+
+
+        html +=
+          `
+          <div
+            class="builder-card"
+            data-field-id="${field.id}"
+          >
+
+            <div class="builder-header">
+
+              <div>
+
+                <div class="builder-title">
+                  ${escapeHtml(field.field_label)}
+                </div>
+
+                <div class="builder-key">
+                  ${escapeHtml(field.field_key)}
+                </div>
+
+              </div>
+
+              <div class="builder-type">
+                ${escapeHtml(type)}
+              </div>
+
+            </div>
+
+
+            <div class="builder-field">
+
+              <label>
+                Field Label
+              </label>
+
+              <input
+                type="text"
+                value="${escapeAttribute(field.field_label || "")}"
+                data-field-label
+              >
+
+            </div>
+
+
+            <div class="builder-toggle-row">
+
+              <div>
+
+                <div class="toggle-label">
+                  👁️ Show Field
+                </div>
+
+                <div class="toggle-description">
+                  Display this field on the registration form.
+                </div>
+
+              </div>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  data-field-visible
+                  ${visible ? "checked" : ""}
+                  ${automatic ? "disabled" : ""}
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+            </div>
+
+
+            <div class="builder-toggle-row">
+
+              <div>
+
+                <div class="toggle-label">
+                  ⭐ Required Field
+                </div>
+
+                <div class="toggle-description">
+                  Staff must complete this field before registration.
+                </div>
+
+              </div>
+
+              <label class="switch">
+
+                <input
+                  type="checkbox"
+                  data-field-required
+                  ${required ? "checked" : ""}
+                  ${automatic ? "disabled" : ""}
+                >
+
+                <span class="slider"></span>
+
+              </label>
+
+            </div>
+
+
+            <div class="builder-toggle-row">
+
+              <div>
+
+                <div class="toggle-label">
+                  🔢 Display Order
+                </div>
+
+                <div class="toggle-description">
+                  Lower numbers appear first.
+                </div>
+
+              </div>
+
+              <div class="builder-order">
+
+                <input
+                  type="number"
+                  min="1"
+                  step="1"
+                  value="${escapeAttribute(field.display_order)}"
+                  data-field-order
+                >
+
+              </div>
+
+            </div>
+
+            ${
+              automatic
+                ? `
+                  <div class="automatic-note">
+                    🔒 Member ID is automatically generated by the system
+                    and cannot be changed by staff.
+                  </div>
+                `
+                : ""
+            }
+
+          </div>
+          `;
+
+      }
+    );
+
+
+    formBuilder.innerHTML =
+      html;
+
+  }
+
+
+  /* =========================================================
+     SAVE FORM FIELDS
+  ========================================================= */
+
+  async function saveFormFields() {
+
+    saveFormButton.disabled =
+      true;
+
+    saveFormButton.textContent =
+      "⏳ Saving Form Settings...";
+
+
+    try {
+
+      const user =
+        await checkAdmin();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const cards =
+        formBuilder.querySelectorAll(
+          "[data-field-id]"
+        );
+
+
+      for (
+        const card of cards
+      ) {
+
+        const id =
+          card.getAttribute(
+            "data-field-id"
+          );
+
+
+        const labelInput =
+          card.querySelector(
+            "[data-field-label]"
+          );
+
+        const visibleInput =
+          card.querySelector(
+            "[data-field-visible]"
+          );
+
+        const requiredInput =
+          card.querySelector(
+            "[data-field-required]"
+          );
+
+        const orderInput =
+          card.querySelector(
+            "[data-field-order]"
+          );
+
+
+        const label =
+          labelInput
+            ? labelInput.value.trim()
+            : "";
+
+        const visible =
+          visibleInput
+            ? visibleInput.checked
+            : true;
+
+        const required =
+          requiredInput
+            ? requiredInput.checked
+            : false;
+
+        let order =
+          parseInt(
+            orderInput?.value,
+            10
+          );
+
+
+        if (!label) {
+
+          throw new Error(
+            "Field Label cannot be empty."
+          );
+
+        }
+
+
+        if (
+          !Number.isInteger(order) ||
+          order < 1
+        ) {
+
+          throw new Error(
+            "Display Order must be a number greater than 0."
+          );
+
+        }
+
+
+        const {
+          error
+        } =
+        await supabaseClient
+          .from("form_fields")
+          .update({
+
+            field_label:
+              label,
+
+            is_visible:
+              visible,
+
+            is_required:
+              required,
+
+            display_order:
+              order,
+
+            updated_at:
+              new Date().toISOString()
+
+          })
+          .eq(
+            "id",
+            id
+          );
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+      }
+
+
+      showMessage(
+        "Registration Form Settings saved successfully! ✅",
+        "success"
+      );
+
+
+      await loadFormFields();
+
+
+    } catch (error) {
+
+      console.error(
+        "Save Form Fields Error:",
+        error
+      );
+
+      showMessage(
+        "Failed to save Registration Form Settings: " +
+        error.message,
+        "error"
+      );
+
+    }
+
+
+    saveFormButton.disabled =
+      false;
+
+    saveFormButton.textContent =
+      "💾 Save Registration Form Settings";
 
   }
 
@@ -1672,6 +2252,8 @@
 
 
       await loadAppConfig();
+
+      await loadFormFields();
 
 
       loading.style.display =
@@ -2144,6 +2726,12 @@
   saveControlButton.addEventListener(
     "click",
     saveAppConfig
+  );
+
+
+  saveFormButton.addEventListener(
+    "click",
+    saveFormFields
   );
 
 

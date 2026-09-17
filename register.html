@@ -167,6 +167,7 @@
 
       <form id="memberForm">
 
+        <!-- 1. Member ID -->
         <div class="field">
           <label>Member ID</label>
           <input
@@ -177,6 +178,18 @@
           >
         </div>
 
+        <!-- 2. Member Type -->
+        <div class="field">
+          <label>Member Type</label>
+          <select id="memberType" required>
+            <option value="">Select...</option>
+            <option value="Pastor">Pastor</option>
+            <option value="Brother">Brother</option>
+            <option value="Sister">Sister</option>
+          </select>
+        </div>
+
+        <!-- 3. Full Name -->
         <div class="field">
           <label>Full Name</label>
           <input
@@ -187,11 +200,26 @@
           >
         </div>
 
+        <!-- 4. NIC Number -->
         <div class="field">
-          <label>Date of Birth</label>
-          <input type="date" id="dateOfBirth">
+          <label>NIC Number</label>
+          <input
+            type="text"
+            id="nicNumber"
+            placeholder="Enter NIC Number (Optional)"
+          >
         </div>
 
+        <!-- 5. Date of Birth -->
+        <div class="field">
+          <label>Date of Birth</label>
+          <input
+            type="date"
+            id="dateOfBirth"
+          >
+        </div>
+
+        <!-- 6. Gender -->
         <div class="field">
           <label>Gender</label>
           <select id="gender">
@@ -201,6 +229,7 @@
           </select>
         </div>
 
+        <!-- 7. Phone / WhatsApp -->
         <div class="field">
           <label>Phone / WhatsApp</label>
           <input
@@ -210,6 +239,7 @@
           >
         </div>
 
+        <!-- 8. Address -->
         <div class="field">
           <label>Address</label>
           <textarea
@@ -218,6 +248,7 @@
           ></textarea>
         </div>
 
+        <!-- 9. Marital Status -->
         <div class="field">
           <label>Marital Status</label>
           <select id="maritalStatus">
@@ -229,26 +260,16 @@
           </select>
         </div>
 
-        <div class="field">
-          <label>Church Joining Date</label>
-          <input type="date" id="churchJoiningDate">
-        </div>
-
+        <!-- 10. Date of Salvation -->
         <div class="field">
           <label>Date of Salvation</label>
-          <input type="date" id="dateOfSalvation">
+          <input
+            type="date"
+            id="dateOfSalvation"
+          >
         </div>
 
-        <div class="field">
-          <label>Member Type</label>
-          <select id="memberType">
-            <option value="">Select...</option>
-            <option value="Pastor">Pastor</option>
-            <option value="Brother">Brother</option>
-            <option value="Sister">Sister</option>
-          </select>
-        </div>
-
+        <!-- 11. Member Photo -->
         <div class="field">
           <label>Member Photo</label>
 
@@ -286,6 +307,7 @@
           >
         </div>
 
+        <!-- 12. Additional Notes -->
         <div class="field">
           <label>Additional Notes</label>
           <textarea
@@ -318,9 +340,15 @@
     SUPABASE_PUBLISHABLE_KEY
   );
 
-  const form = document.getElementById("memberForm");
-  const saveButton = document.getElementById("saveButton");
-  const message = document.getElementById("message");
+
+  const form =
+    document.getElementById("memberForm");
+
+  const saveButton =
+    document.getElementById("saveButton");
+
+  const message =
+    document.getElementById("message");
 
   const cameraInput =
     document.getElementById("cameraInput");
@@ -350,9 +378,11 @@
 
     reader.onload = function(event) {
 
-      photoPreview.src = event.target.result;
+      photoPreview.src =
+        event.target.result;
 
-      photoPreview.style.display = "block";
+      photoPreview.style.display =
+        "block";
 
     };
 
@@ -360,26 +390,34 @@
   }
 
 
-  cameraInput.addEventListener("change", function() {
+  cameraInput.addEventListener(
+    "change",
+    function() {
 
-    if (this.files && this.files[0]) {
+      if (this.files &&
+          this.files[0]) {
 
-      showPhoto(this.files[0]);
+        showPhoto(this.files[0]);
 
-    }
-
-  });
-
-
-  galleryInput.addEventListener("change", function() {
-
-    if (this.files && this.files[0]) {
-
-      showPhoto(this.files[0]);
+      }
 
     }
+  );
 
-  });
+
+  galleryInput.addEventListener(
+    "change",
+    function() {
+
+      if (this.files &&
+          this.files[0]) {
+
+        showPhoto(this.files[0]);
+
+      }
+
+    }
+  );
 
 
   function showMessage(text, type) {
@@ -389,7 +427,8 @@
     message.className =
       "message " + type;
 
-    message.style.display = "block";
+    message.style.display =
+      "block";
 
   }
 
@@ -398,27 +437,8 @@
 
     message.textContent = "";
 
-    message.style.display = "none";
-
-  }
-
-
-  async function checkLogin() {
-
-    const {
-      data: { session },
-      error
-    } = await supabaseClient.auth.getSession();
-
-    if (error || !session) {
-
-      window.location.href = "index.html";
-
-      return null;
-
-    }
-
-    return session;
+    message.style.display =
+      "none";
 
   }
 
@@ -426,22 +446,23 @@
   async function getCurrentUser() {
 
     const {
-      data: { user },
+      data,
       error
-    } = await supabaseClient.auth.getUser();
+    } =
+      await supabaseClient.auth.getUser();
 
-    if (error) {
+    if (error || !data.user) {
+
+      window.location.href =
+        "index.html";
 
       return null;
 
     }
 
-    return user;
+    return data.user;
 
   }
-
-
-  checkLogin();
 
 
   form.addEventListener(
@@ -454,7 +475,8 @@
 
       saveButton.disabled = true;
 
-      saveButton.textContent = "SAVING...";
+      saveButton.textContent =
+        "SAVING...";
 
 
       try {
@@ -462,114 +484,90 @@
         const user =
           await getCurrentUser();
 
+        if (!user) return;
 
-        if (!user) {
 
-          window.location.href =
-            "index.html";
-
-          return;
-
-        }
-
+        const memberType =
+          document.getElementById(
+            "memberType"
+          ).value;
 
         const fullName =
           document.getElementById(
             "fullName"
           ).value.trim();
 
+        const nicNumber =
+          document.getElementById(
+            "nicNumber"
+          ).value.trim();
 
         const dateOfBirth =
           document.getElementById(
             "dateOfBirth"
           ).value || null;
 
-
         const gender =
           document.getElementById(
             "gender"
-          ).value || null;
-
+          ).value;
 
         const phoneWhatsapp =
           document.getElementById(
             "phoneWhatsapp"
-          ).value.trim() || null;
-
+          ).value.trim();
 
         const address =
           document.getElementById(
             "address"
-          ).value.trim() || null;
-
+          ).value.trim();
 
         const maritalStatus =
           document.getElementById(
             "maritalStatus"
-          ).value || null;
-
-
-        const churchJoiningDate =
-          document.getElementById(
-            "churchJoiningDate"
-          ).value || null;
-
+          ).value;
 
         const dateOfSalvation =
           document.getElementById(
             "dateOfSalvation"
           ).value || null;
 
-
-        const memberType =
-          document.getElementById(
-            "memberType"
-          ).value || null;
-
-
         const additionalNotes =
           document.getElementById(
             "additionalNotes"
-          ).value.trim() || null;
+          ).value.trim();
 
-
-        if (!fullName) {
-
-          throw new Error(
-            "Please enter Full Name."
-          );
-
-        }
-
-
-        /*
-          IMPORTANT:
-          These names exactly match
-          the actual Supabase columns.
-        */
 
         const memberData = {
 
-          full_name: fullName,
-
-          date_of_birth: dateOfBirth,
-
-          gender: gender,
-
-          phone_whatsapp: phoneWhatsapp,
-
-          address: address,
-
-          marital_status: maritalStatus,
-
-          church_joining_date:
-            churchJoiningDate,
-
-          date_of_salvation:
-            dateOfSalvation,
+          member_id: undefined,
 
           member_type:
             memberType,
+
+          full_name:
+            fullName,
+
+          nic_number:
+            nicNumber || null,
+
+          date_of_birth:
+            dateOfBirth,
+
+          gender:
+            gender,
+
+          phone_whatsapp:
+            phoneWhatsapp,
+
+          address:
+            address,
+
+          marital_status:
+            maritalStatus,
+
+          date_of_salvation:
+            dateOfSalvation,
 
           additional_notes:
             additionalNotes,
@@ -583,76 +581,61 @@
         const {
           data,
           error
-        } = await supabaseClient
-
-          .from("members")
-
-          .insert([memberData])
-
-          .select(
-            "id, member_id, full_name"
-          )
-
-          .single();
+        } =
+          await supabaseClient
+            .from("members")
+            .insert(memberData)
+            .select()
+            .single();
 
 
         if (error) {
+
+          console.error(error);
 
           throw error;
 
         }
 
 
-        document.getElementById(
-          "memberId"
-        ).value = data.member_id || "";
-
-
         showMessage(
-
-          "Member Registered Successfully — Member ID: "
-          + data.member_id,
-
+          "Member Registered Successfully\nMember ID: " +
+          data.member_id,
           "success"
-
         );
 
 
         form.reset();
 
-
-        document.getElementById(
-          "memberId"
-        ).value =
-          data.member_id || "";
-
+        photoPreview.src = "";
 
         photoPreview.style.display =
           "none";
 
-        photoPreview.src = "";
+
+        document.getElementById(
+          "memberId"
+        ).value =
+          data.member_id;
 
 
       } catch (error) {
 
-        console.error(error);
-
+        console.error(
+          "Registration Error:",
+          error
+        );
 
         showMessage(
-
-          "Error: "
-          + (
-            error.message ||
-            "Failed to register member."
-          ),
-
+          "Error: " +
+          error.message,
           "error"
-
         );
 
       } finally {
 
-        saveButton.disabled = false;
+        saveButton.disabled =
+          false;
 
         saveButton.textContent =
           "SAVE MEMBER";
@@ -661,6 +644,9 @@
 
     }
   );
+
+
+  getCurrentUser();
 
 </script>
 

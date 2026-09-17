@@ -252,6 +252,10 @@
 
 <script>
 
+  /* =========================================================
+     SUPABASE CONFIGURATION
+  ========================================================= */
+
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
@@ -265,6 +269,10 @@
       SUPABASE_PUBLISHABLE_KEY
     );
 
+
+  /* =========================================================
+     PAGE ELEMENTS
+  ========================================================= */
 
   const membersList =
     document.getElementById(
@@ -293,6 +301,10 @@
   let allMembers = [];
 
 
+  /* =========================================================
+     CHECK LOGIN
+  ========================================================= */
+
   async function checkUser() {
 
     const {
@@ -320,6 +332,10 @@
   }
 
 
+  /* =========================================================
+     SHOW VALUE
+  ========================================================= */
+
   function showValue(value) {
 
     if (
@@ -337,6 +353,10 @@
 
   }
 
+
+  /* =========================================================
+     FORMAT DATE
+  ========================================================= */
 
   function formatDate(date) {
 
@@ -370,6 +390,10 @@
 
   }
 
+
+  /* =========================================================
+     DISPLAY MEMBERS
+  ========================================================= */
 
   function displayMembers(members) {
 
@@ -544,6 +568,10 @@
   }
 
 
+  /* =========================================================
+     SEARCH
+  ========================================================= */
+
   function filterMembers() {
 
     const search =
@@ -598,6 +626,10 @@
 
   }
 
+
+  /* =========================================================
+     LOAD MEMBERS
+  ========================================================= */
 
   async function loadMembers() {
 
@@ -684,10 +716,9 @@
   }
 
 
-  /*
-   * Convert online image
-   * into Data URL for PDF.
-   */
+  /* =========================================================
+     IMAGE → DATA URL
+  ========================================================= */
 
   async function imageToDataURL(
     url
@@ -761,15 +792,169 @@
   }
 
 
-  /*
-   * Add one member profile
-   * to the PDF.
-   */
+  /* =========================================================
+     GET IMAGE FORMAT
+  ========================================================= */
+
+  function getImageFormat(
+    dataURL
+  ) {
+
+    if (!dataURL) {
+
+      return "JPEG";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/png"
+      )
+    ) {
+
+      return "PNG";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/webp"
+      )
+    ) {
+
+      return "WEBP";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/gif"
+      )
+    ) {
+
+      return "GIF";
+
+    }
+
+
+    return "JPEG";
+
+  }
+
+
+  /* =========================================================
+     ADD PAGE FOOTER
+  ========================================================= */
+
+  function addFooter(
+    pdf,
+    pageNumber,
+    totalPages
+  ) {
+
+    const pageWidth =
+      pdf.internal.pageSize.getWidth();
+
+    const pageHeight =
+      pdf.internal.pageSize.getHeight();
+
+    const margin = 18;
+
+
+    pdf.setDrawColor(
+      210,
+      210,
+      210
+    );
+
+
+    pdf.line(
+      margin,
+      pageHeight - 19,
+      pageWidth - margin,
+      pageHeight - 19
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(7.5);
+
+
+    pdf.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    pdf.text(
+      "COC Members - Church Of Christ Sri Lanka",
+      margin,
+      pageHeight - 12
+    );
+
+
+    pdf.text(
+      "Page " +
+      pageNumber +
+      " of " +
+      totalPages,
+      pageWidth - margin,
+      pageHeight - 12,
+      {
+        align: "right"
+      }
+    );
+
+
+    const today =
+      new Date();
+
+
+    const generatedDate =
+      String(
+        today.getDate()
+      )
+      .padStart(2, "0") +
+      "/" +
+      String(
+        today.getMonth() + 1
+      )
+      .padStart(2, "0") +
+      "/" +
+      today.getFullYear();
+
+
+    pdf.text(
+      "Generated: " +
+      generatedDate,
+      pageWidth / 2,
+      pageHeight - 12,
+      {
+        align: "center"
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     ADD ONE MEMBER TO PDF
+  ========================================================= */
 
   async function addMemberToPDF(
     pdf,
     member,
-    profileNumber
+    profileNumber,
+    totalProfiles
   ) {
 
     const pageWidth =
@@ -783,9 +968,9 @@
     const margin = 18;
 
 
-    /*
-     * HEADER
-     */
+    /* -------------------------------------------------------
+       HEADER
+    ------------------------------------------------------- */
 
     pdf.setFillColor(
       23,
@@ -798,7 +983,7 @@
       0,
       0,
       pageWidth,
-      35,
+      37,
       "F"
     );
 
@@ -835,7 +1020,7 @@
     );
 
 
-    pdf.setFontSize(10);
+    pdf.setFontSize(9.5);
 
 
     pdf.text(
@@ -858,17 +1043,23 @@
     );
 
 
+    /* -------------------------------------------------------
+       PROFILE NUMBER
+    ------------------------------------------------------- */
+
     let currentY = 45;
 
-
-    /*
-     * PROFILE NUMBER
-     */
 
     pdf.setTextColor(
       100,
       100,
       100
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
     );
 
 
@@ -886,12 +1077,12 @@
     );
 
 
-    currentY += 6;
+    currentY += 7;
 
 
-    /*
-     * PHOTO
-     */
+    /* -------------------------------------------------------
+       PHOTO
+    ------------------------------------------------------- */
 
     if (
       member.photo_url
@@ -907,21 +1098,28 @@
 
         try {
 
+          const imageFormat =
+            getImageFormat(
+              photoData
+            );
+
+
           pdf.addImage(
             photoData,
-            "JPEG",
-            pageWidth / 2 - 22,
+            imageFormat,
+            pageWidth / 2 - 23,
             currentY,
-            44,
-            44
+            46,
+            46
           );
 
 
-          currentY += 51;
+          currentY += 53;
 
         } catch (error) {
 
           console.error(
+            "PDF image error:",
             error
           );
 
@@ -932,9 +1130,9 @@
     }
 
 
-    /*
-     * MEMBER NAME
-     */
+    /* -------------------------------------------------------
+       NAME
+    ------------------------------------------------------- */
 
     pdf.setTextColor(
       23,
@@ -952,10 +1150,21 @@
     pdf.setFontSize(17);
 
 
-    pdf.text(
+    const memberName =
       showValue(
         member.full_name
-      ),
+      );
+
+
+    const nameLines =
+      pdf.splitTextToSize(
+        memberName,
+        pageWidth - margin * 2
+      );
+
+
+    pdf.text(
+      nameLines,
       pageWidth / 2,
       currentY,
       {
@@ -964,8 +1173,13 @@
     );
 
 
-    currentY += 7;
+    currentY +=
+      nameLines.length * 6 + 2;
 
+
+    /* -------------------------------------------------------
+       MEMBER ID + TYPE
+    ------------------------------------------------------- */
 
     pdf.setFont(
       "helvetica",
@@ -976,22 +1190,18 @@
     pdf.setFontSize(10);
 
 
-    pdf.text(
-      showValue(
-        member.member_id
-      ),
-      pageWidth / 2,
-      currentY,
-      {
-        align: "center"
-      }
+    pdf.setTextColor(
+      70,
+      70,
+      70
     );
 
 
-    currentY += 6;
-
-
     pdf.text(
+      showValue(
+        member.member_id
+      ) +
+      "  •  " +
       showValue(
         member.member_type
       ),
@@ -1006,9 +1216,9 @@
     currentY += 11;
 
 
-    /*
-     * INFORMATION HEADER
-     */
+    /* -------------------------------------------------------
+       INFORMATION HEADER
+    ------------------------------------------------------- */
 
     pdf.setFillColor(
       23,
@@ -1017,11 +1227,13 @@
     );
 
 
-    pdf.rect(
+    pdf.roundedRect(
       margin,
       currentY,
       pageWidth - margin * 2,
       9,
+      2,
+      2,
       "F"
     );
 
@@ -1049,12 +1261,12 @@
     );
 
 
-    currentY += 14;
+    currentY += 13;
 
 
-    /*
-     * DETAILS
-     */
+    /* -------------------------------------------------------
+       MEMBER DETAILS
+    ------------------------------------------------------- */
 
     const details = [
 
@@ -1121,8 +1333,12 @@
           item[1];
 
 
+        const labelX =
+          margin + 5;
+
+
         const valueX =
-          margin + 50;
+          margin + 53;
 
 
         const maxWidth =
@@ -1142,13 +1358,11 @@
         const rowHeight =
           Math.max(
             11,
-            lines.length * 5 + 6
+            lines.length * 4.8 + 6
           );
 
 
-        /*
-         * Background
-         */
+        /* Row background */
 
         pdf.setFillColor(
           248,
@@ -1168,9 +1382,7 @@
         );
 
 
-        /*
-         * Label
-         */
+        /* Label */
 
         pdf.setFont(
           "helvetica",
@@ -1190,14 +1402,12 @@
 
         pdf.text(
           label,
-          margin + 4,
+          labelX,
           currentY + 7
         );
 
 
-        /*
-         * Value
-         */
+        /* Value */
 
         pdf.setFont(
           "helvetica",
@@ -1226,9 +1436,9 @@
     );
 
 
-    /*
-     * NOTES
-     */
+    /* -------------------------------------------------------
+       NOTES HEADER
+    ------------------------------------------------------- */
 
     currentY += 2;
 
@@ -1240,11 +1450,13 @@
     );
 
 
-    pdf.rect(
+    pdf.roundedRect(
       margin,
       currentY,
       pageWidth - margin * 2,
       9,
+      2,
+      2,
       "F"
     );
 
@@ -1272,7 +1484,69 @@
     );
 
 
-    currentY += 14;
+    currentY += 13;
+
+
+    /* -------------------------------------------------------
+       NOTES BOX
+    ------------------------------------------------------- */
+
+    const notes =
+      showValue(
+        member.additional_notes
+      );
+
+
+    const noteLines =
+      pdf.splitTextToSize(
+        notes,
+        pageWidth -
+        margin * 2 -
+        10
+      );
+
+
+    const noteHeight =
+      Math.max(
+        16,
+        noteLines.length * 4.8 + 10
+      );
+
+
+    /* Prevent notes from entering footer */
+
+    const availableHeight =
+      pageHeight -
+      currentY -
+      27;
+
+
+    const finalNoteHeight =
+      Math.min(
+        noteHeight,
+        Math.max(
+          16,
+          availableHeight
+        )
+      );
+
+
+    pdf.setFillColor(
+      250,
+      249,
+      246
+    );
+
+
+    pdf.roundedRect(
+      margin,
+      currentY,
+      pageWidth - margin * 2,
+      finalNoteHeight,
+      2,
+      2,
+      "F"
+    );
 
 
     pdf.setFont(
@@ -1291,83 +1565,92 @@
     );
 
 
-    const notes =
-      showValue(
-        member.additional_notes
+    let visibleNoteLines =
+      noteLines;
+
+
+    const maxNoteLines =
+      Math.max(
+        1,
+        Math.floor(
+          (finalNoteHeight - 7) /
+          4.8
+        )
       );
 
 
-    const noteLines =
-      pdf.splitTextToSize(
-        notes,
-        pageWidth -
-        margin * 2 -
-        10
-      );
+    if (
+      visibleNoteLines.length >
+      maxNoteLines
+    ) {
+
+      visibleNoteLines =
+        visibleNoteLines.slice(
+          0,
+          maxNoteLines
+        );
+
+
+      if (
+        visibleNoteLines.length > 0
+      ) {
+
+        let lastLine =
+          visibleNoteLines[
+            visibleNoteLines.length - 1
+          ];
+
+
+        if (
+          lastLine.length > 3
+        ) {
+
+          lastLine =
+            lastLine.substring(
+              0,
+              Math.max(
+                1,
+                lastLine.length - 3
+              )
+            ) +
+            "...";
+
+
+          visibleNoteLines[
+            visibleNoteLines.length - 1
+          ] =
+            lastLine;
+
+        }
+
+      }
+
+    }
 
 
     pdf.text(
-      noteLines,
+      visibleNoteLines,
       margin + 5,
-      currentY + 5
+      currentY + 7
     );
 
 
-    /*
-     * FOOTER
-     */
+    /* -------------------------------------------------------
+       FOOTER
+    ------------------------------------------------------- */
 
-    pdf.setDrawColor(
-      210,
-      210,
-      210
-    );
-
-
-    pdf.line(
-      margin,
-      pageHeight - 20,
-      pageWidth - margin,
-      pageHeight - 20
-    );
-
-
-    pdf.setFontSize(8);
-
-
-    pdf.setTextColor(
-      100,
-      100,
-      100
-    );
-
-
-    pdf.text(
-      "COC Members - Church Of Christ Sri Lanka",
-      pageWidth / 2,
-      pageHeight - 14,
-      {
-        align: "center"
-      }
-    );
-
-
-    pdf.text(
-      "Member Profile " +
+    addFooter(
+      pdf,
       profileNumber,
-      pageWidth / 2,
-      pageHeight - 9,
-      {
-        align: "center"
-      }
+      totalProfiles
     );
 
   }
 
 
-  /*
-   * DOWNLOAD ALL MEMBERS PDF
-   */
+  /* =========================================================
+     DOWNLOAD ALL MEMBERS PDF
+  ========================================================= */
 
   async function downloadAllMembersPDF() {
 
@@ -1407,6 +1690,15 @@
       window.jspdf;
 
 
+      if (!jsPDF) {
+
+        throw new Error(
+          "PDF library could not be loaded."
+        );
+
+      }
+
+
       const pdf =
         new jsPDF({
           orientation: "portrait",
@@ -1415,9 +1707,13 @@
         });
 
 
+      const totalProfiles =
+        allMembers.length;
+
+
       for (
         let i = 0;
-        i < allMembers.length;
+        i < totalProfiles;
         i++
       ) {
 
@@ -1428,10 +1724,21 @@
         }
 
 
+        errorBox.innerHTML =
+          '<div class="success">' +
+          'Creating PDF: Member ' +
+          (i + 1) +
+          ' of ' +
+          totalProfiles +
+          '...' +
+          '</div>';
+
+
         await addMemberToPDF(
           pdf,
           allMembers[i],
-          i + 1
+          i + 1,
+          totalProfiles
         );
 
       }
@@ -1475,6 +1782,10 @@
   }
 
 
+  /* =========================================================
+     EVENTS
+  ========================================================= */
+
   searchInput.addEventListener(
     "input",
     filterMembers
@@ -1486,6 +1797,10 @@
     downloadAllMembersPDF
   );
 
+
+  /* =========================================================
+     START
+  ========================================================= */
 
   loadMembers();
 

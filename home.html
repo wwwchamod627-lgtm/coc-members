@@ -29,10 +29,6 @@
       text-align: center;
     }
 
-    /* =========================
-       LOGO
-    ========================= */
-
     .logo {
       min-height: 110px;
       margin-bottom: 8px;
@@ -136,9 +132,7 @@
 
 <body>
 
-  <!-- ==========================================
-       HEADER
-  =========================================== -->
+  <!-- HEADER -->
 
   <div class="header">
 
@@ -168,9 +162,7 @@
   </div>
 
 
-  <!-- ==========================================
-       MAIN
-  =========================================== -->
+  <!-- MAIN -->
 
   <div class="container">
 
@@ -194,9 +186,7 @@
     </div>
 
 
-    <!-- ========================================
-         MENU
-    ========================================= -->
+    <!-- MENU -->
 
     <div class="menu">
 
@@ -224,9 +214,7 @@
     </div>
 
 
-    <!-- ========================================
-         LOGOUT
-    ========================================= -->
+    <!-- LOGOUT -->
 
     <button
       class="logout"
@@ -261,8 +249,7 @@
 
 
   /* =========================================================
-     DEFAULT VALUES
-     These are only used if database settings cannot be loaded.
+     DEFAULT SETTINGS
   ========================================================= */
 
   const DEFAULT_SETTINGS = {
@@ -306,45 +293,61 @@
 
   async function checkLogin() {
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient.auth.getSession();
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient.auth.getSession();
 
 
-    if (error) {
+      if (error) {
+
+        console.error(
+          "Session error:",
+          error
+        );
+
+        window.location.href =
+          "index.html";
+
+        return;
+
+      }
+
+
+      if (!data.session) {
+
+        window.location.href =
+          "index.html";
+
+        return;
+
+      }
+
+
+      document.getElementById(
+        "userEmail"
+      ).textContent =
+        data.session.user.email;
+
+
+      await loadSettings();
+
+    }
+
+    catch (error) {
 
       console.error(
-        "Session error:",
+        "Login check error:",
         error
       );
 
       window.location.href =
         "index.html";
 
-      return;
-
     }
-
-
-    if (!data.session) {
-
-      window.location.href =
-        "index.html";
-
-      return;
-
-    }
-
-
-    document.getElementById(
-      "userEmail"
-    ).textContent =
-      data.session.user.email;
-
-
-    await loadSettings();
 
   }
 
@@ -352,10 +355,11 @@
   /* =========================================================
      LOAD SETTINGS
      
-     Priority:
-     1. app_config
-     2. app_settings fallback
-     3. Default values
+     MAIN SOURCE:
+     app_config
+
+     FALLBACK:
+     default settings
   ========================================================= */
 
   async function loadSettings() {
@@ -367,93 +371,6 @@
 
     /* =====================================================
        STEP 1
-       LOAD OLD APP SETTINGS AS FALLBACK
-    ===================================================== */
-
-    try {
-
-      const {
-        data,
-        error
-      } =
-        await supabaseClient
-          .from("app_settings")
-          .select(
-            "app_name, church_name, subtitle, welcome_text, logo_url, register_button_text, members_button_text, search_button_text"
-          )
-          .limit(1)
-          .maybeSingle();
-
-
-      if (!error && data) {
-
-        if (data.app_name) {
-
-          finalSettings.app_name =
-            data.app_name;
-
-        }
-
-        if (data.church_name) {
-
-          finalSettings.church_name =
-            data.church_name;
-
-        }
-
-        if (data.subtitle) {
-
-          finalSettings.subtitle =
-            data.subtitle;
-
-        }
-
-        if (data.welcome_text) {
-
-          finalSettings.welcome_text =
-            data.welcome_text;
-
-        }
-
-        if (data.register_button_text) {
-
-          finalSettings.register_button_text =
-            "➕ " + data.register_button_text;
-
-        }
-
-        if (data.members_button_text) {
-
-          finalSettings.members_button_text =
-            "👥 " + data.members_button_text;
-
-        }
-
-        if (data.search_button_text) {
-
-          finalSettings.search_button_text =
-            "🔍 " + data.search_button_text;
-
-        }
-
-        loadLogo(
-          data.logo_url
-        );
-
-      }
-
-    } catch (error) {
-
-      console.error(
-        "app_settings fallback error:",
-        error
-      );
-
-    }
-
-
-    /* =====================================================
-       STEP 2
        LOAD APP CONFIG
     ===================================================== */
 
@@ -463,17 +380,17 @@
         data,
         error
       } =
-      await supabaseClient
-        .from("app_config")
-        .select(
-          "setting_key, setting_value, setting_type, is_active"
-        )
-        .order(
-          "id",
-          {
-            ascending: true
-          }
-        );
+        await supabaseClient
+          .from("app_config")
+          .select(
+            "setting_key, setting_value, setting_type, is_active"
+          )
+          .order(
+            "id",
+            {
+              ascending: true
+            }
+          );
 
 
       if (error) {
@@ -483,14 +400,29 @@
           error
         );
 
+        showMessage(
+          "App settings could not be loaded.",
+          "error"
+        );
+
       }
-      else if (data) {
+
+
+      if (data && data.length > 0) {
+
+        console.log(
+          "App Config Loaded:",
+          data
+        );
+
 
         data.forEach(
           function(item) {
 
+            /* Ignore inactive settings */
+
             if (
-              !item.is_active
+              item.is_active !== true
             ) {
 
               return;
@@ -501,10 +433,23 @@
             const key =
               item.setting_key;
 
-
             const value =
               item.setting_value;
 
+
+            /* Ignore empty values */
+
+            if (
+              value === null ||
+              value === undefined
+            ) {
+
+              return;
+
+            }
+
+
+            /* BOOLEAN SETTINGS */
 
             if (
               key === "show_register_button" ||
@@ -520,74 +465,87 @@
             }
 
 
+            /* TEXT SETTINGS */
+
+            const textValue =
+              String(value).trim();
+
+
             if (
-              value !== null &&
-              value !== undefined &&
-              String(value).trim() !== ""
+              textValue === ""
             ) {
 
-              if (
-                key === "app_name"
-              ) {
+              return;
 
-                finalSettings.app_name =
-                  value;
+            }
 
-              }
 
-              else if (
-                key === "church_name"
-              ) {
+            if (
+              key === "app_name"
+            ) {
 
-                finalSettings.church_name =
-                  value;
+              finalSettings.app_name =
+                textValue;
 
-              }
+            }
 
-              else if (
-                key === "subtitle"
-              ) {
 
-                finalSettings.subtitle =
-                  value;
+            else if (
+              key === "church_name"
+            ) {
 
-              }
+              finalSettings.church_name =
+                textValue;
 
-              else if (
-                key === "welcome_text"
-              ) {
+            }
 
-                finalSettings.welcome_text =
-                  value;
 
-              }
+            else if (
+              key === "subtitle"
+            ) {
 
-              else if (
-                key === "register_button_text"
-              ) {
+              finalSettings.subtitle =
+                textValue;
 
-                finalSettings.register_button_text =
-                  "➕ " + value;
+            }
 
-              }
 
-              else if (
-                key === "members_button_text"
-              ) {
+            else if (
+              key === "welcome_text"
+            ) {
 
-                finalSettings.members_button_text =
-                  "👥 " + value;
+              finalSettings.welcome_text =
+                textValue;
 
-              }
+            }
 
-              else if (
-                key === "search_button_text"
-              ) {
 
-                finalSettings.search_button_text =
-                  "🔍 " + value;
+            else if (
+              key === "register_button_text"
+            ) {
 
-              }
+              finalSettings.register_button_text =
+                "➕ " + textValue;
+
+            }
+
+
+            else if (
+              key === "members_button_text"
+            ) {
+
+              finalSettings.members_button_text =
+                "👥 " + textValue;
+
+            }
+
+
+            else if (
+              key === "search_button_text"
+            ) {
+
+              finalSettings.search_button_text =
+                "🔍 " + textValue;
 
             }
 
@@ -596,7 +554,9 @@
 
       }
 
-    } catch (error) {
+    }
+
+    catch (error) {
 
       console.error(
         "app_config error:",
@@ -607,9 +567,69 @@
 
 
     /* =====================================================
-       STEP 3
-       APPLY SETTINGS TO HOME PAGE
+       STEP 2
+       LOAD HOME LOGO
+       
+       Logo remains in app_settings.
     ===================================================== */
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("app_settings")
+          .select(
+            "logo_url"
+          )
+          .limit(1)
+          .maybeSingle();
+
+
+      if (
+        !error &&
+        data
+      ) {
+
+        loadLogo(
+          data.logo_url
+        );
+
+      }
+
+      else if (error) {
+
+        console.error(
+          "Logo settings error:",
+          error
+        );
+
+      }
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Logo loading error:",
+        error
+      );
+
+    }
+
+
+    /* =====================================================
+       STEP 3
+       APPLY SETTINGS
+    ===================================================== */
+
+    console.log(
+      "Final Home Settings:",
+      finalSettings
+    );
+
 
     applySettings(
       finalSettings
@@ -625,9 +645,7 @@
   function applySettings(settings) {
 
 
-    /* =====================================================
-       APP NAME
-    ===================================================== */
+    /* APP NAME */
 
     document.getElementById(
       "appName"
@@ -638,9 +656,7 @@
       settings.app_name;
 
 
-    /* =====================================================
-       CHURCH NAME
-    ===================================================== */
+    /* CHURCH NAME */
 
     document.getElementById(
       "churchName"
@@ -648,9 +664,7 @@
       settings.church_name;
 
 
-    /* =====================================================
-       SUBTITLE
-    ===================================================== */
+    /* SUBTITLE */
 
     document.getElementById(
       "subtitle"
@@ -658,9 +672,7 @@
       settings.subtitle;
 
 
-    /* =====================================================
-       WELCOME TEXT
-    ===================================================== */
+    /* WELCOME TEXT */
 
     document.getElementById(
       "welcomeText"
@@ -668,9 +680,7 @@
       settings.welcome_text;
 
 
-    /* =====================================================
-       REGISTER BUTTON
-    ===================================================== */
+    /* REGISTER BUTTON */
 
     const registerButton =
       document.getElementById(
@@ -688,9 +698,7 @@
         : "none";
 
 
-    /* =====================================================
-       MEMBERS BUTTON
-    ===================================================== */
+    /* MEMBERS BUTTON */
 
     const membersButton =
       document.getElementById(
@@ -708,9 +716,7 @@
         : "none";
 
 
-    /* =====================================================
-       SEARCH BUTTON
-    ===================================================== */
+    /* SEARCH BUTTON */
 
     const searchButton =
       document.getElementById(
@@ -741,18 +747,17 @@
         "logoImage"
       );
 
-
     const defaultLogo =
       document.getElementById(
         "defaultLogo"
       );
 
 
-    /* No URL */
+    /* No logo */
 
     if (
       !url ||
-      url.trim() === ""
+      String(url).trim() === ""
     ) {
 
       logoImage.style.display =
@@ -766,13 +771,13 @@
     }
 
 
-    /* Prepare image */
+    /* Image loaded */
 
     logoImage.onload =
       function() {
 
         console.log(
-          "Logo loaded successfully."
+          "Home logo loaded successfully."
         );
 
         logoImage.style.display =
@@ -784,11 +789,13 @@
       };
 
 
+    /* Image failed */
+
     logoImage.onerror =
       function() {
 
         console.error(
-          "Logo could not be loaded:",
+          "Home logo could not be loaded:",
           url
         );
 
@@ -801,7 +808,7 @@
       };
 
 
-    /* Add cache-busting */
+    /* Cache bust */
 
     const separator =
       url.includes("?")
@@ -814,6 +821,44 @@
       separator +
       "v=" +
       Date.now();
+
+  }
+
+
+  /* =========================================================
+     SHOW MESSAGE
+  ========================================================= */
+
+  function showMessage(
+    text,
+    type
+  ) {
+
+    const message =
+      document.getElementById(
+        "message"
+      );
+
+
+    message.textContent =
+      text;
+
+
+    if (
+      type === "error"
+    ) {
+
+      message.style.color =
+        "#b00020";
+
+    }
+
+    else {
+
+      message.style.color =
+        "#183b2b";
+
+    }
 
   }
 
@@ -852,7 +897,21 @@
 
   async function logout() {
 
-    await supabaseClient.auth.signOut();
+    try {
+
+      await supabaseClient.auth.signOut();
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Logout error:",
+        error
+      );
+
+    }
+
 
     window.location.href =
       "index.html";
@@ -861,7 +920,7 @@
 
 
   /* =========================================================
-     START
+     START APPLICATION
   ========================================================= */
 
   checkLogin();

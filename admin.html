@@ -166,6 +166,7 @@
       font-size: 12px;
       color: #777;
       margin-top: 6px;
+      line-height: 1.5;
     }
 
     /* =========================
@@ -238,18 +239,6 @@
       display: none;
     }
 
-    @media (max-width: 600px) {
-
-      .container {
-        padding: 10px;
-      }
-
-      .card {
-        padding: 18px;
-      }
-
-    }
-
   </style>
 </head>
 
@@ -304,12 +293,14 @@
         style="display:none;"
       >
 
+        <!-- =========================
+             APPLICATION INFORMATION
+        ========================= -->
+
         <div class="section-title">
           🏛️ Application Information
         </div>
 
-
-        <!-- APP NAME -->
 
         <div class="form-group">
 
@@ -326,8 +317,6 @@
         </div>
 
 
-        <!-- CHURCH NAME -->
-
         <div class="form-group">
 
           <label for="churchName">
@@ -342,8 +331,6 @@
 
         </div>
 
-
-        <!-- SUBTITLE -->
 
         <div class="form-group">
 
@@ -360,8 +347,6 @@
         </div>
 
 
-        <!-- WELCOME TEXT -->
-
         <div class="form-group">
 
           <label for="welcomeText">
@@ -376,17 +361,19 @@
         </div>
 
 
+        <!-- =========================
+             HOME SCREEN SETTINGS
+        ========================= -->
+
         <div class="section-title">
           🎨 Home Screen Settings
         </div>
 
 
-        <!-- LOGO -->
-
         <div class="form-group">
 
           <label>
-            🖼️ App Logo
+            🖼️ Home Screen Logo
           </label>
 
           <div class="logo-box">
@@ -394,7 +381,7 @@
             <img
               id="logoPreview"
               class="logo-preview"
-              alt="Logo Preview"
+              alt="Home Logo Preview"
             >
 
             <div
@@ -443,13 +430,90 @@
           </div>
 
           <div class="hint">
-            Select an image from your phone Gallery. The logo will be uploaded automatically when you save settings.
+            This logo appears on the Home Screen. Select an image from your phone Gallery.
           </div>
 
         </div>
 
 
-        <!-- REGISTER BUTTON -->
+        <!-- =========================
+             LOGIN SCREEN LOGO
+        ========================= -->
+
+        <div class="section-title">
+          🔐 Login Screen Settings
+        </div>
+
+
+        <div class="form-group">
+
+          <label>
+            🖼️ Login Screen Logo
+          </label>
+
+          <div class="logo-box">
+
+            <img
+              id="loginLogoPreview"
+              class="logo-preview"
+              alt="Login Logo Preview"
+            >
+
+            <div
+              id="noLoginLogo"
+              class="no-logo"
+            >
+              No login logo selected
+            </div>
+
+
+            <button
+              type="button"
+              class="logo-btn"
+              onclick="openLoginLogoPicker()"
+            >
+              🖼️ Choose Login Logo from Gallery
+            </button>
+
+
+            <input
+              type="file"
+              id="loginLogoFile"
+              class="logo-file"
+              accept="image/*"
+            >
+
+
+            <br>
+
+
+            <button
+              type="button"
+              id="removeLoginLogoButton"
+              class="remove-logo-btn"
+              onclick="removeLoginLogo()"
+            >
+              🗑️ Remove Login Logo
+            </button>
+
+
+            <div
+              id="loginUploadStatus"
+              class="upload-status"
+            ></div>
+
+          </div>
+
+          <div class="hint">
+            This logo appears on the Login Screen above the Email and Password fields.
+          </div>
+
+        </div>
+
+
+        <!-- =========================
+             BUTTON TEXT
+        ========================= -->
 
         <div class="form-group">
 
@@ -466,8 +530,6 @@
         </div>
 
 
-        <!-- MEMBERS BUTTON -->
-
         <div class="form-group">
 
           <label for="membersButtonText">
@@ -482,8 +544,6 @@
 
         </div>
 
-
-        <!-- SEARCH BUTTON -->
 
         <div class="form-group">
 
@@ -542,65 +602,71 @@
   const loading =
     document.getElementById("loading");
 
-
   const settingsForm =
     document.getElementById("settingsForm");
-
 
   const message =
     document.getElementById("message");
 
-
   const saveButton =
     document.getElementById("saveButton");
-
 
   const appName =
     document.getElementById("appName");
 
-
   const churchName =
     document.getElementById("churchName");
-
 
   const subtitle =
     document.getElementById("subtitle");
 
-
   const welcomeText =
     document.getElementById("welcomeText");
-
 
   const registerButtonText =
     document.getElementById("registerButtonText");
 
-
   const membersButtonText =
     document.getElementById("membersButtonText");
-
 
   const searchButtonText =
     document.getElementById("searchButtonText");
 
 
+  /* HOME LOGO */
+
   const logoFile =
     document.getElementById("logoFile");
-
 
   const logoPreview =
     document.getElementById("logoPreview");
 
-
   const noLogo =
     document.getElementById("noLogo");
-
 
   const removeLogoButton =
     document.getElementById("removeLogoButton");
 
-
   const uploadStatus =
     document.getElementById("uploadStatus");
+
+
+  /* LOGIN LOGO */
+
+  const loginLogoFile =
+    document.getElementById("loginLogoFile");
+
+  const loginLogoPreview =
+    document.getElementById("loginLogoPreview");
+
+  const noLoginLogo =
+    document.getElementById("noLoginLogo");
+
+  const removeLoginLogoButton =
+    document.getElementById("removeLoginLogoButton");
+
+  const loginUploadStatus =
+    document.getElementById("loginUploadStatus");
 
 
   /* =========================================================
@@ -614,13 +680,21 @@
   let removeLogoRequested = false;
 
 
+  let currentLoginLogoUrl = "";
+
+  let selectedLoginLogoFile = null;
+
+  let removeLoginLogoRequested = false;
+
+
   /* =========================================================
      MESSAGE
   ========================================================= */
 
   function showMessage(text, type) {
 
-    message.textContent = text;
+    message.textContent =
+      text;
 
     message.className =
       "message " + type;
@@ -632,7 +706,7 @@
 
 
   /* =========================================================
-     OPEN GALLERY
+     OPEN HOME LOGO GALLERY
   ========================================================= */
 
   function openLogoPicker() {
@@ -643,7 +717,7 @@
 
 
   /* =========================================================
-     LOGO SELECTED
+     HOME LOGO SELECTED
   ========================================================= */
 
   logoFile.addEventListener(
@@ -659,8 +733,6 @@
       }
 
 
-      /* Validate image */
-
       if (!file.type.startsWith("image/")) {
 
         showMessage(
@@ -668,14 +740,13 @@
           "error"
         );
 
-        logoFile.value = "";
+        logoFile.value =
+          "";
 
         return;
 
       }
 
-
-      /* Maximum 5MB */
 
       if (file.size > 5 * 1024 * 1024) {
 
@@ -684,7 +755,8 @@
           "error"
         );
 
-        logoFile.value = "";
+        logoFile.value =
+          "";
 
         return;
 
@@ -697,8 +769,6 @@
       removeLogoRequested =
         false;
 
-
-      /* Preview */
 
       const reader =
         new FileReader();
@@ -735,7 +805,106 @@
 
 
   /* =========================================================
-     REMOVE LOGO
+     OPEN LOGIN LOGO GALLERY
+  ========================================================= */
+
+  function openLoginLogoPicker() {
+
+    loginLogoFile.click();
+
+  }
+
+
+  /* =========================================================
+     LOGIN LOGO SELECTED
+  ========================================================= */
+
+  loginLogoFile.addEventListener(
+    "change",
+    function(event) {
+
+      const file =
+        event.target.files[0];
+
+
+      if (!file) {
+        return;
+      }
+
+
+      if (!file.type.startsWith("image/")) {
+
+        showMessage(
+          "Please select an image file.",
+          "error"
+        );
+
+        loginLogoFile.value =
+          "";
+
+        return;
+
+      }
+
+
+      if (file.size > 5 * 1024 * 1024) {
+
+        showMessage(
+          "Login logo image must be less than 5MB.",
+          "error"
+        );
+
+        loginLogoFile.value =
+          "";
+
+        return;
+
+      }
+
+
+      selectedLoginLogoFile =
+        file;
+
+      removeLoginLogoRequested =
+        false;
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload =
+        function(e) {
+
+          loginLogoPreview.src =
+            e.target.result;
+
+          loginLogoPreview.style.display =
+            "block";
+
+          noLoginLogo.style.display =
+            "none";
+
+          removeLoginLogoButton.style.display =
+            "inline-block";
+
+          loginUploadStatus.style.display =
+            "block";
+
+          loginUploadStatus.textContent =
+            "New login logo selected. Click Save Settings to upload.";
+
+        };
+
+
+      reader.readAsDataURL(file);
+
+    }
+  );
+
+
+  /* =========================================================
+     REMOVE HOME LOGO
   ========================================================= */
 
   function removeLogo() {
@@ -777,7 +946,49 @@
 
 
   /* =========================================================
-     SHOW CURRENT LOGO
+     REMOVE LOGIN LOGO
+  ========================================================= */
+
+  function removeLoginLogo() {
+
+    selectedLoginLogoFile =
+      null;
+
+    removeLoginLogoRequested =
+      true;
+
+    currentLoginLogoUrl =
+      "";
+
+    loginLogoFile.value =
+      "";
+
+    loginLogoPreview.src =
+      "";
+
+    loginLogoPreview.style.display =
+      "none";
+
+    noLoginLogo.style.display =
+      "block";
+
+    noLoginLogo.textContent =
+      "Login logo will be removed when you save.";
+
+    removeLoginLogoButton.style.display =
+      "none";
+
+    loginUploadStatus.style.display =
+      "block";
+
+    loginUploadStatus.textContent =
+      "Login logo removal is pending. Click Save Settings.";
+
+  }
+
+
+  /* =========================================================
+     SHOW CURRENT HOME LOGO
   ========================================================= */
 
   function showCurrentLogo(url) {
@@ -823,6 +1034,60 @@
         "none";
 
       uploadStatus.style.display =
+        "none";
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SHOW CURRENT LOGIN LOGO
+  ========================================================= */
+
+  function showCurrentLoginLogo(url) {
+
+    if (url) {
+
+      currentLoginLogoUrl =
+        url;
+
+      loginLogoPreview.src =
+        url;
+
+      loginLogoPreview.style.display =
+        "block";
+
+      noLoginLogo.style.display =
+        "none";
+
+      removeLoginLogoButton.style.display =
+        "inline-block";
+
+      loginUploadStatus.style.display =
+        "none";
+
+    } else {
+
+      currentLoginLogoUrl =
+        "";
+
+      loginLogoPreview.src =
+        "";
+
+      loginLogoPreview.style.display =
+        "none";
+
+      noLoginLogo.style.display =
+        "block";
+
+      noLoginLogo.textContent =
+        "No login logo selected";
+
+      removeLoginLogoButton.style.display =
+        "none";
+
+      loginUploadStatus.style.display =
         "none";
 
     }
@@ -964,8 +1229,17 @@
           data.search_button_text || "";
 
 
+        /* HOME LOGO */
+
         showCurrentLogo(
           data.logo_url || ""
+        );
+
+
+        /* LOGIN LOGO */
+
+        showCurrentLoginLogo(
+          data.login_logo_url || ""
         );
 
       }
@@ -973,7 +1247,6 @@
 
       loading.style.display =
         "none";
-
 
       settingsForm.style.display =
         "block";
@@ -1036,7 +1309,7 @@
 
 
   /* =========================================================
-     UPLOAD LOGO
+     UPLOAD HOME LOGO
   ========================================================= */
 
   async function uploadLogo(user) {
@@ -1065,7 +1338,7 @@
       "block";
 
     uploadStatus.textContent =
-      "⏳ Uploading logo...";
+      "⏳ Uploading Home Logo...";
 
 
     const {
@@ -1105,14 +1378,98 @@
     if (!data || !data.publicUrl) {
 
       throw new Error(
-        "Could not create logo URL."
+        "Could not create Home Logo URL."
       );
 
     }
 
 
     uploadStatus.textContent =
-      "Logo uploaded successfully.";
+      "Home Logo uploaded successfully.";
+
+    return data.publicUrl;
+
+  }
+
+
+  /* =========================================================
+     UPLOAD LOGIN LOGO
+  ========================================================= */
+
+  async function uploadLoginLogo(user) {
+
+    if (!selectedLoginLogoFile) {
+
+      return currentLoginLogoUrl;
+
+    }
+
+
+    const extension =
+      getFileExtension(
+        selectedLoginLogoFile
+      );
+
+
+    const filePath =
+      "login-logo-" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+
+    loginUploadStatus.style.display =
+      "block";
+
+    loginUploadStatus.textContent =
+      "⏳ Uploading Login Logo...";
+
+
+    const {
+      error: uploadError
+    } =
+      await supabaseClient.storage
+        .from("app-assets")
+        .upload(
+          filePath,
+          selectedLoginLogoFile,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType:
+              selectedLoginLogoFile.type
+          }
+        );
+
+
+    if (uploadError) {
+
+      throw uploadError;
+
+    }
+
+
+    const {
+      data
+    } =
+      supabaseClient.storage
+        .from("app-assets")
+        .getPublicUrl(
+          filePath
+        );
+
+
+    if (!data || !data.publicUrl) {
+
+      throw new Error(
+        "Could not create Login Logo URL."
+      );
+
+    }
+
+
+    loginUploadStatus.textContent =
+      "Login Logo uploaded successfully.";
 
     return data.publicUrl;
 
@@ -1157,7 +1514,9 @@
       } =
       await supabaseClient
         .from("app_settings")
-        .select("id, logo_url")
+        .select(
+          "id, logo_url, login_logo_url"
+        )
         .limit(1)
         .maybeSingle();
 
@@ -1169,11 +1528,23 @@
       }
 
 
+      /* HOME LOGO */
+
       let logoUrl =
-        existing?.logo_url || currentLogoUrl || "";
+        existing?.logo_url ||
+        currentLogoUrl ||
+        "";
 
 
-      /* Upload new logo */
+      /* LOGIN LOGO */
+
+      let loginLogoUrl =
+        existing?.login_logo_url ||
+        currentLoginLogoUrl ||
+        "";
+
+
+      /* Upload new Home Logo */
 
       if (selectedLogoFile) {
 
@@ -1183,11 +1554,31 @@
       }
 
 
-      /* Remove logo */
+      /* Remove Home Logo */
 
       if (removeLogoRequested) {
 
         logoUrl =
+          "";
+
+      }
+
+
+      /* Upload new Login Logo */
+
+      if (selectedLoginLogoFile) {
+
+        loginLogoUrl =
+          await uploadLoginLogo(user);
+
+      }
+
+
+      /* Remove Login Logo */
+
+      if (removeLoginLogoRequested) {
+
+        loginLogoUrl =
           "";
 
       }
@@ -1209,6 +1600,9 @@
 
         logo_url:
           logoUrl,
+
+        login_logo_url:
+          loginLogoUrl,
 
         register_button_text:
           registerButtonText.value.trim(),
@@ -1260,7 +1654,7 @@
       }
 
 
-      /* Reset temporary states */
+      /* Reset Home Logo State */
 
       currentLogoUrl =
         logoUrl;
@@ -1275,8 +1669,29 @@
         "";
 
 
+      /* Reset Login Logo State */
+
+      currentLoginLogoUrl =
+        loginLogoUrl;
+
+      selectedLoginLogoFile =
+        null;
+
+      removeLoginLogoRequested =
+        false;
+
+      loginLogoFile.value =
+        "";
+
+
+      /* Refresh previews */
+
       showCurrentLogo(
         logoUrl
+      );
+
+      showCurrentLoginLogo(
+        loginLogoUrl
       );
 
 

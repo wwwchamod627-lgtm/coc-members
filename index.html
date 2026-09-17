@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -33,9 +35,29 @@
       box-shadow: 0 8px 30px rgba(0,0,0,0.12);
     }
 
+    /* =========================
+       LOGIN LOGO
+    ========================= */
+
     .logo {
+      width: 120px;
+      height: 120px;
+      margin: 0 auto 15px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #defaultLogo {
       font-size: 55px;
-      margin-bottom: 10px;
+      display: block;
+    }
+
+    #loginLogoImage {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      display: none;
     }
 
     h1 {
@@ -65,6 +87,11 @@
       border: 1px solid #ccc;
       border-radius: 10px;
       font-size: 16px;
+      outline: none;
+    }
+
+    input:focus {
+      border-color: #183b2b;
     }
 
     button {
@@ -89,6 +116,7 @@
       font-size: 14px;
       min-height: 20px;
     }
+
   </style>
 </head>
 
@@ -96,16 +124,46 @@
 
   <div class="login-box">
 
-    <div class="logo">✔️</div>
+    <!-- LOGIN LOGO -->
 
-    <h1>COC Members</h1>
+    <div class="logo">
 
-    <div class="subtitle">
-      Church Of Christ Sri Lanka<br>
-      Members Registration
+      <span id="defaultLogo">
+        ✔️
+      </span>
+
+      <img
+        id="loginLogoImage"
+        alt="Login Logo"
+      >
+
     </div>
 
-    <label for="email">Email</label>
+
+    <h1 id="appName">
+      COC Members
+    </h1>
+
+
+    <div class="subtitle">
+
+      <span id="churchName">
+        Church Of Christ Sri Lanka
+      </span>
+
+      <br>
+
+      <span id="subtitleText">
+        Members Registration
+      </span>
+
+    </div>
+
+
+    <label for="email">
+      Email
+    </label>
+
     <input
       id="email"
       type="email"
@@ -113,7 +171,11 @@
       autocomplete="email"
     >
 
-    <label for="password">Password</label>
+
+    <label for="password">
+      Password
+    </label>
+
     <input
       id="password"
       type="password"
@@ -121,71 +183,331 @@
       autocomplete="current-password"
     >
 
-    <button id="loginBtn">LOGIN</button>
+
+    <button id="loginBtn">
+      LOGIN
+    </button>
+
 
     <div id="message"></div>
 
   </div>
 
-  <script>
-    const SUPABASE_URL = "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-    /*
-      IMPORTANT:
-      Replace ONLY the text below with your Supabase
-      Publishable key.
+<script>
 
-      Do NOT use the service_role / secret key.
-    */
-    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+  /* =========================================================
+     SUPABASE CONFIG
+  ========================================================= */
 
-    const supabaseClient = window.supabase.createClient(
+  const SUPABASE_URL =
+    "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+
+  const supabaseClient =
+    window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
     );
 
-    const loginBtn = document.getElementById("loginBtn");
-    const message = document.getElementById("message");
 
-    loginBtn.addEventListener("click", async () => {
+  /* =========================================================
+     ELEMENTS
+  ========================================================= */
 
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value;
+  const loginBtn =
+    document.getElementById("loginBtn");
 
-      message.textContent = "";
+  const message =
+    document.getElementById("message");
 
-      if (!email || !password) {
-        message.textContent = "Please enter your email and password.";
-        message.style.color = "#b00020";
-        return;
-      }
+  const loginLogoImage =
+    document.getElementById("loginLogoImage");
 
-      loginBtn.disabled = true;
-      loginBtn.textContent = "LOGGING IN...";
+  const defaultLogo =
+    document.getElementById("defaultLogo");
 
-      const { data, error } =
-        await supabaseClient.auth.signInWithPassword({
-          email: email,
-          password: password
-        });
+
+  /* =========================================================
+     LOAD LOGIN SETTINGS
+  ========================================================= */
+
+  async function loadLoginSettings() {
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+      await supabaseClient
+        .from("app_settings")
+        .select(
+          "app_name, church_name, subtitle, login_logo_url"
+        )
+        .limit(1)
+        .maybeSingle();
+
 
       if (error) {
-        message.textContent = error.message;
-        message.style.color = "#b00020";
 
-        loginBtn.disabled = false;
-        loginBtn.textContent = "LOGIN";
+        console.error(
+          "Failed to load login settings:",
+          error
+        );
+
+        return;
+
+      }
+
+
+      if (!data) {
         return;
       }
 
-      message.textContent = "Login successful!";
-      message.style.color = "#183b2b";
 
-      setTimeout(() => {
-        window.location.href = "home.html";
-      }, 500);
-    });
-  </script>
+      /* APP NAME */
+
+      if (data.app_name) {
+
+        document.getElementById(
+          "appName"
+        ).textContent =
+          data.app_name;
+
+        document.title =
+          data.app_name;
+
+      }
+
+
+      /* CHURCH NAME */
+
+      if (data.church_name) {
+
+        document.getElementById(
+          "churchName"
+        ).textContent =
+          data.church_name;
+
+      }
+
+
+      /* SUBTITLE */
+
+      if (data.subtitle) {
+
+        document.getElementById(
+          "subtitleText"
+        ).textContent =
+          data.subtitle;
+
+      }
+
+
+      /* LOGIN LOGO */
+
+      loadLoginLogo(
+        data.login_logo_url
+      );
+
+    } catch (error) {
+
+      console.error(
+        "Login settings error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LOAD LOGIN LOGO
+  ========================================================= */
+
+  function loadLoginLogo(url) {
+
+    if (
+      !url ||
+      url.trim() === ""
+    ) {
+
+      loginLogoImage.style.display =
+        "none";
+
+      defaultLogo.style.display =
+        "block";
+
+      return;
+
+    }
+
+
+    loginLogoImage.onload =
+      function() {
+
+        console.log(
+          "Login logo loaded successfully."
+        );
+
+        loginLogoImage.style.display =
+          "block";
+
+        defaultLogo.style.display =
+          "none";
+
+      };
+
+
+    loginLogoImage.onerror =
+      function() {
+
+        console.error(
+          "Login logo could not be loaded:",
+          url
+        );
+
+        loginLogoImage.style.display =
+          "none";
+
+        defaultLogo.style.display =
+          "block";
+
+      };
+
+
+    const separator =
+      url.includes("?")
+        ? "&"
+        : "?";
+
+
+    loginLogoImage.src =
+      url +
+      separator +
+      "v=" +
+      Date.now();
+
+  }
+
+
+  /* =========================================================
+     LOGIN
+  ========================================================= */
+
+  loginBtn.addEventListener(
+    "click",
+    async function() {
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+
+      const password =
+        document
+          .getElementById("password")
+          .value;
+
+
+      message.textContent =
+        "";
+
+
+      if (
+        !email ||
+        !password
+      ) {
+
+        message.textContent =
+          "Please enter your email and password.";
+
+        message.style.color =
+          "#b00020";
+
+        return;
+
+      }
+
+
+      loginBtn.disabled =
+        true;
+
+      loginBtn.textContent =
+        "LOGGING IN...";
+
+
+      const {
+        data,
+        error
+      } =
+      await supabaseClient.auth
+        .signInWithPassword({
+
+          email:
+            email,
+
+          password:
+            password
+
+        });
+
+
+      if (error) {
+
+        message.textContent =
+          error.message;
+
+        message.style.color =
+          "#b00020";
+
+        loginBtn.disabled =
+          false;
+
+        loginBtn.textContent =
+          "LOGIN";
+
+        return;
+
+      }
+
+
+      message.textContent =
+        "Login successful!";
+
+      message.style.color =
+        "#183b2b";
+
+
+      setTimeout(
+        function() {
+
+          window.location.href =
+            "home.html";
+
+        },
+        500
+      );
+
+    }
+  );
+
+
+  /* =========================================================
+     START
+  ========================================================= */
+
+  loadLoginSettings();
+
+</script>
 
 </body>
 </html>

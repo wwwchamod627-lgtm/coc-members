@@ -125,6 +125,9 @@
       text-align: center;
       margin-top: 15px;
       color: #b00020;
+      word-break: break-word;
+      font-size: 13px;
+      line-height: 1.5;
     }
 
   </style>
@@ -239,7 +242,7 @@
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
   const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_CNFFKEPixquJzd83jnyNEw_LAsIvU_c";
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
   const supabaseClient =
     window.supabase.createClient(
@@ -359,7 +362,7 @@
      app_config
 
      FALLBACK:
-     default settings
+     DEFAULT_SETTINGS
   ========================================================= */
 
   async function loadSettings() {
@@ -384,34 +387,38 @@
           .from("app_config")
           .select(
             "setting_key, setting_value, setting_type, is_active"
-          )
-          .order(
-            "id",
-            {
-              ascending: true
-            }
           );
 
 
       if (error) {
 
         console.error(
-          "Failed to load app_config:",
+          "APP_CONFIG ERROR:",
           error
         );
 
+
         showMessage(
-          "App settings could not be loaded.",
+          "APP_CONFIG ERROR: " +
+          error.message +
+          " | CODE: " +
+          (error.code || "N/A") +
+          " | DETAILS: " +
+          (error.details || "N/A"),
           "error"
         );
 
       }
 
 
-      if (data && data.length > 0) {
+      if (
+        !error &&
+        data &&
+        data.length > 0
+      ) {
 
         console.log(
-          "App Config Loaded:",
+          "APP_CONFIG LOADED:",
           data
         );
 
@@ -449,7 +456,9 @@
             }
 
 
-            /* BOOLEAN SETTINGS */
+            /* =============================================
+               BOOLEAN SETTINGS
+            ============================================= */
 
             if (
               key === "show_register_button" ||
@@ -465,7 +474,9 @@
             }
 
 
-            /* TEXT SETTINGS */
+            /* =============================================
+               TEXT SETTINGS
+            ============================================= */
 
             const textValue =
               String(value).trim();
@@ -559,8 +570,15 @@
     catch (error) {
 
       console.error(
-        "app_config error:",
+        "APP_CONFIG EXCEPTION:",
         error
+      );
+
+
+      showMessage(
+        "APP_CONFIG EXCEPTION: " +
+        error.message,
+        "error"
       );
 
     }
@@ -599,10 +617,11 @@
 
       }
 
-      else if (error) {
+
+      if (error) {
 
         console.error(
-          "Logo settings error:",
+          "LOGO SETTINGS ERROR:",
           error
         );
 
@@ -613,7 +632,7 @@
     catch (error) {
 
       console.error(
-        "Logo loading error:",
+        "LOGO LOADING EXCEPTION:",
         error
       );
 
@@ -626,7 +645,7 @@
     ===================================================== */
 
     console.log(
-      "Final Home Settings:",
+      "FINAL HOME SETTINGS:",
       finalSettings
     );
 
@@ -753,8 +772,6 @@
       );
 
 
-    /* No logo */
-
     if (
       !url ||
       String(url).trim() === ""
@@ -770,8 +787,6 @@
 
     }
 
-
-    /* Image loaded */
 
     logoImage.onload =
       function() {
@@ -789,8 +804,6 @@
       };
 
 
-    /* Image failed */
-
     logoImage.onerror =
       function() {
 
@@ -807,8 +820,6 @@
 
       };
 
-
-    /* Cache bust */
 
     const separator =
       url.includes("?")

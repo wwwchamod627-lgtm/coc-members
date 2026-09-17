@@ -582,6 +582,12 @@
     );
 
 
+  /* Selected photo file */
+
+  let selectedPhotoFile =
+    null;
+
+
   function openCamera() {
 
     cameraInput.click();
@@ -599,6 +605,10 @@
   function showPhoto(file) {
 
     if (!file) return;
+
+
+    selectedPhotoFile =
+      file;
 
 
     const reader =
@@ -822,8 +832,8 @@
 
 
     if (
-      year < 1000 ||
-      year > 9999
+      yearNumber < 1000 ||
+      yearNumber > 9999
     ) {
 
       throw new Error(
@@ -879,6 +889,168 @@
   }
 
 
+  /*
+    Upload Member Photo
+  */
+
+  async function uploadMemberPhoto(
+    user,
+    file
+  ) {
+
+    if (!file) {
+
+      return null;
+
+    }
+
+
+    /* Check image type */
+
+    if (
+      !file.type.startsWith("image/")
+    ) {
+
+      throw new Error(
+        "Please select an image file."
+      );
+
+    }
+
+
+    /*
+      Maximum photo size:
+      5 MB
+    */
+
+    if (
+      file.size > 5 * 1024 * 1024
+    ) {
+
+      throw new Error(
+        "Photo is too large. Please select a photo smaller than 5 MB."
+      );
+
+    }
+
+
+    /*
+      Get file extension
+    */
+
+    let extension =
+      "jpg";
+
+
+    if (
+      file.type === "image/png"
+    ) {
+
+      extension = "png";
+
+    } else if (
+      file.type === "image/webp"
+    ) {
+
+      extension = "webp";
+
+    } else if (
+      file.type === "image/jpeg"
+    ) {
+
+      extension = "jpg";
+
+    }
+
+
+    /*
+      Create unique file path
+
+      Example:
+
+      user-id/random-id.jpg
+    */
+
+    const filePath =
+      user.id +
+      "/" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+
+    /*
+      Upload to Supabase Storage
+      bucket: member-photos
+    */
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .storage
+        .from("member-photos")
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Photo Upload Error:",
+        error
+      );
+
+      throw new Error(
+        "Photo upload failed: " +
+        error.message
+      );
+
+    }
+
+
+    /*
+      Get Public URL
+    */
+
+    const {
+      data
+    } =
+      supabaseClient
+        .storage
+        .from("member-photos")
+        .getPublicUrl(
+          filePath
+        );
+
+
+    if (
+      !data ||
+      !data.publicUrl
+    ) {
+
+      throw new Error(
+        "Could not create photo URL."
+      );
+
+    }
+
+
+    return {
+      path: filePath,
+      url: data.publicUrl
+    };
+
+  }
+
+
   form.addEventListener(
     "submit",
     async function(event) {
@@ -895,6 +1067,10 @@
 
       saveButton.textContent =
         "SAVING...";
+
+
+      let uploadedPhoto =
+        null;
 
 
       try {
@@ -972,6 +1148,29 @@
           ).value.trim();
 
 
+        /*
+          Upload photo first.
+        */
+
+        if (selectedPhotoFile) {
+
+          saveButton.textContent =
+            "UPLOADING PHOTO...";
+
+
+          uploadedPhoto =
+            await uploadMemberPhoto(
+              user,
+              selectedPhotoFile
+            );
+
+        }
+
+
+        /*
+          Member data
+        */
+
         const memberData = {
 
           member_id:
@@ -1004,6 +1203,11 @@
           date_of_salvation:
             dateOfSalvation,
 
+          photo_url:
+            uploadedPhoto
+              ? uploadedPhoto.url
+              : null,
+
           additional_notes:
             additionalNotes,
 
@@ -1011,6 +1215,10 @@
             user.id
 
         };
+
+
+        saveButton.textContent =
+          "SAVING MEMBER...";
 
 
         const {
@@ -1028,6 +1236,24 @@
 
           console.error(error);
 
+          /*
+            If member registration fails
+            after photo upload, delete
+            the uploaded photo.
+          */
+
+          if (uploadedPhoto) {
+
+            await supabaseClient
+              .storage
+              .from("member-photos")
+              .remove([
+                uploadedPhoto.path
+              ]);
+
+          }
+
+
           throw error;
 
         }
@@ -1042,6 +1268,10 @@
 
 
         form.reset();
+
+
+        selectedPhotoFile =
+          null;
 
 
         photoPreview.src =

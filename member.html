@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Member Profile - COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f1e8;
+      color: #222;
+    }
+
+    .header {
+      background: #174d3c;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .back-btn {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 9px;
+      background: #777;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      margin-bottom: 15px;
+      cursor: pointer;
+    }
+
+    .profile-card {
+      background: white;
+      padding: 25px;
+      border-radius: 16px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .profile-header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #ddd;
+      margin-bottom: 20px;
+    }
+
+    .profile-photo {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 4px solid #174d3c;
+      margin-bottom: 12px;
+    }
+
+    .member-id {
+      color: #174d3c;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    .member-name {
+      font-size: 25px;
+      font-weight: bold;
+      margin: 7px 0;
+    }
+
+    .member-type {
+      display: inline-block;
+      background: #e7f0eb;
+      color: #174d3c;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+
+    .details {
+      display: grid;
+      gap: 12px;
+    }
+
+    .detail-row {
+      display: flex;
+      padding: 13px;
+      border-radius: 9px;
+      background: #f8f7f3;
+      border: 1px solid #eee;
+    }
+
+    .detail-label {
+      width: 42%;
+      font-weight: bold;
+      color: #174d3c;
+    }
+
+    .detail-value {
+      width: 58%;
+      word-break: break-word;
+    }
+
+    .notes {
+      margin-top: 15px;
+      padding: 15px;
+      background: #f8f7f3;
+      border: 1px solid #eee;
+      border-radius: 9px;
+    }
+
+    .notes-title {
+      font-weight: bold;
+      color: #174d3c;
+      margin-bottom: 8px;
+    }
+
+    .buttons {
+      display: grid;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .edit-btn,
+    .delete-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .edit-btn {
+      background: #174d3c;
+    }
+
+    .delete-btn {
+      background: #b3261e;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: #555;
+    }
+
+    .error {
+      background: #f8dddd;
+      color: #a00000;
+      padding: 14px;
+      border-radius: 9px;
+      text-align: center;
+    }
+
+    .success {
+      background: #dff2e5;
+      color: #176b36;
+      padding: 14px;
+      border-radius: 9px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 12px;
+      }
+
+      .profile-card {
+        padding: 18px;
+      }
+
+      .profile-photo {
+        width: 120px;
+        height: 120px;
+      }
+
+      .member-name {
+        font-size: 21px;
+      }
+
+      .detail-row {
+        display: block;
+      }
+
+      .detail-label,
+      .detail-value {
+        width: 100%;
+      }
+
+      .detail-label {
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>COC Members</h1>
+    <p>Church Of Christ Sri Lanka</p>
+    <p>Members Registration</p>
+  </div>
+
+  <div class="container">
+
+    <button
+      class="back-btn"
+      onclick="window.location.href='members.html'"
+    >
+      ← Back to Members
+    </button>
+
+    <div id="messageBox"></div>
+
+    <div id="profileArea">
+
+      <div class="profile-card">
+        <div class="loading">
+          Loading member profile...
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+<script>
+
+  const SUPABASE_URL =
+    "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  const profileArea =
+    document.getElementById("profileArea");
+
+  const messageBox =
+    document.getElementById("messageBox");
+
+
+  async function checkUser() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getUser();
+
+    if (error || !data.user) {
+
+      window.location.href =
+        "index.html";
+
+      return null;
+
+    }
+
+    return data.user;
+
+  }
+
+
+  function showValue(value) {
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+      return "Not provided";
+    }
+
+    return value;
+
+  }
+
+
+  function formatDate(date) {
+
+    if (!date) {
+      return "Not provided";
+    }
+
+    const parts =
+      date.split("-");
+
+    if (parts.length !== 3) {
+      return date;
+    }
+
+    return (
+      parts[2] +
+      "/" +
+      parts[1] +
+      "/" +
+      parts[0]
+    );
+
+  }
+
+
+  function createDetail(
+    label,
+    value
+  ) {
+
+    const row =
+      document.createElement("div");
+
+    row.className =
+      "detail-row";
+
+
+    const labelDiv =
+      document.createElement("div");
+
+    labelDiv.className =
+      "detail-label";
+
+    labelDiv.textContent =
+      label;
+
+
+    const valueDiv =
+      document.createElement("div");
+
+    valueDiv.className =
+      "detail-value";
+
+    valueDiv.textContent =
+      value;
+
+
+    row.appendChild(labelDiv);
+    row.appendChild(valueDiv);
+
+    return row;
+
+  }
+
+
+  function displayMember(member) {
+
+    profileArea.innerHTML = "";
+
+
+    const card =
+      document.createElement("div");
+
+    card.className =
+      "profile-card";
+
+
+    const header =
+      document.createElement("div");
+
+    header.className =
+      "profile-header";
+
+
+    const photo =
+      document.createElement("img");
+
+    photo.className =
+      "profile-photo";
+
+    photo.alt =
+      "Member Photo";
+
+
+    if (member.photo_url) {
+
+      photo.src =
+        member.photo_url;
+
+    } else {
+
+      photo.src =
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(`
+          <svg xmlns="http://www.w3.org/2000/svg"
+               width="200"
+               height="200">
+            <rect width="100%"
+                  height="100%"
+                  fill="#eeeeee"/>
+            <text x="50%"
+                  y="50%"
+                  dominant-baseline="middle"
+                  text-anchor="middle"
+                  font-size="18"
+                  fill="#777">
+              No Photo
+            </text>
+          </svg>
+        `);
+
+    }
+
+
+    const id =
+      document.createElement("div");
+
+    id.className =
+      "member-id";
+
+    id.textContent =
+      showValue(member.member_id);
+
+
+    const name =
+      document.createElement("div");
+
+    name.className =
+      "member-name";
+
+    name.textContent =
+      showValue(member.full_name);
+
+
+    const type =
+      document.createElement("div");
+
+    type.className =
+      "member-type";
+
+    type.textContent =
+      showValue(member.member_type);
+
+
+    header.appendChild(photo);
+    header.appendChild(id);
+    header.appendChild(name);
+    header.appendChild(type);
+
+
+    const details =
+      document.createElement("div");
+
+    details.className =
+      "details";
+
+
+    details.appendChild(
+      createDetail(
+        "NIC Number",
+        showValue(member.nic_number)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Date of Birth",
+        formatDate(member.date_of_birth)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Gender",
+        showValue(member.gender)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Phone / WhatsApp",
+        showValue(member.phone_whatsapp)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Address",
+        showValue(member.address)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Marital Status",
+        showValue(member.marital_status)
+      )
+    );
+
+
+    details.appendChild(
+      createDetail(
+        "Date of Salvation",
+        formatDate(member.date_of_salvation)
+      )
+    );
+
+
+    const notes =
+      document.createElement("div");
+
+    notes.className =
+      "notes";
+
+
+    const notesTitle =
+      document.createElement("div");
+
+    notesTitle.className =
+      "notes-title";
+
+    notesTitle.textContent =
+      "Additional Notes";
+
+
+    const notesText =
+      document.createElement("div");
+
+    notesText.textContent =
+      showValue(member.additional_notes);
+
+
+    notes.appendChild(notesTitle);
+    notes.appendChild(notesText);
+
+
+    const buttons =
+      document.createElement("div");
+
+    buttons.className =
+      "buttons";
+
+
+    const editButton =
+      document.createElement("button");
+
+    editButton.className =
+      "edit-btn";
+
+    editButton.textContent =
+      "✏️ Edit Member";
+
+
+    editButton.onclick =
+      function() {
+
+        window.location.href =
+          "edit-member.html?id=" +
+          member.id;
+
+      };
+
+
+    const deleteButton =
+      document.createElement("button");
+
+    deleteButton.className =
+      "delete-btn";
+
+    deleteButton.textContent =
+      "🗑️ Delete Member";
+
+
+    deleteButton.onclick =
+      function() {
+
+        deleteMember(member.id);
+
+      };
+
+
+    buttons.appendChild(editButton);
+    buttons.appendChild(deleteButton);
+
+
+    card.appendChild(header);
+    card.appendChild(details);
+    card.appendChild(notes);
+    card.appendChild(buttons);
+
+
+    profileArea.appendChild(card);
+
+  }
+
+
+  async function loadMember() {
+
+    const user =
+      await checkUser();
+
+    if (!user) return;
+
+
+    const params =
+      new URLSearchParams(
+        window.location.search
+      );
+
+
+    const memberId =
+      params.get("id");
+
+
+    if (!memberId) {
+
+      profileArea.innerHTML =
+        '<div class="profile-card">' +
+        '<div class="error">' +
+        'Member ID not found.' +
+        '</div>' +
+        '</div>';
+
+      return;
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("members")
+        .select(`
+          id,
+          member_id,
+          member_type,
+          full_name,
+          nic_number,
+          date_of_birth,
+          gender,
+          phone_whatsapp,
+          address,
+          marital_status,
+          date_of_salvation,
+          photo_url,
+          additional_notes
+        `)
+        .eq("id", memberId)
+        .single();
+
+
+    if (error) {
+
+      console.error(error);
+
+      profileArea.innerHTML =
+        '<div class="profile-card">' +
+        '<div class="error">' +
+        'Error loading member: ' +
+        error.message +
+        '</div>' +
+        '</div>';
+
+      return;
+
+    }
+
+
+    displayMember(data);
+
+  }
+
+
+  async function deleteMember(id) {
+
+    const confirmed =
+      confirm(
+        "Are you sure you want to delete this member?\n\n" +
+        "This action cannot be undone."
+      );
+
+
+    if (!confirmed) {
+      return;
+    }
+
+
+    messageBox.innerHTML =
+      '<div class="success">' +
+      'Deleting member...' +
+      '</div>';
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("members")
+        .delete()
+        .eq("id", id);
+
+
+    if (error) {
+
+      console.error(error);
+
+      messageBox.innerHTML =
+        '<div class="error">' +
+        'Delete failed: ' +
+        error.message +
+        '</div>';
+
+      return;
+
+    }
+
+
+    messageBox.innerHTML =
+      '<div class="success">' +
+      'Member deleted successfully.' +
+      '</div>';
+
+
+    setTimeout(
+      function() {
+
+        window.location.href =
+          "members.html";
+
+      },
+      1200
+    );
+
+  }
+
+
+  loadMember();
+
+</script>
+
+</body>
+</html>

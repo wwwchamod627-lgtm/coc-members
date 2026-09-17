@@ -8,7 +8,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <!-- PDF Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
@@ -197,6 +196,7 @@
     }
 
     @media (max-width: 600px) {
+
       .container {
         padding: 12px;
       }
@@ -226,6 +226,7 @@
       .detail-label {
         margin-bottom: 5px;
       }
+
     }
   </style>
 </head>
@@ -233,10 +234,21 @@
 <body>
 
   <div class="header">
-    <h1>COC Members</h1>
-    <p>Church Of Christ Sri Lanka</p>
-    <p>Members Registration</p>
+
+    <h1 id="appName">
+      COC Members
+    </h1>
+
+    <p id="churchName">
+      Church Of Christ Sri Lanka
+    </p>
+
+    <p id="subtitle">
+      Members Registration
+    </p>
+
   </div>
+
 
   <div class="container">
 
@@ -247,21 +259,30 @@
       ← Back to Members
     </button>
 
+
     <div id="messageBox"></div>
+
 
     <div id="profileArea">
 
       <div class="profile-card">
+
         <div class="loading">
           Loading member profile...
         </div>
+
       </div>
 
     </div>
 
   </div>
 
+
 <script>
+
+  /* =========================================================
+     SUPABASE
+  ========================================================= */
 
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
@@ -276,8 +297,20 @@
     );
 
 
+  /* =========================================================
+     GLOBAL DATA
+  ========================================================= */
+
   let currentMember = null;
 
+  let memberListFields = [];
+
+  let appSettings = {};
+
+
+  /* =========================================================
+     ELEMENTS
+  ========================================================= */
 
   const profileArea =
     document.getElementById("profileArea");
@@ -285,6 +318,43 @@
   const messageBox =
     document.getElementById("messageBox");
 
+
+  /* =========================================================
+     FIELD → DATABASE COLUMN
+  ========================================================= */
+
+  const fieldDatabaseMap = {
+
+    member_id: "member_id",
+
+    member_type: "member_type",
+
+    full_name: "full_name",
+
+    nic_number: "nic_number",
+
+    date_of_birth: "date_of_birth",
+
+    gender: "gender",
+
+    phone_whatsapp: "phone_whatsapp",
+
+    address: "address",
+
+    marital_status: "marital_status",
+
+    date_of_salvation: "date_of_salvation",
+
+    member_photo: "photo_url",
+
+    additional_notes: "additional_notes"
+
+  };
+
+
+  /* =========================================================
+     CHECK LOGIN
+  ========================================================= */
 
   async function checkUser() {
 
@@ -294,7 +364,11 @@
     } =
       await supabaseClient.auth.getUser();
 
-    if (error || !data.user) {
+
+    if (
+      error ||
+      !data.user
+    ) {
 
       window.location.href =
         "index.html";
@@ -303,10 +377,178 @@
 
     }
 
+
     return data.user;
 
   }
 
+
+  /* =========================================================
+     LOAD APP SETTINGS
+  ========================================================= */
+
+  async function loadAppSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select(`
+          app_name,
+          church_name,
+          subtitle
+        `)
+        .limit(1)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "App settings error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    appSettings =
+      data || {};
+
+
+    document.getElementById(
+      "appName"
+    ).textContent =
+      appSettings.app_name ||
+      "COC Members";
+
+
+    document.getElementById(
+      "churchName"
+    ).textContent =
+      appSettings.church_name ||
+      "Church Of Christ Sri Lanka";
+
+
+    document.getElementById(
+      "subtitle"
+    ).textContent =
+      appSettings.subtitle ||
+      "Members Registration";
+
+  }
+
+
+  /* =========================================================
+     LOAD MEMBER LIST SETTINGS
+  ========================================================= */
+
+  async function loadMemberListFields() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("member_list_fields")
+        .select(`
+          id,
+          field_key,
+          field_label,
+          is_visible,
+          is_searchable,
+          display_order,
+          show_in_pdf
+        `)
+        .order(
+          "display_order",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Member list fields error:",
+        error
+      );
+
+      throw error;
+
+    }
+
+
+    memberListFields =
+      data || [];
+
+  }
+
+
+  /* =========================================================
+     GET VISIBLE FIELDS
+  ========================================================= */
+
+  function getVisibleFields() {
+
+    return memberListFields
+      .filter(
+        function(field) {
+
+          return field.is_visible === true;
+
+        }
+      )
+      .sort(
+        function(a, b) {
+
+          return (
+            Number(a.display_order || 0) -
+            Number(b.display_order || 0)
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     GET PDF FIELDS
+  ========================================================= */
+
+  function getPdfFields() {
+
+    return memberListFields
+      .filter(
+        function(field) {
+
+          return field.show_in_pdf === true;
+
+        }
+      )
+      .sort(
+        function(a, b) {
+
+          return (
+            Number(a.display_order || 0) -
+            Number(b.display_order || 0)
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     SHOW VALUE
+  ========================================================= */
 
   function showValue(value) {
 
@@ -315,26 +557,42 @@
       value === undefined ||
       value === ""
     ) {
+
       return "Not provided";
+
     }
 
-    return value;
+
+    return String(value);
 
   }
 
 
+  /* =========================================================
+     FORMAT DATE
+  ========================================================= */
+
   function formatDate(date) {
 
     if (!date) {
+
       return "Not provided";
+
     }
+
 
     const parts =
-      date.split("-");
+      String(date).split("-");
 
-    if (parts.length !== 3) {
-      return date;
+
+    if (
+      parts.length !== 3
+    ) {
+
+      return String(date);
+
     }
+
 
     return (
       parts[2] +
@@ -346,6 +604,69 @@
 
   }
 
+
+  /* =========================================================
+     GET FIELD VALUE
+  ========================================================= */
+
+  function getFieldValue(
+    member,
+    fieldKey
+  ) {
+
+    const column =
+      fieldDatabaseMap[fieldKey];
+
+
+    if (!column) {
+
+      return "";
+
+    }
+
+
+    const value =
+      member[column];
+
+
+    if (
+      fieldKey === "date_of_birth" ||
+      fieldKey === "date_of_salvation"
+    ) {
+
+      return formatDate(value);
+
+    }
+
+
+    return showValue(value);
+
+  }
+
+
+  /* =========================================================
+     GET FIELD
+  ========================================================= */
+
+  function getField(fieldKey) {
+
+    return memberListFields.find(
+      function(field) {
+
+        return (
+          field.field_key ===
+          fieldKey
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     CREATE DETAIL
+  ========================================================= */
 
   function createDetail(
     label,
@@ -379,19 +700,32 @@
       value;
 
 
-    row.appendChild(labelDiv);
-    row.appendChild(valueDiv);
+    row.appendChild(
+      labelDiv
+    );
+
+    row.appendChild(
+      valueDiv
+    );
+
 
     return row;
 
   }
 
 
+  /* =========================================================
+     DISPLAY MEMBER
+  ========================================================= */
+
   function displayMember(member) {
 
-    currentMember = member;
+    currentMember =
+      member;
 
-    profileArea.innerHTML = "";
+
+    profileArea.innerHTML =
+      "";
 
 
     const card =
@@ -401,6 +735,10 @@
       "profile-card";
 
 
+    /* =====================================================
+       PROFILE HEADER
+    ===================================================== */
+
     const header =
       document.createElement("div");
 
@@ -408,81 +746,159 @@
       "profile-header";
 
 
-    const photo =
-      document.createElement("img");
+    /* PHOTO */
 
-    photo.className =
-      "profile-photo";
-
-    photo.alt =
-      "Member Photo";
+    const photoField =
+      getField("member_photo");
 
 
-    if (member.photo_url) {
+    const showPhoto =
+      photoField
+        ? photoField.is_visible === true
+        : true;
 
-      photo.src =
-        member.photo_url;
 
-    } else {
+    if (showPhoto) {
 
-      photo.src =
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(`
-          <svg xmlns="http://www.w3.org/2000/svg"
-               width="200"
-               height="200">
-            <rect width="100%"
-                  height="100%"
-                  fill="#eeeeee"/>
-            <text x="50%"
-                  y="50%"
-                  dominant-baseline="middle"
-                  text-anchor="middle"
-                  font-size="18"
-                  fill="#777">
-              No Photo
-            </text>
-          </svg>
-        `);
+      const photo =
+        document.createElement("img");
+
+      photo.className =
+        "profile-photo";
+
+      photo.alt =
+        "Member Photo";
+
+
+      if (member.photo_url) {
+
+        photo.src =
+          member.photo_url;
+
+      } else {
+
+        photo.src =
+          "data:image/svg+xml;charset=UTF-8," +
+          encodeURIComponent(`
+            <svg xmlns="http://www.w3.org/2000/svg"
+                 width="200"
+                 height="200">
+              <rect width="100%"
+                    height="100%"
+                    fill="#eeeeee"/>
+              <text x="50%"
+                    y="50%"
+                    dominant-baseline="middle"
+                    text-anchor="middle"
+                    font-size="18"
+                    fill="#777">
+                No Photo
+              </text>
+            </svg>
+          `);
+
+      }
+
+
+      header.appendChild(
+        photo
+      );
 
     }
 
 
-    const id =
-      document.createElement("div");
+    /* MEMBER ID */
 
-    id.className =
-      "member-id";
-
-    id.textContent =
-      showValue(member.member_id);
+    const idField =
+      getField("member_id");
 
 
-    const name =
-      document.createElement("div");
+    if (
+      idField &&
+      idField.is_visible === true
+    ) {
 
-    name.className =
-      "member-name";
+      const id =
+        document.createElement("div");
 
-    name.textContent =
-      showValue(member.full_name);
+      id.className =
+        "member-id";
+
+      id.textContent =
+        getFieldValue(
+          member,
+          "member_id"
+        );
+
+      header.appendChild(id);
+
+    }
 
 
-    const type =
-      document.createElement("div");
+    /* FULL NAME */
 
-    type.className =
-      "member-type";
-
-    type.textContent =
-      showValue(member.member_type);
+    const nameField =
+      getField("full_name");
 
 
-    header.appendChild(photo);
-    header.appendChild(id);
-    header.appendChild(name);
-    header.appendChild(type);
+    if (
+      nameField &&
+      nameField.is_visible === true
+    ) {
 
+      const name =
+        document.createElement("div");
+
+      name.className =
+        "member-name";
+
+      name.textContent =
+        getFieldValue(
+          member,
+          "full_name"
+        );
+
+      header.appendChild(name);
+
+    }
+
+
+    /* MEMBER TYPE */
+
+    const typeField =
+      getField("member_type");
+
+
+    if (
+      typeField &&
+      typeField.is_visible === true
+    ) {
+
+      const type =
+        document.createElement("div");
+
+      type.className =
+        "member-type";
+
+      type.textContent =
+        getFieldValue(
+          member,
+          "member_type"
+        );
+
+      header.appendChild(type);
+
+    }
+
+
+    card.appendChild(
+      header
+    );
+
+
+    /* =====================================================
+       DETAILS
+    ===================================================== */
 
     const details =
       document.createElement("div");
@@ -491,89 +907,150 @@
       "details";
 
 
-    details.appendChild(
-      createDetail(
-        "NIC Number",
-        showValue(member.nic_number)
-      )
+    const visibleFields =
+      getVisibleFields();
+
+
+    visibleFields.forEach(
+      function(field) {
+
+        /*
+         * These are already shown
+         * in the profile header.
+         */
+
+        if (
+          field.field_key ===
+          "member_photo"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          field.field_key ===
+          "member_id"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          field.field_key ===
+          "full_name"
+        ) {
+
+          return;
+
+        }
+
+
+        if (
+          field.field_key ===
+          "member_type"
+        ) {
+
+          return;
+
+        }
+
+
+        const value =
+          getFieldValue(
+            member,
+            field.field_key
+          );
+
+
+        details.appendChild(
+          createDetail(
+            field.field_label ||
+            field.field_key,
+            value
+          )
+        );
+
+      }
     );
 
 
-    details.appendChild(
-      createDetail(
-        "Date of Birth",
-        formatDate(member.date_of_birth)
-      )
-    );
+    if (
+      details.children.length > 0
+    ) {
+
+      card.appendChild(
+        details
+      );
+
+    }
 
 
-    details.appendChild(
-      createDetail(
-        "Gender",
-        showValue(member.gender)
-      )
-    );
+    /* =====================================================
+       ADDITIONAL NOTES
+    ===================================================== */
+
+    const notesField =
+      getField(
+        "additional_notes"
+      );
 
 
-    details.appendChild(
-      createDetail(
-        "Phone / WhatsApp",
-        showValue(member.phone_whatsapp)
-      )
-    );
+    if (
+      notesField &&
+      notesField.is_visible === true
+    ) {
+
+      const notes =
+        document.createElement("div");
+
+      notes.className =
+        "notes";
 
 
-    details.appendChild(
-      createDetail(
-        "Address",
-        showValue(member.address)
-      )
-    );
+      const notesTitle =
+        document.createElement("div");
+
+      notesTitle.className =
+        "notes-title";
+
+      notesTitle.textContent =
+        notesField.field_label ||
+        "Additional Notes";
 
 
-    details.appendChild(
-      createDetail(
-        "Marital Status",
-        showValue(member.marital_status)
-      )
-    );
+      const notesText =
+        document.createElement("div");
+
+      notesText.textContent =
+        getFieldValue(
+          member,
+          "additional_notes"
+        );
 
 
-    details.appendChild(
-      createDetail(
-        "Date of Salvation",
-        formatDate(member.date_of_salvation)
-      )
-    );
+      notes.appendChild(
+        notesTitle
+      );
+
+      notes.appendChild(
+        notesText
+      );
 
 
-    const notes =
-      document.createElement("div");
+      card.appendChild(
+        notes
+      );
 
-    notes.className =
-      "notes";
-
-
-    const notesTitle =
-      document.createElement("div");
-
-    notesTitle.className =
-      "notes-title";
-
-    notesTitle.textContent =
-      "Additional Notes";
+    }
 
 
-    const notesText =
-      document.createElement("div");
-
-    notesText.textContent =
-      showValue(member.additional_notes);
-
-
-    notes.appendChild(notesTitle);
-    notes.appendChild(notesText);
-
+    /* =====================================================
+       BUTTONS
+    ===================================================== */
 
     const buttons =
       document.createElement("div");
@@ -581,6 +1058,8 @@
     buttons.className =
       "buttons";
 
+
+    /* EDIT */
 
     const editButton =
       document.createElement("button");
@@ -602,6 +1081,8 @@
       };
 
 
+    /* PDF */
+
     const pdfButton =
       document.createElement("button");
 
@@ -620,6 +1101,8 @@
       };
 
 
+    /* DELETE */
+
     const deleteButton =
       document.createElement("button");
 
@@ -633,33 +1116,53 @@
     deleteButton.onclick =
       function() {
 
-        deleteMember(member.id);
+        deleteMember(
+          member.id
+        );
 
       };
 
 
-    buttons.appendChild(editButton);
-    buttons.appendChild(pdfButton);
-    buttons.appendChild(deleteButton);
+    buttons.appendChild(
+      editButton
+    );
+
+    buttons.appendChild(
+      pdfButton
+    );
+
+    buttons.appendChild(
+      deleteButton
+    );
 
 
-    card.appendChild(header);
-    card.appendChild(details);
-    card.appendChild(notes);
-    card.appendChild(buttons);
+    card.appendChild(
+      buttons
+    );
 
 
-    profileArea.appendChild(card);
+    profileArea.appendChild(
+      card
+    );
 
   }
 
+
+  /* =========================================================
+     LOAD MEMBER
+  ========================================================= */
 
   async function loadMember() {
 
     const user =
       await checkUser();
 
-    if (!user) return;
+
+    if (!user) {
+
+      return;
+
+    }
 
 
     const params =
@@ -686,10 +1189,17 @@
     }
 
 
-    const {
-      data,
-      error
-    } =
+    try {
+
+      await loadAppSettings();
+
+      await loadMemberListFields();
+
+
+      const {
+        data,
+        error
+      } =
       await supabaseClient
         .from("members")
         .select(`
@@ -707,63 +1217,113 @@
           photo_url,
           additional_notes
         `)
-        .eq("id", memberId)
+        .eq(
+          "id",
+          memberId
+        )
         .single();
 
 
-    if (error) {
+      if (error) {
 
-      console.error(error);
+        console.error(
+          error
+        );
+
+
+        profileArea.innerHTML =
+          '<div class="profile-card">' +
+          '<div class="error">' +
+          'Error loading member: ' +
+          error.message +
+          '</div>' +
+          '</div>';
+
+        return;
+
+      }
+
+
+      displayMember(
+        data
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Initialization error:",
+        error
+      );
+
 
       profileArea.innerHTML =
         '<div class="profile-card">' +
         '<div class="error">' +
-        'Error loading member: ' +
+        'Failed to load Member Profile settings: ' +
         error.message +
         '</div>' +
         '</div>';
 
-      return;
-
     }
-
-
-    displayMember(data);
 
   }
 
+
+  /* =========================================================
+     IMAGE → DATA URL
+  ========================================================= */
 
   async function imageToDataURL(url) {
 
     try {
 
       const response =
-        await fetch(url, {
-          mode: "cors"
-        });
+        await fetch(
+          url,
+          {
+            mode: "cors"
+          }
+        );
+
 
       if (!response.ok) {
-        throw new Error("Image loading failed");
+
+        throw new Error(
+          "Image loading failed"
+        );
+
       }
+
 
       const blob =
         await response.blob();
 
+
       return await new Promise(
-        (resolve, reject) => {
+        function(resolve, reject) {
 
           const reader =
             new FileReader();
 
+
           reader.onloadend =
             function() {
-              resolve(reader.result);
+
+              resolve(
+                reader.result
+              );
+
             };
+
 
           reader.onerror =
             reject;
 
-          reader.readAsDataURL(blob);
+
+          reader.readAsDataURL(
+            blob
+          );
 
         }
       );
@@ -781,6 +1341,137 @@
 
   }
 
+
+  /* =========================================================
+     GET IMAGE FORMAT
+  ========================================================= */
+
+  function getImageFormat(dataURL) {
+
+    if (!dataURL) {
+
+      return "JPEG";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/png"
+      )
+    ) {
+
+      return "PNG";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/webp"
+      )
+    ) {
+
+      return "WEBP";
+
+    }
+
+
+    if (
+      dataURL.startsWith(
+        "data:image/gif"
+      )
+    ) {
+
+      return "GIF";
+
+    }
+
+
+    return "JPEG";
+
+  }
+
+
+  /* =========================================================
+     PDF FOOTER
+  ========================================================= */
+
+  function addPDFFooter(
+    pdf
+  ) {
+
+    const pageWidth =
+      pdf.internal.pageSize.getWidth();
+
+    const pageHeight =
+      pdf.internal.pageSize.getHeight();
+
+    const margin = 18;
+
+
+    pdf.setDrawColor(
+      210,
+      210,
+      210
+    );
+
+
+    pdf.line(
+      margin,
+      pageHeight - 20,
+      pageWidth - margin,
+      pageHeight - 20
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+    pdf.setFontSize(8);
+
+    pdf.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    pdf.text(
+      (
+        appSettings.app_name ||
+        "COC Members"
+      ) +
+      " - " +
+      (
+        appSettings.church_name ||
+        "Church Of Christ Sri Lanka"
+      ),
+      pageWidth / 2,
+      pageHeight - 14,
+      {
+        align: "center"
+      }
+    );
+
+
+    pdf.text(
+      "Member Profile",
+      pageWidth / 2,
+      pageHeight - 9,
+      {
+        align: "center"
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     DOWNLOAD MEMBER PDF
+  ========================================================= */
 
   async function downloadMemberPDF() {
 
@@ -805,7 +1496,17 @@
 
       const {
         jsPDF
-      } = window.jspdf;
+      } =
+      window.jspdf;
+
+
+      if (!jsPDF) {
+
+        throw new Error(
+          "PDF library could not be loaded."
+        );
+
+      }
 
 
       const pdf =
@@ -819,19 +1520,22 @@
       const pageWidth =
         pdf.internal.pageSize.getWidth();
 
+      const pageHeight =
+        pdf.internal.pageSize.getHeight();
 
       const margin = 18;
 
 
-      /*
-       * HEADER
-       */
+      /* =====================================================
+         HEADER
+      ===================================================== */
 
       pdf.setFillColor(
         23,
         77,
         60
       );
+
 
       pdf.rect(
         0,
@@ -848,15 +1552,20 @@
         255
       );
 
-      pdf.setFontSize(20);
 
       pdf.setFont(
         "helvetica",
         "bold"
       );
 
+      pdf.setFontSize(20);
+
+
       pdf.text(
-        "COC MEMBERS",
+        String(
+          appSettings.app_name ||
+          "COC MEMBERS"
+        ).toUpperCase(),
         pageWidth / 2,
         14,
         {
@@ -865,14 +1574,16 @@
       );
 
 
-      pdf.setFontSize(10);
-
       pdf.setFont(
         "helvetica",
         "normal"
       );
 
+      pdf.setFontSize(10);
+
+
       pdf.text(
+        appSettings.church_name ||
         "Church Of Christ Sri Lanka",
         pageWidth / 2,
         21,
@@ -883,6 +1594,7 @@
 
 
       pdf.text(
+        appSettings.subtitle ||
         "Members Registration",
         pageWidth / 2,
         27,
@@ -892,14 +1604,29 @@
       );
 
 
-      /*
-       * MEMBER PHOTO
-       */
+      /* =====================================================
+         PHOTO
+      ===================================================== */
 
       let currentY = 47;
 
 
-      if (currentMember.photo_url) {
+      const photoField =
+        getField(
+          "member_photo"
+        );
+
+
+      const showPhotoInPdf =
+        photoField
+          ? photoField.show_in_pdf === true
+          : true;
+
+
+      if (
+        showPhotoInPdf &&
+        currentMember.photo_url
+      ) {
 
         const photoData =
           await imageToDataURL(
@@ -913,12 +1640,15 @@
 
             pdf.addImage(
               photoData,
-              "JPEG",
+              getImageFormat(
+                photoData
+              ),
               pageWidth / 2 - 25,
               currentY,
               50,
               50
             );
+
 
             currentY += 58;
 
@@ -935,79 +1665,156 @@
       }
 
 
-      /*
-       * MEMBER NAME
-       */
+      /* =====================================================
+         NAME
+      ===================================================== */
 
-      pdf.setTextColor(
-        23,
-        77,
-        60
-      );
-
-      pdf.setFontSize(18);
-
-      pdf.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      pdf.text(
-        showValue(
-          currentMember.full_name
-        ),
-        pageWidth / 2,
-        currentY,
-        {
-          align: "center"
-        }
-      );
+      const nameField =
+        getField(
+          "full_name"
+        );
 
 
-      currentY += 8;
+      const showNameInPdf =
+        nameField
+          ? nameField.show_in_pdf === true
+          : true;
 
 
-      pdf.setFontSize(11);
+      if (showNameInPdf) {
 
-      pdf.setFont(
-        "helvetica",
-        "normal"
-      );
-
-
-      pdf.text(
-        showValue(
-          currentMember.member_id
-        ),
-        pageWidth / 2,
-        currentY,
-        {
-          align: "center"
-        }
-      );
+        const name =
+          getFieldValue(
+            currentMember,
+            "full_name"
+          );
 
 
-      currentY += 6;
+        pdf.setTextColor(
+          23,
+          77,
+          60
+        );
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        pdf.setFontSize(18);
 
 
-      pdf.text(
-        showValue(
-          currentMember.member_type
-        ),
-        pageWidth / 2,
-        currentY,
-        {
-          align: "center"
-        }
-      );
+        const nameLines =
+          pdf.splitTextToSize(
+            name,
+            pageWidth - margin * 2
+          );
 
 
-      currentY += 12;
+        pdf.text(
+          nameLines,
+          pageWidth / 2,
+          currentY,
+          {
+            align: "center"
+          }
+        );
 
 
-      /*
-       * PERSONAL INFORMATION TITLE
-       */
+        currentY +=
+          nameLines.length * 6 + 2;
+
+      }
+
+
+      /* =====================================================
+         MEMBER ID
+      ===================================================== */
+
+      const idField =
+        getField(
+          "member_id"
+        );
+
+
+      if (
+        idField &&
+        idField.show_in_pdf === true
+      ) {
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        pdf.setFontSize(11);
+
+
+        pdf.text(
+          getFieldValue(
+            currentMember,
+            "member_id"
+          ),
+          pageWidth / 2,
+          currentY,
+          {
+            align: "center"
+          }
+        );
+
+
+        currentY += 6;
+
+      }
+
+
+      /* =====================================================
+         MEMBER TYPE
+      ===================================================== */
+
+      const typeField =
+        getField(
+          "member_type"
+        );
+
+
+      if (
+        typeField &&
+        typeField.show_in_pdf === true
+      ) {
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        pdf.setFontSize(11);
+
+
+        pdf.text(
+          getFieldValue(
+            currentMember,
+            "member_type"
+          ),
+          pageWidth / 2,
+          currentY,
+          {
+            align: "center"
+          }
+        );
+
+
+        currentY += 6;
+
+      }
+
+
+      currentY += 7;
+
+
+      /* =====================================================
+         MEMBER INFORMATION TITLE
+      ===================================================== */
 
       pdf.setFillColor(
         23,
@@ -1015,11 +1822,14 @@
         60
       );
 
-      pdf.rect(
+
+      pdf.roundedRect(
         margin,
         currentY,
         pageWidth - margin * 2,
         9,
+        2,
+        2,
         "F"
       );
 
@@ -1030,12 +1840,13 @@
         255
       );
 
-      pdf.setFontSize(11);
-
       pdf.setFont(
         "helvetica",
         "bold"
       );
+
+      pdf.setFontSize(10);
+
 
       pdf.text(
         "MEMBER INFORMATION",
@@ -1044,369 +1855,363 @@
       );
 
 
-      currentY += 15;
+      currentY += 13;
 
 
-      /*
-       * DETAILS
-       */
+      /* =====================================================
+         PDF FIELDS
+      ===================================================== */
 
-      const details = [
-
-        [
-          "NIC Number",
-          showValue(
-            currentMember.nic_number
-          )
-        ],
-
-        [
-          "Date of Birth",
-          formatDate(
-            currentMember.date_of_birth
-          )
-        ],
-
-        [
-          "Gender",
-          showValue(
-            currentMember.gender
-          )
-        ],
-
-        [
-          "Phone / WhatsApp",
-          showValue(
-            currentMember.phone_whatsapp
-          )
-        ],
-
-        [
-          "Address",
-          showValue(
-            currentMember.address
-          )
-        ],
-
-        [
-          "Marital Status",
-          showValue(
-            currentMember.marital_status
-          )
-        ],
-
-        [
-          "Date of Salvation",
-          formatDate(
-            currentMember.date_of_salvation
-          )
-        ]
-
-      ];
+      const pdfFields =
+        getPdfFields();
 
 
-      pdf.setTextColor(
-        34,
-        34,
-        34
-      );
+      for (
+        const field of pdfFields
+      ) {
+
+        /*
+         * Already shown above
+         */
+
+        if (
+          field.field_key ===
+          "member_photo"
+        ) {
+
+          continue;
+
+        }
 
 
-      details.forEach(
-        function(item) {
+        if (
+          field.field_key ===
+          "full_name"
+        ) {
 
-          const label =
-            item[0];
+          continue;
 
-          const value =
-            item[1];
+        }
 
 
-          pdf.setFillColor(
-            248,
-            247,
-            243
+        if (
+          field.field_key ===
+          "member_id"
+        ) {
+
+          continue;
+
+        }
+
+
+        if (
+          field.field_key ===
+          "member_type"
+        ) {
+
+          continue;
+
+        }
+
+
+        if (
+          field.field_key ===
+          "additional_notes"
+        ) {
+
+          continue;
+
+        }
+
+
+        const label =
+          field.field_label ||
+          field.field_key;
+
+
+        const value =
+          getFieldValue(
+            currentMember,
+            field.field_key
           );
 
 
-          pdf.roundedRect(
-            margin,
-            currentY,
-            pageWidth - margin * 2,
+        const valueX =
+          margin + 53;
+
+
+        const maxWidth =
+          pageWidth -
+          valueX -
+          margin -
+          5;
+
+
+        const lines =
+          pdf.splitTextToSize(
+            value,
+            maxWidth
+          );
+
+
+        const rowHeight =
+          Math.max(
             11,
-            2,
-            2,
-            "F"
+            lines.length * 4.8 + 6
           );
 
 
-          pdf.setFont(
-            "helvetica",
-            "bold"
+        /* Row background */
+
+        pdf.setFillColor(
+          248,
+          247,
+          243
+        );
+
+
+        pdf.roundedRect(
+          margin,
+          currentY,
+          pageWidth - margin * 2,
+          rowHeight,
+          2,
+          2,
+          "F"
+        );
+
+
+        /* Label */
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        pdf.setFontSize(8.5);
+
+        pdf.setTextColor(
+          23,
+          77,
+          60
+        );
+
+
+        pdf.text(
+          label,
+          margin + 4,
+          currentY + 7
+        );
+
+
+        /* Value */
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        pdf.setTextColor(
+          34,
+          34,
+          34
+        );
+
+
+        pdf.text(
+          lines,
+          valueX,
+          currentY + 7
+        );
+
+
+        currentY +=
+          rowHeight + 3;
+
+
+        /*
+         * Prevent content from going
+         * underneath footer.
+         */
+
+        if (
+          currentY >
+          pageHeight - 35
+        ) {
+
+          pdf.addPage();
+
+          currentY = 25;
+
+        }
+
+      }
+
+
+      /* =====================================================
+         ADDITIONAL NOTES
+      ===================================================== */
+
+      const notesField =
+        getField(
+          "additional_notes"
+        );
+
+
+      if (
+        notesField &&
+        notesField.show_in_pdf === true
+      ) {
+
+        currentY += 3;
+
+
+        if (
+          currentY >
+          pageHeight - 65
+        ) {
+
+          pdf.addPage();
+
+          currentY = 25;
+
+        }
+
+
+        pdf.setFillColor(
+          23,
+          77,
+          60
+        );
+
+
+        pdf.roundedRect(
+          margin,
+          currentY,
+          pageWidth - margin * 2,
+          9,
+          2,
+          2,
+          "F"
+        );
+
+
+        pdf.setTextColor(
+          255,
+          255,
+          255
+        );
+
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+        pdf.setFontSize(10);
+
+
+        pdf.text(
+          notesField.field_label ||
+          "Additional Notes",
+          margin + 5,
+          currentY + 6
+        );
+
+
+        currentY += 14;
+
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+        pdf.setTextColor(
+          34,
+          34,
+          34
+        );
+
+        pdf.setFontSize(9);
+
+
+        const notes =
+          getFieldValue(
+            currentMember,
+            "additional_notes"
           );
 
-          pdf.setFontSize(9);
 
-          pdf.setTextColor(
-            23,
-            77,
-            60
-          );
-
-
-          pdf.text(
-            label,
-            margin + 4,
-            currentY + 7
-          );
-
-
-          pdf.setFont(
-            "helvetica",
-            "normal"
-          );
-
-          pdf.setTextColor(
-            34,
-            34,
-            34
-          );
-
-
-          const valueX =
-            margin + 55;
-
-
-          const maxWidth =
+        const noteLines =
+          pdf.splitTextToSize(
+            notes,
             pageWidth -
-            margin -
-            valueX -
-            4;
-
-
-          const lines =
-            pdf.splitTextToSize(
-              value,
-              maxWidth
-            );
-
-
-          pdf.text(
-            lines,
-            valueX,
-            currentY + 7
+            margin * 2 -
+            10
           );
 
 
-          const rowHeight =
-            Math.max(
-              11,
-              lines.length * 5 + 6
-            );
+        const noteHeight =
+          Math.max(
+            18,
+            noteLines.length * 4.8 + 10
+          );
 
 
-          if (rowHeight > 11) {
-
-            /*
-             * Expand background when text wraps
-             */
-
-            pdf.setFillColor(
-              248,
-              247,
-              243
-            );
-
-            pdf.roundedRect(
-              margin,
-              currentY,
-              pageWidth - margin * 2,
-              rowHeight,
-              2,
-              2,
-              "F"
-            );
-
-
-            pdf.setFont(
-              "helvetica",
-              "bold"
-            );
-
-            pdf.setTextColor(
-              23,
-              77,
-              60
-            );
-
-            pdf.text(
-              label,
-              margin + 4,
-              currentY + 7
-            );
-
-
-            pdf.setFont(
-              "helvetica",
-              "normal"
-            );
-
-            pdf.setTextColor(
-              34,
-              34,
-              34
-            );
-
-            pdf.text(
-              lines,
-              valueX,
-              currentY + 7
-            );
-
-          }
-
-
-          currentY +=
-            rowHeight + 3;
-
-        }
-      );
-
-
-      /*
-       * ADDITIONAL NOTES
-       */
-
-      currentY += 3;
-
-
-      pdf.setFillColor(
-        23,
-        77,
-        60
-      );
-
-      pdf.rect(
-        margin,
-        currentY,
-        pageWidth - margin * 2,
-        9,
-        "F"
-      );
-
-
-      pdf.setTextColor(
-        255,
-        255,
-        255
-      );
-
-      pdf.setFontSize(11);
-
-      pdf.setFont(
-        "helvetica",
-        "bold"
-      );
-
-      pdf.text(
-        "ADDITIONAL NOTES",
-        margin + 5,
-        currentY + 6
-      );
-
-
-      currentY += 14;
-
-
-      pdf.setFont(
-        "helvetica",
-        "normal"
-      );
-
-      pdf.setTextColor(
-        34,
-        34,
-        34
-      );
-
-      pdf.setFontSize(10);
-
-
-      const notes =
-        showValue(
-          currentMember.additional_notes
+        pdf.setFillColor(
+          250,
+          249,
+          246
         );
 
 
-      const noteLines =
-        pdf.splitTextToSize(
-          notes,
-          pageWidth - margin * 2 - 10
+        pdf.roundedRect(
+          margin,
+          currentY,
+          pageWidth - margin * 2,
+          noteHeight,
+          2,
+          2,
+          "F"
         );
 
 
-      pdf.text(
-        noteLines,
-        margin + 5,
-        currentY + 5
-      );
+        pdf.text(
+          noteLines,
+          margin + 5,
+          currentY + 7
+        );
+
+      }
 
 
-      /*
-       * FOOTER
-       */
+      /* =====================================================
+         FOOTER
+      ===================================================== */
 
-      const pageHeight =
-        pdf.internal.pageSize.getHeight();
-
-
-      pdf.setDrawColor(
-        210,
-        210,
-        210
-      );
+      const totalPages =
+        pdf.getNumberOfPages();
 
 
-      pdf.line(
-        margin,
-        pageHeight - 20,
-        pageWidth - margin,
-        pageHeight - 20
-      );
+      for (
+        let i = 1;
+        i <= totalPages;
+        i++
+      ) {
+
+        pdf.setPage(i);
+
+        addPDFFooter(
+          pdf
+        );
+
+      }
 
 
-      pdf.setFontSize(8);
-
-      pdf.setTextColor(
-        100,
-        100,
-        100
-      );
-
-
-      pdf.text(
-        "COC Members - Church Of Christ Sri Lanka",
-        pageWidth / 2,
-        pageHeight - 14,
-        {
-          align: "center"
-        }
-      );
-
-
-      pdf.text(
-        "Member Profile",
-        pageWidth / 2,
-        pageHeight - 9,
-        {
-          align: "center"
-        }
-      );
-
-
-      /*
-       * DOWNLOAD
-       */
+      /* =====================================================
+         DOWNLOAD
+      ===================================================== */
 
       const safeName =
         (
@@ -1461,6 +2266,10 @@
   }
 
 
+  /* =========================================================
+     DELETE MEMBER
+  ========================================================= */
+
   async function deleteMember(id) {
 
     const confirmed =
@@ -1471,7 +2280,9 @@
 
 
     if (!confirmed) {
+
       return;
+
     }
 
 
@@ -1487,12 +2298,18 @@
       await supabaseClient
         .from("members")
         .delete()
-        .eq("id", id);
+        .eq(
+          "id",
+          id
+        );
 
 
     if (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
+
 
       messageBox.innerHTML =
         '<div class="error">' +
@@ -1523,6 +2340,10 @@
 
   }
 
+
+  /* =========================================================
+     START
+  ========================================================= */
 
   loadMember();
 

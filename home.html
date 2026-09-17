@@ -136,7 +136,6 @@
 
 <body>
 
-
   <!-- ==========================================
        HEADER
   =========================================== -->
@@ -154,16 +153,13 @@
 
     </div>
 
-
     <h1 id="appName">
       COC Members
     </h1>
 
-
     <p id="churchName">
       Church Of Christ Sri Lanka
     </p>
-
 
     <p id="subtitle">
       Members Registration
@@ -178,18 +174,15 @@
 
   <div class="container">
 
-
     <div class="welcome">
 
       <h2>
         Welcome
       </h2>
 
-
       <p id="welcomeText">
         Welcome to Church Of Christ Sri Lanka Members Registration
       </p>
-
 
       <p
         id="userEmail"
@@ -207,14 +200,12 @@
 
     <div class="menu">
 
-
       <button
         id="registerButton"
         onclick="registerMember()"
       >
         ➕ Register New Member
       </button>
-
 
       <button
         id="membersButton"
@@ -223,14 +214,12 @@
         👥 Members List
       </button>
 
-
       <button
         id="searchButton"
         onclick="searchMembers()"
       >
         🔍 Search Members
       </button>
-
 
     </div>
 
@@ -254,7 +243,6 @@
 
 <script>
 
-
   /* =========================================================
      SUPABASE CONFIG
   ========================================================= */
@@ -262,16 +250,54 @@
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-
   const SUPABASE_PUBLISHABLE_KEY =
-    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
-
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_LAsIvU_c";
 
   const supabaseClient =
     window.supabase.createClient(
       SUPABASE_URL,
       SUPABASE_PUBLISHABLE_KEY
     );
+
+
+  /* =========================================================
+     DEFAULT VALUES
+     These are only used if database settings cannot be loaded.
+  ========================================================= */
+
+  const DEFAULT_SETTINGS = {
+
+    app_name:
+      "COC Members",
+
+    church_name:
+      "Church Of Christ Sri Lanka",
+
+    subtitle:
+      "Members Registration",
+
+    welcome_text:
+      "Welcome to Church Of Christ Sri Lanka Members Registration",
+
+    register_button_text:
+      "➕ Register New Member",
+
+    members_button_text:
+      "👥 Members List",
+
+    search_button_text:
+      "🔍 Search Members",
+
+    show_register_button:
+      true,
+
+    show_members_button:
+      true,
+
+    show_search_button:
+      true
+
+  };
 
 
   /* =========================================================
@@ -325,154 +351,381 @@
 
   /* =========================================================
      LOAD SETTINGS
+     
+     Priority:
+     1. app_config
+     2. app_settings fallback
+     3. Default values
   ========================================================= */
 
   async function loadSettings() {
 
-    const {
-      data,
-      error
-    } =
-      await supabaseClient
-        .from("app_settings")
-        .select(
-          "app_name, church_name, subtitle, welcome_text, logo_url, register_button_text, members_button_text, search_button_text"
-        )
-        .limit(1)
-        .maybeSingle();
+    let finalSettings = {
+      ...DEFAULT_SETTINGS
+    };
 
 
-    if (error) {
+    /* =====================================================
+       STEP 1
+       LOAD OLD APP SETTINGS AS FALLBACK
+    ===================================================== */
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("app_settings")
+          .select(
+            "app_name, church_name, subtitle, welcome_text, logo_url, register_button_text, members_button_text, search_button_text"
+          )
+          .limit(1)
+          .maybeSingle();
+
+
+      if (!error && data) {
+
+        if (data.app_name) {
+
+          finalSettings.app_name =
+            data.app_name;
+
+        }
+
+        if (data.church_name) {
+
+          finalSettings.church_name =
+            data.church_name;
+
+        }
+
+        if (data.subtitle) {
+
+          finalSettings.subtitle =
+            data.subtitle;
+
+        }
+
+        if (data.welcome_text) {
+
+          finalSettings.welcome_text =
+            data.welcome_text;
+
+        }
+
+        if (data.register_button_text) {
+
+          finalSettings.register_button_text =
+            "➕ " + data.register_button_text;
+
+        }
+
+        if (data.members_button_text) {
+
+          finalSettings.members_button_text =
+            "👥 " + data.members_button_text;
+
+        }
+
+        if (data.search_button_text) {
+
+          finalSettings.search_button_text =
+            "🔍 " + data.search_button_text;
+
+        }
+
+        loadLogo(
+          data.logo_url
+        );
+
+      }
+
+    } catch (error) {
 
       console.error(
-        "Failed to load settings:",
+        "app_settings fallback error:",
         error
       );
 
-      return;
-
     }
 
 
-    if (!data) {
+    /* =====================================================
+       STEP 2
+       LOAD APP CONFIG
+    ===================================================== */
 
-      console.log(
-        "No app settings found."
+    try {
+
+      const {
+        data,
+        error
+      } =
+      await supabaseClient
+        .from("app_config")
+        .select(
+          "setting_key, setting_value, setting_type, is_active"
+        )
+        .order(
+          "id",
+          {
+            ascending: true
+          }
+        );
+
+
+      if (error) {
+
+        console.error(
+          "Failed to load app_config:",
+          error
+        );
+
+      }
+      else if (data) {
+
+        data.forEach(
+          function(item) {
+
+            if (
+              !item.is_active
+            ) {
+
+              return;
+
+            }
+
+
+            const key =
+              item.setting_key;
+
+
+            const value =
+              item.setting_value;
+
+
+            if (
+              key === "show_register_button" ||
+              key === "show_members_button" ||
+              key === "show_search_button"
+            ) {
+
+              finalSettings[key] =
+                String(value).toLowerCase() === "true";
+
+              return;
+
+            }
+
+
+            if (
+              value !== null &&
+              value !== undefined &&
+              String(value).trim() !== ""
+            ) {
+
+              if (
+                key === "app_name"
+              ) {
+
+                finalSettings.app_name =
+                  value;
+
+              }
+
+              else if (
+                key === "church_name"
+              ) {
+
+                finalSettings.church_name =
+                  value;
+
+              }
+
+              else if (
+                key === "subtitle"
+              ) {
+
+                finalSettings.subtitle =
+                  value;
+
+              }
+
+              else if (
+                key === "welcome_text"
+              ) {
+
+                finalSettings.welcome_text =
+                  value;
+
+              }
+
+              else if (
+                key === "register_button_text"
+              ) {
+
+                finalSettings.register_button_text =
+                  "➕ " + value;
+
+              }
+
+              else if (
+                key === "members_button_text"
+              ) {
+
+                finalSettings.members_button_text =
+                  "👥 " + value;
+
+              }
+
+              else if (
+                key === "search_button_text"
+              ) {
+
+                finalSettings.search_button_text =
+                  "🔍 " + value;
+
+              }
+
+            }
+
+          }
+        );
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "app_config error:",
+        error
       );
 
-      return;
-
     }
+
+
+    /* =====================================================
+       STEP 3
+       APPLY SETTINGS TO HOME PAGE
+    ===================================================== */
+
+    applySettings(
+      finalSettings
+    );
+
+  }
+
+
+  /* =========================================================
+     APPLY SETTINGS
+  ========================================================= */
+
+  function applySettings(settings) {
 
 
     /* =====================================================
        APP NAME
     ===================================================== */
 
-    if (data.app_name) {
+    document.getElementById(
+      "appName"
+    ).textContent =
+      settings.app_name;
 
-      document.getElementById(
-        "appName"
-      ).textContent =
-        data.app_name;
-
-      document.title =
-        data.app_name;
-
-    }
+    document.title =
+      settings.app_name;
 
 
     /* =====================================================
        CHURCH NAME
     ===================================================== */
 
-    if (data.church_name) {
-
-      document.getElementById(
-        "churchName"
-      ).textContent =
-        data.church_name;
-
-    }
+    document.getElementById(
+      "churchName"
+    ).textContent =
+      settings.church_name;
 
 
     /* =====================================================
        SUBTITLE
     ===================================================== */
 
-    if (data.subtitle) {
-
-      document.getElementById(
-        "subtitle"
-      ).textContent =
-        data.subtitle;
-
-    }
+    document.getElementById(
+      "subtitle"
+    ).textContent =
+      settings.subtitle;
 
 
     /* =====================================================
        WELCOME TEXT
     ===================================================== */
 
-    if (data.welcome_text) {
-
-      document.getElementById(
-        "welcomeText"
-      ).textContent =
-        data.welcome_text;
-
-    }
+    document.getElementById(
+      "welcomeText"
+    ).textContent =
+      settings.welcome_text;
 
 
     /* =====================================================
        REGISTER BUTTON
     ===================================================== */
 
-    if (data.register_button_text) {
-
+    const registerButton =
       document.getElementById(
         "registerButton"
-      ).textContent =
-        data.register_button_text;
+      );
 
-    }
+
+    registerButton.textContent =
+      settings.register_button_text;
+
+
+    registerButton.style.display =
+      settings.show_register_button
+        ? "block"
+        : "none";
 
 
     /* =====================================================
        MEMBERS BUTTON
     ===================================================== */
 
-    if (data.members_button_text) {
-
+    const membersButton =
       document.getElementById(
         "membersButton"
-      ).textContent =
-        data.members_button_text;
+      );
 
-    }
+
+    membersButton.textContent =
+      settings.members_button_text;
+
+
+    membersButton.style.display =
+      settings.show_members_button
+        ? "block"
+        : "none";
 
 
     /* =====================================================
        SEARCH BUTTON
     ===================================================== */
 
-    if (data.search_button_text) {
-
+    const searchButton =
       document.getElementById(
         "searchButton"
-      ).textContent =
-        data.search_button_text;
-
-    }
+      );
 
 
-    /* =====================================================
-       LOGO
-    ===================================================== */
+    searchButton.textContent =
+      settings.search_button_text;
 
-    loadLogo(
-      data.logo_url
-    );
+
+    searchButton.style.display =
+      settings.show_search_button
+        ? "block"
+        : "none";
 
   }
 
@@ -612,7 +865,6 @@
   ========================================================= */
 
   checkLogin();
-
 
 </script>
 

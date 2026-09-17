@@ -3,13 +3,11 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>Admin Settings - COC Members</title>
+  <title>Admin Panel - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
-
     * {
       box-sizing: border-box;
     }
@@ -17,273 +15,207 @@
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f1e8;
+      background: #f5f3ee;
       color: #222;
     }
 
     .header {
-      background: #174d3c;
-      color: white;
-      padding: 22px 15px;
+      background: #ffffff;
+      border-bottom: 1px solid #ddd;
+      padding: 18px 20px;
       text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .header img {
+      max-width: 220px;
+      max-height: 90px;
+      object-fit: contain;
     }
 
     .header h1 {
-      margin: 0;
+      margin: 10px 0 3px;
       font-size: 24px;
     }
 
     .header p {
-      margin: 7px 0 0;
-      font-size: 14px;
+      margin: 0;
+      color: #666;
     }
 
     .container {
-      max-width: 700px;
-      margin: 20px auto;
-      padding: 15px;
+      width: 100%;
+      max-width: 1000px;
+      margin: 25px auto;
+      padding: 0 15px 50px;
     }
 
     .card {
-      background: white;
-      border-radius: 15px;
+      background: #fff;
+      border-radius: 14px;
       padding: 22px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
       margin-bottom: 20px;
+      box-shadow: 0 3px 12px rgba(0,0,0,0.08);
     }
 
     .card h2 {
       margin-top: 0;
-      color: #174d3c;
-      text-align: center;
+      margin-bottom: 18px;
+      font-size: 21px;
     }
 
-    .description {
-      text-align: center;
-      color: #666;
-      font-size: 14px;
-      margin-bottom: 25px;
-      line-height: 1.5;
+    .section-title {
+      font-size: 17px;
+      font-weight: bold;
+      margin: 22px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ddd;
     }
 
     .form-group {
-      margin-bottom: 18px;
+      margin-bottom: 16px;
     }
 
     label {
       display: block;
       font-weight: bold;
-      color: #174d3c;
       margin-bottom: 7px;
-      font-size: 14px;
     }
 
-    input,
+    input[type="text"],
+    input[type="url"],
+    input[type="number"],
     textarea,
     select {
       width: 100%;
-      padding: 13px;
+      padding: 12px;
       border: 1px solid #ccc;
-      border-radius: 9px;
-      font-size: 16px;
-      font-family: Arial, sans-serif;
-      outline: none;
-      background: white;
-    }
-
-    input:focus,
-    textarea:focus,
-    select:focus {
-      border-color: #174d3c;
+      border-radius: 8px;
+      font-size: 15px;
+      background: #fff;
     }
 
     textarea {
-      min-height: 110px;
+      min-height: 90px;
       resize: vertical;
     }
 
-    .save-btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 9px;
-      background: #8b6b2e;
-      color: white;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
+    .button-row {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
     }
 
-    .save-btn:disabled {
-      background: #aaa;
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 11px 17px;
+      font-size: 15px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: #c59b45;
+      color: #fff;
+    }
+
+    .btn-secondary {
+      background: #555;
+      color: #fff;
+    }
+
+    .btn-danger {
+      background: #c0392b;
+      color: #fff;
+    }
+
+    .btn-success {
+      background: #2e7d32;
+      color: #fff;
+    }
+
+    .btn-small {
+      padding: 8px 12px;
+      font-size: 13px;
+    }
+
+    button:disabled {
+      opacity: 0.55;
       cursor: not-allowed;
     }
 
-    .back-btn {
-      width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 9px;
-      background: #777;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-bottom: 15px;
-    }
-
     .message {
-      padding: 13px;
-      border-radius: 9px;
-      text-align: center;
-      margin-bottom: 18px;
-      display: none;
-      line-height: 1.5;
-    }
-
-    .success {
-      background: #dff2e5;
-      color: #176b36;
-    }
-
-    .error {
-      background: #f8dddd;
-      color: #a00000;
-    }
-
-    .loading {
-      text-align: center;
-      padding: 20px;
-      color: #666;
-    }
-
-    .section-title {
-      margin-top: 28px;
+      padding: 12px;
+      border-radius: 8px;
       margin-bottom: 15px;
-      padding-bottom: 8px;
-      border-bottom: 2px solid #eee;
-      color: #8b6b2e;
-      font-size: 17px;
-      font-weight: bold;
+      display: none;
     }
 
-    .hint {
-      font-size: 12px;
-      color: #777;
-      margin-top: 6px;
-      line-height: 1.5;
+    .message.success {
+      display: block;
+      background: #e8f5e9;
+      color: #256029;
+      border: 1px solid #b7dfb9;
     }
 
-    .logo-box {
-      border: 2px dashed #c9c1ae;
-      border-radius: 12px;
-      padding: 18px;
-      text-align: center;
-      background: #faf9f5;
+    .message.error {
+      display: block;
+      background: #ffebee;
+      color: #a61b1b;
+      border: 1px solid #efb5b5;
     }
 
     .logo-preview {
-      width: 150px;
-      height: 150px;
+      margin-top: 10px;
+      padding: 15px;
+      border: 1px dashed #bbb;
+      border-radius: 10px;
+      text-align: center;
+      background: #fafafa;
+    }
+
+    .logo-preview img {
+      max-width: 260px;
+      max-height: 140px;
       object-fit: contain;
+    }
+
+    .file-input {
       display: none;
-      margin: 0 auto 15px;
-      border-radius: 12px;
-      background: white;
-      padding: 8px;
-      border: 1px solid #ddd;
-    }
-
-    .no-logo {
-      color: #888;
-      font-size: 14px;
-      margin-bottom: 15px;
-    }
-
-    .logo-btn {
-      display: inline-block;
-      padding: 13px 20px;
-      border: none;
-      border-radius: 9px;
-      background: #174d3c;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .logo-file {
-      display: none;
-    }
-
-    .remove-logo-btn {
-      display: none;
-      margin-top: 10px;
-      padding: 10px 18px;
-      border: none;
-      border-radius: 8px;
-      background: #8b2f2f;
-      color: white;
-      font-size: 14px;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    .upload-status {
-      margin-top: 10px;
-      font-size: 13px;
-      color: #666;
-      display: none;
-    }
-
-    /* =========================
-       APP CONTROL CENTER
-    ========================= */
-
-    .control-card {
-      border: 1px solid #e4dfd4;
-      border-radius: 12px;
-      padding: 16px;
-      margin-bottom: 14px;
-      background: #faf9f5;
-    }
-
-    .control-card h3 {
-      margin: 0 0 12px;
-      color: #174d3c;
-      font-size: 16px;
     }
 
     .control-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 15px;
       align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 10px 0;
+      padding: 13px 0;
+      border-bottom: 1px solid #eee;
     }
 
-    .control-row + .control-row {
-      border-top: 1px solid #e5e0d6;
+    .control-row:last-child {
+      border-bottom: none;
     }
 
     .control-name {
       font-weight: bold;
-      color: #333;
-      font-size: 14px;
     }
 
     .control-key {
-      font-size: 11px;
-      color: #999;
+      color: #777;
+      font-size: 12px;
       margin-top: 3px;
     }
 
     .switch {
       position: relative;
+      display: inline-block;
       width: 52px;
-      height: 30px;
-      flex-shrink: 0;
+      height: 28px;
     }
 
     .switch input {
@@ -294,10 +226,10 @@
 
     .slider {
       position: absolute;
-      cursor: pointer;
       inset: 0;
       background: #bbb;
       border-radius: 30px;
+      cursor: pointer;
       transition: 0.2s;
     }
 
@@ -306,516 +238,419 @@
       position: absolute;
       width: 22px;
       height: 22px;
-      left: 4px;
-      top: 4px;
+      left: 3px;
+      top: 3px;
       background: white;
       border-radius: 50%;
       transition: 0.2s;
     }
 
     .switch input:checked + .slider {
-      background: #174d3c;
+      background: #c59b45;
     }
 
     .switch input:checked + .slider:before {
-      transform: translateX(22px);
+      transform: translateX(24px);
     }
 
-    .config-input {
-      margin-top: 8px;
-    }
-
-    .config-input input {
-      background: white;
-    }
-
-    .control-save-btn {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 9px;
-      background: #174d3c;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      cursor: pointer;
-      margin-top: 5px;
-    }
-
-    .control-save-btn:disabled {
-      background: #aaa;
-    }
-
-    .empty-control {
-      text-align: center;
-      color: #777;
-      padding: 20px;
-    }
-
-    /* =========================
-       REGISTRATION FORM BUILDER
-    ========================= */
-
-    .builder-card {
-      border: 1px solid #e4dfd4;
+    .field-builder {
+      border: 1px solid #ddd;
       border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 14px;
-      background: #faf9f5;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fafafa;
     }
 
-    .builder-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 100px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .field-info {
       margin-bottom: 12px;
     }
 
-    .builder-title {
-      font-weight: bold;
-      color: #174d3c;
+    .field-info strong {
       font-size: 16px;
     }
 
-    .builder-key {
-      font-size: 11px;
-      color: #999;
-      margin-top: 4px;
-    }
-
-    .builder-type {
-      display: inline-block;
-      padding: 4px 8px;
-      border-radius: 20px;
-      background: #eee7d7;
-      color: #76591e;
-      font-size: 11px;
-      white-space: nowrap;
-    }
-
-    .builder-field {
-      margin-top: 12px;
-    }
-
-    .builder-field label {
-      margin-bottom: 5px;
-    }
-
-    .builder-toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      padding-top: 12px;
-      margin-top: 12px;
-      border-top: 1px solid #e5e0d6;
-    }
-
-    .toggle-label {
-      font-weight: bold;
-      color: #444;
-      font-size: 14px;
-    }
-
-    .toggle-description {
-      font-size: 11px;
-      color: #888;
+    .field-key {
+      color: #777;
+      font-size: 12px;
       margin-top: 3px;
     }
 
-    .builder-order {
-      width: 90px;
+    .checkbox-group {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+      min-height: 42px;
     }
 
-    .builder-order input {
-      text-align: center;
+    .checkbox-group input {
+      width: 18px;
+      height: 18px;
     }
 
-    .required-badge {
+    .automatic-badge {
       display: inline-block;
-      margin-left: 5px;
-      color: #a00000;
+      background: #e8f5e9;
+      color: #2e7d32;
+      padding: 5px 9px;
+      border-radius: 20px;
       font-size: 12px;
-    }
-
-    .automatic-note {
-      background: #edf4f0;
-      color: #376351;
-      padding: 9px;
-      border-radius: 8px;
-      font-size: 12px;
-      line-height: 1.5;
-      margin-top: 10px;
-    }
-
-    .builder-save-btn {
-      width: 100%;
-      padding: 15px;
-      border: none;
-      border-radius: 9px;
-      background: #8b6b2e;
-      color: white;
-      font-size: 16px;
       font-weight: bold;
-      cursor: pointer;
+    }
+
+    .dropdown-manager {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 18px;
+      margin-bottom: 18px;
+      background: #fafafa;
+    }
+
+    .dropdown-manager h3 {
+      margin-top: 0;
+      margin-bottom: 5px;
+    }
+
+    .dropdown-key {
+      color: #777;
+      font-size: 12px;
+      margin-bottom: 15px;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+
+    .option-item {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .option-actions {
+      display: flex;
+      gap: 6px;
+    }
+
+    .add-option-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+    }
+
+    .empty-options {
+      color: #777;
+      padding: 10px;
+      background: #fff;
+      border-radius: 8px;
+      border: 1px dashed #ccc;
+      margin-bottom: 12px;
+    }
+
+    .info-box {
+      background: #fff8e7;
+      border: 1px solid #ead59a;
+      border-radius: 10px;
+      padding: 13px;
+      margin-bottom: 15px;
+      color: #5e4a18;
+      line-height: 1.5;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 20px;
+      color: #777;
+    }
+
+    .admin-email {
+      font-size: 13px;
+      color: #666;
       margin-top: 8px;
     }
 
-    .builder-save-btn:disabled {
-      background: #aaa;
-      cursor: not-allowed;
-    }
+    @media (max-width: 700px) {
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
 
+      .control-row {
+        grid-template-columns: 1fr auto;
+      }
+
+      .option-item {
+        grid-template-columns: 1fr;
+      }
+
+      .add-option-row {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 17px;
+      }
+    }
   </style>
 </head>
 
 <body>
 
   <div class="header">
-    <h1>COC Members</h1>
-    <p>Church Of Christ Sri Lanka</p>
-    <p>Admin Settings</p>
+    <img id="headerLogo" src="" alt="COC Members Logo" style="display:none;">
+    <h1 id="headerAppName">COC Members</h1>
+    <p id="headerChurchName">Church Of Christ Sri Lanka</p>
+    <div class="admin-email" id="adminEmail"></div>
   </div>
 
   <div class="container">
 
-    <button
-      class="back-btn"
-      onclick="window.location.href='home.html'"
-    >
-      ← Back to Dashboard
-    </button>
+    <div id="message" class="message"></div>
 
+    <!-- APPLICATION INFORMATION -->
     <div class="card">
+      <h2>⚙️ Application Information</h2>
 
-      <h2>⚙️ Admin Settings</h2>
-
-      <div class="description">
-        Only administrators can access and update these settings.
+      <div class="form-group">
+        <label for="appName">App Name</label>
+        <input type="text" id="appName" placeholder="Enter App Name">
       </div>
 
-      <div id="message" class="message"></div>
-
-      <div id="loading" class="loading">
-        Checking administrator access...
+      <div class="form-group">
+        <label for="churchName">Church Name</label>
+        <input type="text" id="churchName" placeholder="Enter Church Name">
       </div>
 
-      <div id="settingsForm" style="display:none;">
+      <div class="form-group">
+        <label for="subtitle">Subtitle</label>
+        <input type="text" id="subtitle" placeholder="Enter Subtitle">
+      </div>
 
-        <!-- =========================
-             APPLICATION INFORMATION
-        ========================= -->
+      <div class="form-group">
+        <label for="welcomeText">Welcome Text</label>
+        <textarea id="welcomeText" placeholder="Enter Welcome Text"></textarea>
+      </div>
+    </div>
 
-        <div class="section-title">
-          🏛️ Application Information
-        </div>
 
-        <div class="form-group">
-          <label for="appName">App Name</label>
+    <!-- HOME SCREEN SETTINGS -->
+    <div class="card">
+      <h2>🏠 Home Screen Settings</h2>
 
-          <input
-            type="text"
-            id="appName"
-            placeholder="Enter App Name"
+      <div class="form-group">
+        <label>Home Logo</label>
+
+        <input
+          type="file"
+          id="homeLogoInput"
+          class="file-input"
+          accept="image/*"
+        >
+
+        <div class="button-row">
+          <button
+            type="button"
+            class="btn-primary"
+            onclick="document.getElementById('homeLogoInput').click()"
           >
-        </div>
+            🖼️ Upload Home Logo
+          </button>
 
-        <div class="form-group">
-          <label for="churchName">Church Name</label>
-
-          <input
-            type="text"
-            id="churchName"
-            placeholder="Enter Church Name"
+          <button
+            type="button"
+            class="btn-danger"
+            onclick="removeHomeLogo()"
           >
+            🗑️ Remove Logo
+          </button>
         </div>
 
-        <div class="form-group">
-          <label for="subtitle">Subtitle</label>
+        <div class="logo-preview" id="homeLogoPreview">
+          <span>No home logo selected</span>
+        </div>
+      </div>
+    </div>
 
-          <input
-            type="text"
-            id="subtitle"
-            placeholder="Enter Subtitle"
+
+    <!-- LOGIN SCREEN SETTINGS -->
+    <div class="card">
+      <h2>🔐 Login Screen Settings</h2>
+
+      <div class="form-group">
+        <label>Login Logo</label>
+
+        <input
+          type="file"
+          id="loginLogoInput"
+          class="file-input"
+          accept="image/*"
+        >
+
+        <div class="button-row">
+          <button
+            type="button"
+            class="btn-primary"
+            onclick="document.getElementById('loginLogoInput').click()"
           >
-        </div>
+            🖼️ Upload Login Logo
+          </button>
 
-        <div class="form-group">
-          <label for="welcomeText">Welcome Text</label>
-
-          <textarea
-            id="welcomeText"
-            placeholder="Enter Welcome Text"
-          ></textarea>
-        </div>
-
-
-        <!-- =========================
-             HOME LOGO
-        ========================= -->
-
-        <div class="section-title">
-          🎨 Home Screen Settings
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            🖼️ Home Screen Logo
-          </label>
-
-          <div class="logo-box">
-
-            <img
-              id="logoPreview"
-              class="logo-preview"
-              alt="Home Logo Preview"
-            >
-
-            <div
-              id="noLogo"
-              class="no-logo"
-            >
-              No logo selected
-            </div>
-
-            <button
-              type="button"
-              class="logo-btn"
-              onclick="openLogoPicker()"
-            >
-              🖼️ Choose Logo from Gallery
-            </button>
-
-            <input
-              type="file"
-              id="logoFile"
-              class="logo-file"
-              accept="image/*"
-            >
-
-            <br>
-
-            <button
-              type="button"
-              id="removeLogoButton"
-              class="remove-logo-btn"
-              onclick="removeLogo()"
-            >
-              🗑️ Remove Logo
-            </button>
-
-            <div
-              id="uploadStatus"
-              class="upload-status"
-            ></div>
-
-          </div>
-
-          <div class="hint">
-            This logo appears on the Home Screen.
-          </div>
-
-        </div>
-
-
-        <!-- =========================
-             LOGIN LOGO
-        ========================= -->
-
-        <div class="section-title">
-          🔐 Login Screen Settings
-        </div>
-
-        <div class="form-group">
-
-          <label>
-            🖼️ Login Screen Logo
-          </label>
-
-          <div class="logo-box">
-
-            <img
-              id="loginLogoPreview"
-              class="logo-preview"
-              alt="Login Logo Preview"
-            >
-
-            <div
-              id="noLoginLogo"
-              class="no-logo"
-            >
-              No login logo selected
-            </div>
-
-            <button
-              type="button"
-              class="logo-btn"
-              onclick="openLoginLogoPicker()"
-            >
-              🖼️ Choose Login Logo from Gallery
-            </button>
-
-            <input
-              type="file"
-              id="loginLogoFile"
-              class="logo-file"
-              accept="image/*"
-            >
-
-            <br>
-
-            <button
-              type="button"
-              id="removeLoginLogoButton"
-              class="remove-logo-btn"
-              onclick="removeLoginLogo()"
-            >
-              🗑️ Remove Login Logo
-            </button>
-
-            <div
-              id="loginUploadStatus"
-              class="upload-status"
-            ></div>
-
-          </div>
-
-          <div class="hint">
-            This logo appears on the Login Screen.
-          </div>
-
-        </div>
-
-
-        <!-- =========================
-             BUTTON TEXT
-        ========================= -->
-
-        <div class="section-title">
-          🔘 Home Button Settings
-        </div>
-
-        <div class="form-group">
-
-          <label for="registerButtonText">
-            Register Button Text
-          </label>
-
-          <input
-            type="text"
-            id="registerButtonText"
-            placeholder="Register New Member"
+          <button
+            type="button"
+            class="btn-danger"
+            onclick="removeLoginLogo()"
           >
-
+            🗑️ Remove Login Logo
+          </button>
         </div>
 
-        <div class="form-group">
-
-          <label for="membersButtonText">
-            Members Button Text
-          </label>
-
-          <input
-            type="text"
-            id="membersButtonText"
-            placeholder="Members List"
-          >
-
+        <div class="logo-preview" id="loginLogoPreview">
+          <span>No login logo selected</span>
         </div>
-
-        <div class="form-group">
-
-          <label for="searchButtonText">
-            Search Button Text
-          </label>
-
-          <input
-            type="text"
-            id="searchButtonText"
-            placeholder="Search Members"
-          >
-
-        </div>
+      </div>
+    </div>
 
 
-        <!-- =========================
-             APP CONTROL CENTER
-        ========================= -->
+    <!-- HOME BUTTON SETTINGS -->
+    <div class="card">
+      <h2>🔘 Home Button Settings</h2>
 
-        <div class="section-title">
-          🛠️ App Control Center
-        </div>
+      <div class="form-group">
+        <label for="registerButtonText">Register Button Text</label>
+        <input
+          type="text"
+          id="registerButtonText"
+          placeholder="Register New Member"
+        >
+      </div>
 
-        <div class="description">
-          Control app content and visibility without editing GitHub code.
-        </div>
+      <div class="form-group">
+        <label for="membersButtonText">Members List Button Text</label>
+        <input
+          type="text"
+          id="membersButtonText"
+          placeholder="Members List"
+        >
+      </div>
 
-        <div id="controlCenter">
+      <div class="form-group">
+        <label for="searchButtonText">Search Button Text</label>
+        <input
+          type="text"
+          id="searchButtonText"
+          placeholder="Search Members"
+        >
+      </div>
+    </div>
 
-          <div class="loading">
-            Loading App Controls...
-          </div>
 
-        </div>
+    <!-- APP CONTROL CENTER -->
+    <div class="card">
+      <h2>🎛️ App Control Center</h2>
 
+      <div class="info-box">
+        මෙතැනින් Home Screen එකේ text සහ buttons Admin Panel එකෙන් control කරන්න පුළුවන්.
+      </div>
+
+      <div id="appControlsContainer">
+        <div class="loading">Loading App Controls...</div>
+      </div>
+
+      <div class="button-row">
         <button
           type="button"
-          id="saveControlButton"
-          class="control-save-btn"
+          class="btn-primary"
+          onclick="saveAppControls()"
         >
           💾 Save App Controls
         </button>
+      </div>
+    </div>
 
 
-        <!-- =========================
-             REGISTRATION FORM BUILDER
-        ========================= -->
+    <!-- REGISTRATION FORM BUILDER -->
+    <div class="card">
+      <h2>📝 Registration Form Builder</h2>
 
-        <div class="section-title">
-          📝 Registration Form Builder
-        </div>
+      <div class="info-box">
+        Registration Form එකේ field label, field visibility, required status සහ display order මෙතැනින් වෙනස් කරන්න.
+        <br><br>
+        <strong>Note:</strong> Member ID automatic වන නිසා එය වෙනස් කළ නොහැක.
+      </div>
 
-        <div class="description">
-          Manage registration form fields without editing GitHub code.
-          You can change field labels, visibility, required status and order.
-        </div>
+      <div id="formFieldsContainer">
+        <div class="loading">Loading Registration Form Fields...</div>
+      </div>
 
-        <div id="formBuilder">
-
-          <div class="loading">
-            Loading Registration Form Fields...
-          </div>
-
-        </div>
-
+      <div class="button-row">
         <button
           type="button"
-          id="saveFormButton"
-          class="builder-save-btn"
+          class="btn-primary"
+          onclick="saveFormFields()"
         >
           💾 Save Registration Form Settings
         </button>
+      </div>
+    </div>
 
 
-        <!-- =========================
-             EXISTING SETTINGS SAVE
-        ========================= -->
+    <!-- DROPDOWN OPTIONS MANAGER -->
+    <div class="card">
+      <h2>🔽 Dropdown Options Manager</h2>
 
-        <div class="section-title">
-          💾 Save Application Settings
-        </div>
-
-        <button
-          id="saveButton"
-          class="save-btn"
-        >
-          💾 Save Settings
-        </button>
-
+      <div class="info-box">
+        Registration Form එකේ dropdown fields සඳහා options මෙතැනින් add, edit සහ delete කරන්න.
+        <br><br>
+        <strong>Current dropdown fields:</strong>
+        Member Type, Gender, Marital Status
       </div>
 
+      <div id="dropdownOptionsContainer">
+        <div class="loading">Loading Dropdown Options...</div>
+      </div>
+
+      <div class="button-row">
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="saveAllDropdownOptions()"
+        >
+          💾 Save All Dropdown Options
+        </button>
+      </div>
+    </div>
+
+
+    <!-- SAVE APPLICATION SETTINGS -->
+    <div class="card">
+      <h2>💾 Save Application Settings</h2>
+
+      <div class="button-row">
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="saveApplicationSettings()"
+        >
+          💾 Save Application Settings
+        </button>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          onclick="window.location.href='home.html'"
+        >
+          🏠 Back to Home
+        </button>
+      </div>
     </div>
 
   </div>
@@ -824,346 +659,597 @@
 <script>
 
   /* =========================================================
-     SUPABASE CONFIG
+     SUPABASE
   ========================================================= */
 
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-  const SUPABASE_PUBLISHABLE_KEY =
+  const SUPABASE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
   const supabaseClient =
-    supabase.createClient(
+    window.supabase.createClient(
       SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
+      SUPABASE_KEY
     );
 
 
   /* =========================================================
-     ELEMENTS
+     GLOBAL VARIABLES
   ========================================================= */
 
-  const loading =
-    document.getElementById("loading");
+  let currentUser = null;
+  let appSettingsId = null;
 
-  const settingsForm =
-    document.getElementById("settingsForm");
-
-  const message =
-    document.getElementById("message");
-
-  const saveButton =
-    document.getElementById("saveButton");
-
-  const saveControlButton =
-    document.getElementById("saveControlButton");
-
-  const saveFormButton =
-    document.getElementById("saveFormButton");
-
-  const controlCenter =
-    document.getElementById("controlCenter");
-
-  const formBuilder =
-    document.getElementById("formBuilder");
-
-
-  const appName =
-    document.getElementById("appName");
-
-  const churchName =
-    document.getElementById("churchName");
-
-  const subtitle =
-    document.getElementById("subtitle");
-
-  const welcomeText =
-    document.getElementById("welcomeText");
-
-  const registerButtonText =
-    document.getElementById("registerButtonText");
-
-  const membersButtonText =
-    document.getElementById("membersButtonText");
-
-  const searchButtonText =
-    document.getElementById("searchButtonText");
-
-
-  /* HOME LOGO */
-
-  const logoFile =
-    document.getElementById("logoFile");
-
-  const logoPreview =
-    document.getElementById("logoPreview");
-
-  const noLogo =
-    document.getElementById("noLogo");
-
-  const removeLogoButton =
-    document.getElementById("removeLogoButton");
-
-  const uploadStatus =
-    document.getElementById("uploadStatus");
-
-
-  /* LOGIN LOGO */
-
-  const loginLogoFile =
-    document.getElementById("loginLogoFile");
-
-  const loginLogoPreview =
-    document.getElementById("loginLogoPreview");
-
-  const noLoginLogo =
-    document.getElementById("noLoginLogo");
-
-  const removeLoginLogoButton =
-    document.getElementById("removeLoginLogoButton");
-
-  const loginUploadStatus =
-    document.getElementById("loginUploadStatus");
-
-
-  /* =========================================================
-     LOGO VARIABLES
-  ========================================================= */
-
-  let currentLogoUrl = "";
-  let selectedLogoFile = null;
-  let removeLogoRequested = false;
-
-  let currentLoginLogoUrl = "";
-  let selectedLoginLogoFile = null;
-  let removeLoginLogoRequested = false;
-
-
-  /* =========================================================
-     APP CONFIG
-  ========================================================= */
-
-  let appConfigs = [];
-
-
-  /* =========================================================
-     FORM FIELDS
-  ========================================================= */
+  let appControls = [];
 
   let formFields = [];
+
+  let dropdownFields = [];
 
 
   /* =========================================================
      MESSAGE
   ========================================================= */
 
-  function showMessage(text, type) {
+  function showMessage(text, type = "success") {
 
-    message.textContent =
-      text;
+    const box = document.getElementById("message");
 
-    message.className =
+    box.textContent = text;
+
+    box.className =
       "message " + type;
 
-    message.style.display =
-      "block";
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    });
 
+    setTimeout(() => {
+
+      box.className = "message";
+
+    }, 5000);
   }
 
 
   /* =========================================================
-     HOME LOGO PICKER
+     ADMIN CHECK
   ========================================================= */
 
-  function openLogoPicker() {
-    logoFile.click();
-  }
+  async function checkAdmin() {
 
+    const {
+      data: {
+        user
+      },
+      error
+    } =
+      await supabaseClient.auth.getUser();
 
-  logoFile.addEventListener(
-    "change",
-    function(event) {
+    if (error || !user) {
 
-      const file =
-        event.target.files[0];
+      window.location.href = "index.html";
 
-      if (!file) {
-        return;
-      }
-
-      if (!file.type.startsWith("image/")) {
-
-        showMessage(
-          "Please select an image file.",
-          "error"
-        );
-
-        logoFile.value = "";
-        return;
-
-      }
-
-      if (file.size > 5 * 1024 * 1024) {
-
-        showMessage(
-          "Logo image must be less than 5MB.",
-          "error"
-        );
-
-        logoFile.value = "";
-        return;
-
-      }
-
-      selectedLogoFile =
-        file;
-
-      removeLogoRequested =
-        false;
-
-      const reader =
-        new FileReader();
-
-      reader.onload =
-        function(e) {
-
-          logoPreview.src =
-            e.target.result;
-
-          logoPreview.style.display =
-            "block";
-
-          noLogo.style.display =
-            "none";
-
-          removeLogoButton.style.display =
-            "inline-block";
-
-          uploadStatus.style.display =
-            "block";
-
-          uploadStatus.textContent =
-            "New logo selected. Click Save Settings to upload.";
-
-        };
-
-      reader.readAsDataURL(file);
-
+      return false;
     }
-  );
+
+    currentUser = user;
+
+    document.getElementById("adminEmail").textContent =
+      "Logged in as: " + (user.email || "");
+
+    const role =
+      user.app_metadata?.role;
+
+    if (role !== "admin") {
+
+      document.body.innerHTML = `
+        <div style="
+          min-height:100vh;
+          display:flex;
+          align-items:center;
+          justify-content:center;
+          padding:20px;
+          text-align:center;
+          font-family:Arial;
+        ">
+          <div>
+            <h2>Access Denied</h2>
+            <p>Administrator access is required.</p>
+            <button
+              onclick="window.location.href='home.html'"
+              style="
+                background:#c59b45;
+                color:white;
+                border:none;
+                padding:12px 20px;
+                border-radius:8px;
+              "
+            >
+              Back to Home
+            </button>
+          </div>
+        </div>
+      `;
+
+      return false;
+    }
+
+    return true;
+  }
 
 
   /* =========================================================
-     LOGIN LOGO PICKER
+     LOAD APP SETTINGS
   ========================================================= */
 
-  function openLoginLogoPicker() {
-    loginLogoFile.click();
+  async function loadAppSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select("*")
+        .limit(1)
+        .maybeSingle();
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to load application settings: " + error.message,
+        "error"
+      );
+
+      return;
+    }
+
+    if (!data) return;
+
+    appSettingsId = data.id;
+
+    document.getElementById("appName").value =
+      data.app_name || "";
+
+    document.getElementById("churchName").value =
+      data.church_name || "";
+
+    document.getElementById("subtitle").value =
+      data.subtitle || "";
+
+    document.getElementById("welcomeText").value =
+      data.welcome_text || "";
+
+    document.getElementById("registerButtonText").value =
+      data.register_button_text || "";
+
+    document.getElementById("membersButtonText").value =
+      data.members_button_text || "";
+
+    document.getElementById("searchButtonText").value =
+      data.search_button_text || "";
+
+    updateHeader();
+
+    renderLogoPreview(
+      "homeLogoPreview",
+      data.logo_url
+    );
+
+    renderLogoPreview(
+      "loginLogoPreview",
+      data.login_logo_url
+    );
+
+    if (data.logo_url) {
+
+      const logo =
+        document.getElementById("headerLogo");
+
+      logo.src = data.logo_url;
+
+      logo.style.display = "inline-block";
+    }
   }
 
 
-  loginLogoFile.addEventListener(
-    "change",
-    function(event) {
+  /* =========================================================
+     HEADER PREVIEW
+  ========================================================= */
 
-      const file =
-        event.target.files[0];
+  function updateHeader() {
 
-      if (!file) {
-        return;
-      }
+    document.getElementById("headerAppName").textContent =
+      document.getElementById("appName").value ||
+      "COC Members";
 
-      if (!file.type.startsWith("image/")) {
+    document.getElementById("headerChurchName").textContent =
+      document.getElementById("churchName").value ||
+      "Church Of Christ Sri Lanka";
+  }
 
-        showMessage(
-          "Please select an image file.",
-          "error"
-        );
 
-        loginLogoFile.value = "";
-        return;
+  document
+    .getElementById("appName")
+    .addEventListener("input", updateHeader);
 
-      }
+  document
+    .getElementById("churchName")
+    .addEventListener("input", updateHeader);
 
-      if (file.size > 5 * 1024 * 1024) {
 
-        showMessage(
-          "Login logo image must be less than 5MB.",
-          "error"
-        );
+  /* =========================================================
+     SAVE APPLICATION SETTINGS
+  ========================================================= */
 
-        loginLogoFile.value = "";
-        return;
+  async function saveApplicationSettings() {
 
-      }
+    if (!appSettingsId) {
 
-      selectedLoginLogoFile =
-        file;
+      showMessage(
+        "Application settings record was not found.",
+        "error"
+      );
 
-      removeLoginLogoRequested =
-        false;
-
-      const reader =
-        new FileReader();
-
-      reader.onload =
-        function(e) {
-
-          loginLogoPreview.src =
-            e.target.result;
-
-          loginLogoPreview.style.display =
-            "block";
-
-          noLoginLogo.style.display =
-            "none";
-
-          removeLoginLogoButton.style.display =
-            "inline-block";
-
-          loginUploadStatus.style.display =
-            "block";
-
-          loginUploadStatus.textContent =
-            "New login logo selected. Click Save Settings to upload.";
-
-        };
-
-      reader.readAsDataURL(file);
-
+      return;
     }
-  );
+
+    const updates = {
+
+      app_name:
+        document.getElementById("appName").value.trim(),
+
+      church_name:
+        document.getElementById("churchName").value.trim(),
+
+      subtitle:
+        document.getElementById("subtitle").value.trim(),
+
+      welcome_text:
+        document.getElementById("welcomeText").value.trim(),
+
+      register_button_text:
+        document.getElementById("registerButtonText").value.trim(),
+
+      members_button_text:
+        document.getElementById("membersButtonText").value.trim(),
+
+      search_button_text:
+        document.getElementById("searchButtonText").value.trim(),
+
+      updated_at:
+        new Date().toISOString()
+    };
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update(updates)
+        .eq("id", appSettingsId);
+
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to save application settings: " +
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    updateHeader();
+
+    showMessage(
+      "Application settings saved successfully.",
+      "success"
+    );
+  }
+
+
+  /* =========================================================
+     LOGO PREVIEW
+  ========================================================= */
+
+  function renderLogoPreview(
+    elementId,
+    url
+  ) {
+
+    const box =
+      document.getElementById(elementId);
+
+    if (!url) {
+
+      box.innerHTML =
+        "<span>No logo uploaded</span>";
+
+      return;
+    }
+
+    box.innerHTML = `
+      <img
+        src="${escapeHtml(url)}"
+        alt="Logo"
+      >
+    `;
+  }
+
+
+  /* =========================================================
+     HOME LOGO UPLOAD
+  ========================================================= */
+
+  document
+    .getElementById("homeLogoInput")
+    .addEventListener(
+      "change",
+      async function () {
+
+        const file =
+          this.files[0];
+
+        if (!file) return;
+
+        await uploadLogo(
+          file,
+          "home"
+        );
+
+        this.value = "";
+      }
+    );
+
+
+  /* =========================================================
+     LOGIN LOGO UPLOAD
+  ========================================================= */
+
+  document
+    .getElementById("loginLogoInput")
+    .addEventListener(
+      "change",
+      async function () {
+
+        const file =
+          this.files[0];
+
+        if (!file) return;
+
+        await uploadLogo(
+          file,
+          "login"
+        );
+
+        this.value = "";
+      }
+    );
+
+
+  /* =========================================================
+     UPLOAD LOGO
+  ========================================================= */
+
+  async function uploadLogo(
+    file,
+    type
+  ) {
+
+    if (!appSettingsId) {
+
+      showMessage(
+        "Application settings are not loaded yet.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (!file.type.startsWith("image/")) {
+
+      showMessage(
+        "Please select an image file.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    if (file.size > 5 * 1024 * 1024) {
+
+      showMessage(
+        "Image must be smaller than 5MB.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    const extension =
+      file.name.split(".").pop();
+
+
+    const path =
+      type +
+      "-logo-" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+
+    const {
+      error: uploadError
+    } =
+      await supabaseClient
+        .storage
+        .from("app-assets")
+        .upload(
+          path,
+          file,
+          {
+            upsert: false,
+            contentType: file.type
+          }
+        );
+
+
+    if (uploadError) {
+
+      console.error(uploadError);
+
+      showMessage(
+        "Logo upload failed: " +
+        uploadError.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    const {
+      data: publicData
+    } =
+      supabaseClient
+        .storage
+        .from("app-assets")
+        .getPublicUrl(path);
+
+
+    const publicUrl =
+      publicData.publicUrl;
+
+
+    const column =
+      type === "home"
+        ? "logo_url"
+        : "login_logo_url";
+
+
+    const {
+      error: updateError
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update({
+          [column]: publicUrl,
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq("id", appSettingsId);
+
+
+    if (updateError) {
+
+      console.error(updateError);
+
+      showMessage(
+        "Failed to save logo URL: " +
+        updateError.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    renderLogoPreview(
+      type === "home"
+        ? "homeLogoPreview"
+        : "loginLogoPreview",
+      publicUrl
+    );
+
+
+    if (type === "home") {
+
+      const logo =
+        document.getElementById("headerLogo");
+
+      logo.src = publicUrl;
+
+      logo.style.display =
+        "inline-block";
+    }
+
+
+    showMessage(
+      (
+        type === "home"
+          ? "Home"
+          : "Login"
+      ) +
+      " logo uploaded successfully.",
+      "success"
+    );
+  }
 
 
   /* =========================================================
      REMOVE HOME LOGO
   ========================================================= */
 
-  function removeLogo() {
+  async function removeHomeLogo() {
 
-    selectedLogoFile = null;
-    removeLogoRequested = true;
-    currentLogoUrl = "";
+    if (!appSettingsId) return;
 
-    logoFile.value = "";
 
-    logoPreview.src = "";
-    logoPreview.style.display = "none";
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update({
+          logo_url: null,
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq("id", appSettingsId);
 
-    noLogo.style.display = "block";
-    noLogo.textContent =
-      "Logo will be removed when you save.";
 
-    removeLogoButton.style.display =
-      "none";
+    if (error) {
 
-    uploadStatus.style.display =
-      "block";
+      showMessage(
+        "Failed to remove home logo: " +
+        error.message,
+        "error"
+      );
 
-    uploadStatus.textContent =
-      "Logo removal is pending. Click Save Settings.";
+      return;
+    }
 
+
+    renderLogoPreview(
+      "homeLogoPreview",
+      null
+    );
+
+
+    document
+      .getElementById("headerLogo")
+      .style.display = "none";
+
+
+    showMessage(
+      "Home logo removed.",
+      "success"
+    );
   }
 
 
@@ -1171,202 +1257,46 @@
      REMOVE LOGIN LOGO
   ========================================================= */
 
-  function removeLoginLogo() {
+  async function removeLoginLogo() {
 
-    selectedLoginLogoFile = null;
-    removeLoginLogoRequested = true;
-    currentLoginLogoUrl = "";
+    if (!appSettingsId) return;
 
-    loginLogoFile.value = "";
-
-    loginLogoPreview.src = "";
-    loginLogoPreview.style.display = "none";
-
-    noLoginLogo.style.display = "block";
-    noLoginLogo.textContent =
-      "Login logo will be removed when you save.";
-
-    removeLoginLogoButton.style.display =
-      "none";
-
-    loginUploadStatus.style.display =
-      "block";
-
-    loginUploadStatus.textContent =
-      "Login logo removal is pending. Click Save Settings.";
-
-  }
-
-
-  /* =========================================================
-     SHOW CURRENT HOME LOGO
-  ========================================================= */
-
-  function showCurrentLogo(url) {
-
-    if (url) {
-
-      currentLogoUrl =
-        url;
-
-      logoPreview.src =
-        url;
-
-      logoPreview.style.display =
-        "block";
-
-      noLogo.style.display =
-        "none";
-
-      removeLogoButton.style.display =
-        "inline-block";
-
-      uploadStatus.style.display =
-        "none";
-
-    } else {
-
-      currentLogoUrl =
-        "";
-
-      logoPreview.src =
-        "";
-
-      logoPreview.style.display =
-        "none";
-
-      noLogo.style.display =
-        "block";
-
-      noLogo.textContent =
-        "No logo selected";
-
-      removeLogoButton.style.display =
-        "none";
-
-      uploadStatus.style.display =
-        "none";
-
-    }
-
-  }
-
-
-  /* =========================================================
-     SHOW CURRENT LOGIN LOGO
-  ========================================================= */
-
-  function showCurrentLoginLogo(url) {
-
-    if (url) {
-
-      currentLoginLogoUrl =
-        url;
-
-      loginLogoPreview.src =
-        url;
-
-      loginLogoPreview.style.display =
-        "block";
-
-      noLoginLogo.style.display =
-        "none";
-
-      removeLoginLogoButton.style.display =
-        "inline-block";
-
-      loginUploadStatus.style.display =
-        "none";
-
-    } else {
-
-      currentLoginLogoUrl =
-        "";
-
-      loginLogoPreview.src =
-        "";
-
-      loginLogoPreview.style.display =
-        "none";
-
-      noLoginLogo.style.display =
-        "block";
-
-      noLoginLogo.textContent =
-        "No login logo selected";
-
-      removeLoginLogoButton.style.display =
-        "none";
-
-      loginUploadStatus.style.display =
-        "none";
-
-    }
-
-  }
-
-
-  /* =========================================================
-     CHECK ADMIN
-  ========================================================= */
-
-  async function checkAdmin() {
 
     const {
-      data,
       error
     } =
-      await supabaseClient.auth.getUser();
+      await supabaseClient
+        .from("app_settings")
+        .update({
+          login_logo_url: null,
+          updated_at:
+            new Date().toISOString()
+        })
+        .eq("id", appSettingsId);
 
 
-    if (
-      error ||
-      !data.user
-    ) {
-
-      window.location.href =
-        "index.html";
-
-      return null;
-
-    }
-
-
-    const user =
-      data.user;
-
-
-    const role =
-      user.app_metadata?.role;
-
-
-    if (role !== "admin") {
-
-      loading.style.display =
-        "none";
+    if (error) {
 
       showMessage(
-        "Access denied. Administrator access required.",
+        "Failed to remove login logo: " +
+        error.message,
         "error"
       );
 
-      setTimeout(
-        function() {
-
-          window.location.href =
-            "home.html";
-
-        },
-        2500
-      );
-
-      return null;
-
+      return;
     }
 
 
-    return user;
+    renderLogoPreview(
+      "loginLogoPreview",
+      null
+    );
 
+
+    showMessage(
+      "Login logo removed.",
+      "success"
+    );
   }
 
 
@@ -1374,7 +1304,7 @@
      LOAD APP CONFIG
   ========================================================= */
 
-  async function loadAppConfig() {
+  async function loadAppControls() {
 
     const {
       data,
@@ -1382,222 +1312,232 @@
     } =
       await supabaseClient
         .from("app_config")
-        .select(
-          "id, setting_key, setting_value, setting_type, is_active"
-        )
-        .order(
-          "id",
-          {
-            ascending: true
-          }
-        );
+        .select("*")
+        .order("id", {
+          ascending: true
+        });
 
 
     if (error) {
 
-      console.error(
-        "App Config Error:",
-        error
+      console.error(error);
+
+      showMessage(
+        "Failed to load app controls: " +
+        error.message,
+        "error"
       );
 
-      controlCenter.innerHTML =
-        `
-        <div class="empty-control">
-          Failed to load App Controls.<br>
-          ${escapeHtml(error.message)}
-        </div>
-        `;
-
       return;
-
     }
 
 
-    appConfigs =
+    appControls =
       data || [];
 
-
-    renderAppConfig();
-
+    renderAppControls();
   }
 
 
   /* =========================================================
-     RENDER APP CONFIG
+     RENDER APP CONTROLS
   ========================================================= */
 
-  function renderAppConfig() {
+  function renderAppControls() {
 
-    if (!appConfigs.length) {
+    const container =
+      document.getElementById(
+        "appControlsContainer"
+      );
 
-      controlCenter.innerHTML =
-        `
-        <div class="empty-control">
-          No App Controls found.
-        </div>
-        `;
+
+    if (!appControls.length) {
+
+      container.innerHTML =
+        '<div class="empty-options">No app controls found.</div>';
 
       return;
-
     }
 
 
-    let html = "";
+    container.innerHTML = "";
 
 
-    appConfigs.forEach(
-      function(config) {
+    appControls.forEach(
+      control => {
 
-        const key =
-          config.setting_key;
-
-        const value =
-          config.setting_value || "";
-
-        const type =
-          config.setting_type || "text";
+        const isBoolean =
+          control.setting_type ===
+          "boolean";
 
 
-        const title =
-          formatSettingName(key);
+        const row =
+          document.createElement("div");
+
+        row.className =
+          "control-row";
 
 
-        if (type === "boolean") {
+        if (isBoolean) {
 
           const checked =
-            String(value).toLowerCase() === "true"
-              ? "checked"
-              : "";
+            String(control.setting_value)
+              .toLowerCase() ===
+            "true";
 
 
-          html +=
-            `
-            <div class="control-card">
+          row.innerHTML = `
 
-              <div class="control-row">
-
-                <div>
-
-                  <div class="control-name">
-                    ${escapeHtml(title)}
-                  </div>
-
-                  <div class="control-key">
-                    ${escapeHtml(key)}
-                  </div>
-
-                </div>
-
-                <label class="switch">
-
-                  <input
-                    type="checkbox"
-                    data-config-id="${config.id}"
-                    data-config-type="boolean"
-                    ${checked}
-                  >
-
-                  <span class="slider"></span>
-
-                </label>
-
+            <div>
+              <div class="control-name">
+                ${escapeHtml(
+                  formatSettingName(
+                    control.setting_key
+                  )
+                )}
               </div>
 
+              <div class="control-key">
+                ${escapeHtml(
+                  control.setting_key
+                )}
+              </div>
             </div>
-            `;
+
+            <label class="switch">
+              <input
+                type="checkbox"
+                data-config-id="${control.id}"
+                ${checked ? "checked" : ""}
+              >
+              <span class="slider"></span>
+            </label>
+          `;
 
         } else {
 
-          html +=
-            `
-            <div class="control-card">
+          row.innerHTML = `
 
-              <h3>
-                ${escapeHtml(title)}
-              </h3>
+            <div style="width:100%;">
+              <div class="control-name">
+                ${escapeHtml(
+                  formatSettingName(
+                    control.setting_key
+                  )
+                )}
+              </div>
 
               <div class="control-key">
-                ${escapeHtml(key)}
+                ${escapeHtml(
+                  control.setting_key
+                )}
               </div>
 
-              <div class="config-input">
-
-                <input
-                  type="text"
-                  value="${escapeAttribute(value)}"
-                  data-config-id="${config.id}"
-                  data-config-type="text"
-                >
-
-              </div>
-
+              <input
+                type="text"
+                class="app-config-input"
+                data-config-id="${control.id}"
+                value="${escapeHtml(
+                  control.setting_value || ""
+                )}"
+                style="margin-top:8px;"
+              >
             </div>
-            `;
-
+          `;
         }
 
+
+        container.appendChild(row);
       }
     );
-
-
-    controlCenter.innerHTML =
-      html;
-
   }
 
 
   /* =========================================================
-     FORMAT SETTING NAME
+     SAVE APP CONTROLS
   ========================================================= */
 
-  function formatSettingName(key) {
+  async function saveAppControls() {
 
-    const names = {
+    try {
 
-      app_name:
-        "App Name",
+      for (const control of appControls) {
 
-      church_name:
-        "Church Name",
-
-      subtitle:
-        "Subtitle",
-
-      welcome_text:
-        "Welcome Text",
-
-      register_button_text:
-        "Register Button Text",
-
-      members_button_text:
-        "Members Button Text",
-
-      search_button_text:
-        "Search Button Text",
-
-      show_register_button:
-        "Show Register Button",
-
-      show_members_button:
-        "Show Members Button",
-
-      show_search_button:
-        "Show Search Button"
-
-    };
+        let value;
 
 
-    if (names[key]) {
-      return names[key];
+        if (
+          control.setting_type ===
+          "boolean"
+        ) {
+
+          const input =
+            document.querySelector(
+              `[data-config-id="${control.id}"]`
+            );
+
+          value =
+            input && input.checked
+              ? "true"
+              : "false";
+
+        } else {
+
+          const input =
+            document.querySelector(
+              `.app-config-input[data-config-id="${control.id}"]`
+            );
+
+          value =
+            input
+              ? input.value.trim()
+              : control.setting_value;
+        }
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("app_config")
+            .update({
+              setting_value: value,
+              updated_at:
+                new Date().toISOString()
+            })
+            .eq(
+              "id",
+              control.id
+            );
+
+
+        if (error) {
+
+          throw error;
+        }
+
+
+        control.setting_value =
+          value;
+      }
+
+
+      showMessage(
+        "App Controls saved successfully.",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to save App Controls: " +
+        error.message,
+        "error"
+      );
     }
-
-
-    return key
-      .replaceAll("_", " ")
-      .replace(/\b\w/g, function(char) {
-        return char.toUpperCase();
-      });
-
   }
 
 
@@ -1613,9 +1553,16 @@
     } =
       await supabaseClient
         .from("form_fields")
-        .select(
-          "id, field_key, field_label, field_type, is_visible, is_required, display_order, options"
-        )
+        .select(`
+          id,
+          field_key,
+          field_label,
+          field_type,
+          is_visible,
+          is_required,
+          display_order,
+          options
+        `)
         .order(
           "display_order",
           {
@@ -1626,101 +1573,91 @@
 
     if (error) {
 
-      console.error(
-        "Form Fields Error:",
-        error
+      console.error(error);
+
+      showMessage(
+        "Failed to load form fields: " +
+        error.message,
+        "error"
       );
 
-      formBuilder.innerHTML =
-        `
-        <div class="empty-control">
-          Failed to load Registration Form Fields.<br>
-          ${escapeHtml(error.message)}
-        </div>
-        `;
-
       return;
-
     }
 
 
     formFields =
       data || [];
 
-
-    renderFormBuilder();
-
+    renderFormFields();
+    renderDropdownOptions();
   }
 
 
   /* =========================================================
-     RENDER FORM BUILDER
+     RENDER FORM FIELDS
   ========================================================= */
 
-  function renderFormBuilder() {
+  function renderFormFields() {
+
+    const container =
+      document.getElementById(
+        "formFieldsContainer"
+      );
+
 
     if (!formFields.length) {
 
-      formBuilder.innerHTML =
-        `
-        <div class="empty-control">
-          No Registration Form Fields found.
-        </div>
-        `;
+      container.innerHTML =
+        '<div class="empty-options">No form fields found.</div>';
 
       return;
-
     }
 
 
-    let html = "";
+    container.innerHTML = "";
 
 
     formFields.forEach(
-      function(field) {
-
-        const type =
-          field.field_type || "text";
-
-        const visible =
-          field.is_visible === true;
-
-        const required =
-          field.is_required === true;
+      field => {
 
         const automatic =
-          type === "automatic";
+          field.field_type ===
+          "automatic";
 
 
-        html +=
-          `
-          <div
-            class="builder-card"
-            data-field-id="${field.id}"
-          >
+        const div =
+          document.createElement("div");
 
-            <div class="builder-header">
+        div.className =
+          "field-builder";
 
-              <div>
 
-                <div class="builder-title">
-                  ${escapeHtml(field.field_label)}
-                </div>
+        div.innerHTML = `
 
-                <div class="builder-key">
-                  ${escapeHtml(field.field_key)}
-                </div>
+          <div class="field-info">
 
-              </div>
+            <strong>
+              ${escapeHtml(
+                field.field_label
+              )}
+            </strong>
 
-              <div class="builder-type">
-                ${escapeHtml(type)}
-              </div>
-
+            <div class="field-key">
+              ${escapeHtml(
+                field.field_key
+              )}
+              •
+              ${escapeHtml(
+                field.field_type
+              )}
             </div>
 
+          </div>
 
-            <div class="builder-field">
+
+          <div class="field-grid">
+
+            <div>
 
               <label>
                 Field Label
@@ -1728,122 +1665,99 @@
 
               <input
                 type="text"
-                value="${escapeAttribute(field.field_label || "")}"
-                data-field-label
+                class="field-label-input"
+                data-field-id="${field.id}"
+                value="${escapeHtml(
+                  field.field_label
+                )}"
+                ${automatic ? "disabled" : ""}
               >
 
             </div>
 
 
-            <div class="builder-toggle-row">
+            <div>
 
-              <div>
-
-                <div class="toggle-label">
-                  👁️ Show Field
-                </div>
-
-                <div class="toggle-description">
-                  Display this field on the registration form.
-                </div>
-
-              </div>
-
-              <label class="switch">
-
-                <input
-                  type="checkbox"
-                  data-field-visible
-                  ${visible ? "checked" : ""}
-                  ${automatic ? "disabled" : ""}
-                >
-
-                <span class="slider"></span>
-
+              <label>
+                Display Order
               </label>
 
-            </div>
-
-
-            <div class="builder-toggle-row">
-
-              <div>
-
-                <div class="toggle-label">
-                  ⭐ Required Field
-                </div>
-
-                <div class="toggle-description">
-                  Staff must complete this field before registration.
-                </div>
-
-              </div>
-
-              <label class="switch">
-
-                <input
-                  type="checkbox"
-                  data-field-required
-                  ${required ? "checked" : ""}
-                  ${automatic ? "disabled" : ""}
-                >
-
-                <span class="slider"></span>
-
-              </label>
+              <input
+                type="number"
+                class="field-order-input"
+                data-field-id="${field.id}"
+                value="${field.display_order}"
+                min="1"
+              >
 
             </div>
 
 
-            <div class="builder-toggle-row">
+            <div>
 
-              <div>
-
-                <div class="toggle-label">
-                  🔢 Display Order
-                </div>
-
-                <div class="toggle-description">
-                  Lower numbers appear first.
-                </div>
-
-              </div>
-
-              <div class="builder-order">
-
-                <input
-                  type="number"
-                  min="1"
-                  step="1"
-                  value="${escapeAttribute(field.display_order)}"
-                  data-field-order
-                >
-
-              </div>
+              ${
+                automatic
+                  ? `
+                    <span class="automatic-badge">
+                      AUTOMATIC
+                    </span>
+                  `
+                  : `
+                    <div class="checkbox-group">
+                      <input
+                        type="checkbox"
+                        class="field-visible-input"
+                        data-field-id="${field.id}"
+                        ${
+                          field.is_visible
+                            ? "checked"
+                            : ""
+                        }
+                      >
+                      <span>Show</span>
+                    </div>
+                  `
+              }
 
             </div>
-
-            ${
-              automatic
-                ? `
-                  <div class="automatic-note">
-                    🔒 Member ID is automatically generated by the system
-                    and cannot be changed by staff.
-                  </div>
-                `
-                : ""
-            }
 
           </div>
-          `;
 
+
+          ${
+            automatic
+              ? `
+                <div style="
+                  margin-top:12px;
+                  color:#777;
+                  font-size:13px;
+                ">
+                  Member ID is automatically generated.
+                </div>
+              `
+              : `
+                <div class="checkbox-group" style="margin-top:12px;">
+                  <input
+                    type="checkbox"
+                    class="field-required-input"
+                    data-field-id="${field.id}"
+                    ${
+                      field.is_required
+                        ? "checked"
+                        : ""
+                    }
+                  >
+                  <span>Required Field</span>
+                </div>
+              `
+          }
+
+        `;
+
+
+        container.appendChild(div);
       }
     );
-
-
-    formBuilder.innerHTML =
-      html;
-
   }
 
 
@@ -1853,298 +1767,542 @@
 
   async function saveFormFields() {
 
-    saveFormButton.disabled =
-      true;
-
-    saveFormButton.textContent =
-      "⏳ Saving Form Settings...";
-
-
     try {
 
-      const user =
-        await checkAdmin();
-
-
-      if (!user) {
-        return;
-      }
-
-
-      const cards =
-        formBuilder.querySelectorAll(
-          "[data-field-id]"
-        );
-
-
-      for (
-        const card of cards
-      ) {
-
-        const id =
-          card.getAttribute(
-            "data-field-id"
-          );
-
+      for (const field of formFields) {
 
         const labelInput =
-          card.querySelector(
-            "[data-field-label]"
+          document.querySelector(
+            `.field-label-input[data-field-id="${field.id}"]`
           );
+
 
         const visibleInput =
-          card.querySelector(
-            "[data-field-visible]"
+          document.querySelector(
+            `.field-visible-input[data-field-id="${field.id}"]`
           );
+
 
         const requiredInput =
-          card.querySelector(
-            "[data-field-required]"
+          document.querySelector(
+            `.field-required-input[data-field-id="${field.id}"]`
           );
+
 
         const orderInput =
-          card.querySelector(
-            "[data-field-order]"
+          document.querySelector(
+            `.field-order-input[data-field-id="${field.id}"]`
           );
 
 
-        const label =
-          labelInput
-            ? labelInput.value.trim()
-            : "";
+        const updates = {
 
-        const visible =
-          visibleInput
-            ? visibleInput.checked
-            : true;
+          field_label:
+            labelInput
+              ? labelInput.value.trim()
+              : field.field_label,
 
-        const required =
-          requiredInput
-            ? requiredInput.checked
-            : false;
+          is_visible:
+            field.field_type === "automatic"
+              ? true
+              : !!(
+                  visibleInput &&
+                  visibleInput.checked
+                ),
 
-        let order =
-          parseInt(
-            orderInput?.value,
-            10
-          );
+          is_required:
+            field.field_type === "automatic"
+              ? false
+              : !!(
+                  requiredInput &&
+                  requiredInput.checked
+                ),
 
+          display_order:
+            parseInt(
+              orderInput
+                ? orderInput.value
+                : field.display_order
+            ) || field.display_order,
 
-        if (!label) {
-
-          throw new Error(
-            "Field Label cannot be empty."
-          );
-
-        }
-
-
-        if (
-          !Number.isInteger(order) ||
-          order < 1
-        ) {
-
-          throw new Error(
-            "Display Order must be a number greater than 0."
-          );
-
-        }
+          updated_at:
+            new Date().toISOString()
+        };
 
 
         const {
           error
         } =
-        await supabaseClient
-          .from("form_fields")
-          .update({
-
-            field_label:
-              label,
-
-            is_visible:
-              visible,
-
-            is_required:
-              required,
-
-            display_order:
-              order,
-
-            updated_at:
-              new Date().toISOString()
-
-          })
-          .eq(
-            "id",
-            id
-          );
+          await supabaseClient
+            .from("form_fields")
+            .update(updates)
+            .eq(
+              "id",
+              field.id
+            );
 
 
         if (error) {
 
           throw error;
-
         }
 
+
+        Object.assign(
+          field,
+          updates
+        );
       }
 
 
+      formFields.sort(
+        (a, b) =>
+          a.display_order -
+          b.display_order
+      );
+
+
+      renderFormFields();
+      renderDropdownOptions();
+
+
       showMessage(
-        "Registration Form Settings saved successfully! ✅",
+        "Registration Form Settings saved successfully.",
         "success"
       );
 
 
-      await loadFormFields();
-
-
     } catch (error) {
 
-      console.error(
-        "Save Form Fields Error:",
-        error
-      );
+      console.error(error);
 
       showMessage(
         "Failed to save Registration Form Settings: " +
         error.message,
         "error"
       );
+    }
+  }
 
+
+  /* =========================================================
+     DROPDOWN OPTIONS MANAGER
+  ========================================================= */
+
+  function renderDropdownOptions() {
+
+    const container =
+      document.getElementById(
+        "dropdownOptionsContainer"
+      );
+
+
+    dropdownFields =
+      formFields.filter(
+        field =>
+          field.field_type ===
+            "select" &&
+          [
+            "member_type",
+            "gender",
+            "marital_status"
+          ].includes(
+            field.field_key
+          )
+      );
+
+
+    if (!dropdownFields.length) {
+
+      container.innerHTML = `
+        <div class="empty-options">
+          No dropdown fields found.
+        </div>
+      `;
+
+      return;
     }
 
 
-    saveFormButton.disabled =
-      false;
+    container.innerHTML = "";
 
-    saveFormButton.textContent =
-      "💾 Save Registration Form Settings";
 
+    dropdownFields.forEach(
+      field => {
+
+        let options =
+          Array.isArray(field.options)
+            ? field.options
+            : [];
+
+
+        const manager =
+          document.createElement("div");
+
+        manager.className =
+          "dropdown-manager";
+
+
+        manager.innerHTML = `
+
+          <h3>
+            ${escapeHtml(
+              field.field_label
+            )}
+          </h3>
+
+          <div class="dropdown-key">
+            Field Key:
+            ${escapeHtml(
+              field.field_key
+            )}
+          </div>
+
+          <div
+            class="option-list"
+            id="option-list-${field.id}"
+          >
+          </div>
+
+          <div class="add-option-row">
+
+            <input
+              type="text"
+              id="new-option-${field.id}"
+              placeholder="Enter new option"
+            >
+
+            <button
+              type="button"
+              class="btn-success"
+              onclick="addDropdownOption(${field.id})"
+            >
+              ➕ Add Option
+            </button>
+
+          </div>
+
+        `;
+
+
+        container.appendChild(manager);
+
+
+        renderOptionsForField(
+          field.id,
+          options
+        );
+      }
+    );
   }
 
 
   /* =========================================================
-     ESCAPE HTML
+     RENDER OPTIONS FOR FIELD
   ========================================================= */
 
-  function escapeHtml(value) {
+  function renderOptionsForField(
+    fieldId,
+    options
+  ) {
 
-    return String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  }
+    const list =
+      document.getElementById(
+        "option-list-" +
+        fieldId
+      );
 
 
-  function escapeAttribute(value) {
+    if (!list) return;
 
-    return escapeHtml(value);
 
+    list.innerHTML = "";
+
+
+    if (!options.length) {
+
+      list.innerHTML = `
+        <div class="empty-options">
+          No options added yet.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    options.forEach(
+      (option, index) => {
+
+        const item =
+          document.createElement(
+            "div"
+          );
+
+        item.className =
+          "option-item";
+
+
+        item.innerHTML = `
+
+          <input
+            type="text"
+            value="${escapeHtml(option)}"
+            class="dropdown-option-input"
+            data-field-id="${fieldId}"
+            data-option-index="${index}"
+          >
+
+          <div class="option-actions">
+
+            <button
+              type="button"
+              class="btn-danger btn-small"
+              onclick="deleteDropdownOption(
+                ${fieldId},
+                ${index}
+              )"
+            >
+              🗑️ Delete
+            </button>
+
+          </div>
+
+        `;
+
+
+        list.appendChild(item);
+      }
+    );
   }
 
 
   /* =========================================================
-     SAVE APP CONFIG
+     ADD DROPDOWN OPTION
   ========================================================= */
 
-  async function saveAppConfig() {
+  function addDropdownOption(
+    fieldId
+  ) {
 
-    saveControlButton.disabled =
-      true;
+    const field =
+      formFields.find(
+        item =>
+          item.id === fieldId
+      );
 
-    saveControlButton.textContent =
-      "⏳ Saving App Controls...";
 
+    if (!field) return;
+
+
+    const input =
+      document.getElementById(
+        "new-option-" +
+        fieldId
+      );
+
+
+    const value =
+      input.value.trim();
+
+
+    if (!value) {
+
+      showMessage(
+        "Please enter an option first.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    let options =
+      Array.isArray(field.options)
+        ? [...field.options]
+        : [];
+
+
+    const exists =
+      options.some(
+        option =>
+          String(option)
+            .toLowerCase() ===
+          value.toLowerCase()
+      );
+
+
+    if (exists) {
+
+      showMessage(
+        "That option already exists.",
+        "error"
+      );
+
+      return;
+    }
+
+
+    options.push(value);
+
+
+    field.options =
+      options;
+
+
+    input.value = "";
+
+
+    renderOptionsForField(
+      fieldId,
+      options
+    );
+
+
+    showMessage(
+      "Option added. Click Save All Dropdown Options to save it.",
+      "success"
+    );
+  }
+
+
+  /* =========================================================
+     DELETE DROPDOWN OPTION
+  ========================================================= */
+
+  function deleteDropdownOption(
+    fieldId,
+    index
+  ) {
+
+    const field =
+      formFields.find(
+        item =>
+          item.id === fieldId
+      );
+
+
+    if (!field) return;
+
+
+    let options =
+      Array.isArray(field.options)
+        ? [...field.options]
+        : [];
+
+
+    if (
+      index < 0 ||
+      index >= options.length
+    ) {
+      return;
+    }
+
+
+    options.splice(
+      index,
+      1
+    );
+
+
+    field.options =
+      options;
+
+
+    renderOptionsForField(
+      fieldId,
+      options
+    );
+
+
+    showMessage(
+      "Option removed. Click Save All Dropdown Options to save the change.",
+      "success"
+    );
+  }
+
+
+  /* =========================================================
+     SAVE ALL DROPDOWN OPTIONS
+  ========================================================= */
+
+  async function saveAllDropdownOptions() {
 
     try {
 
-      const user =
-        await checkAdmin();
-
-
-      if (!user) {
-        return;
-      }
-
-
-      const controls =
-        controlCenter.querySelectorAll(
-          "[data-config-id]"
-        );
-
-
       for (
-        const control of controls
+        const field
+        of dropdownFields
       ) {
 
-        const id =
-          control.getAttribute(
-            "data-config-id"
-          );
-
-        const type =
-          control.getAttribute(
-            "data-config-type"
+        const inputs =
+          document.querySelectorAll(
+            `.dropdown-option-input[data-field-id="${field.id}"]`
           );
 
 
-        let value;
+        const options = [];
 
 
-        if (type === "boolean") {
+        inputs.forEach(
+          input => {
 
-          value =
-            control.checked
-              ? "true"
-              : "false";
+            const value =
+              input.value.trim();
 
-        } else {
 
-          value =
-            control.value.trim();
+            if (
+              value &&
+              !options.some(
+                existing =>
+                  existing.toLowerCase() ===
+                  value.toLowerCase()
+              )
+            ) {
 
-        }
+              options.push(
+                value
+              );
+            }
+          }
+        );
 
 
         const {
           error
         } =
           await supabaseClient
-            .from("app_config")
+            .from("form_fields")
             .update({
-
-              setting_value:
-                value,
-
+              options:
+                options,
               updated_at:
                 new Date().toISOString()
-
             })
             .eq(
               "id",
-              id
+              field.id
             );
 
 
         if (error) {
 
           throw error;
-
         }
 
+
+        field.options =
+          options;
       }
 
 
       showMessage(
-        "App Controls saved successfully! ✅",
+        "All Dropdown Options saved successfully.",
         "success"
       );
 
 
-      await loadAppConfig();
+      renderDropdownOptions();
 
 
     } catch (error) {
@@ -2152,594 +2310,86 @@
       console.error(error);
 
       showMessage(
-        "Failed to save App Controls: " +
+        "Failed to save Dropdown Options: " +
         error.message,
         "error"
       );
-
     }
-
-
-    saveControlButton.disabled =
-      false;
-
-    saveControlButton.textContent =
-      "💾 Save App Controls";
-
   }
 
 
   /* =========================================================
-     LOAD EXISTING APP SETTINGS
+     FORMAT SETTING NAME
   ========================================================= */
 
-  async function loadSettings() {
+  function formatSettingName(
+    key
+  ) {
 
-    const user =
+    return key
+      .replace(/_/g, " ")
+      .replace(/\b\w/g, char =>
+        char.toUpperCase()
+      );
+  }
+
+
+  /* =========================================================
+     HTML ESCAPE
+  ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value ?? ""
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+  }
+
+
+  /* =========================================================
+     INITIALIZE
+  ========================================================= */
+
+  async function initialize() {
+
+    const isAdmin =
       await checkAdmin();
 
 
-    if (!user) {
-      return;
-    }
+    if (!isAdmin) return;
 
 
-    try {
+    await loadAppSettings();
 
-      const {
-        data,
-        error
-      } =
-      await supabaseClient
-        .from("app_settings")
-        .select("*")
-        .limit(1)
-        .maybeSingle();
+    await loadAppControls();
 
-
-      if (error) {
-
-        console.error(error);
-
-        showMessage(
-          "Failed to load settings: " +
-          error.message,
-          "error"
-        );
-
-        loading.style.display =
-          "none";
-
-        return;
-
-      }
-
-
-      if (data) {
-
-        appName.value =
-          data.app_name || "";
-
-        churchName.value =
-          data.church_name || "";
-
-        subtitle.value =
-          data.subtitle || "";
-
-        welcomeText.value =
-          data.welcome_text || "";
-
-        registerButtonText.value =
-          data.register_button_text || "";
-
-        membersButtonText.value =
-          data.members_button_text || "";
-
-        searchButtonText.value =
-          data.search_button_text || "";
-
-
-        showCurrentLogo(
-          data.logo_url || ""
-        );
-
-
-        showCurrentLoginLogo(
-          data.login_logo_url || ""
-        );
-
-      }
-
-
-      await loadAppConfig();
-
-      await loadFormFields();
-
-
-      loading.style.display =
-        "none";
-
-      settingsForm.style.display =
-        "block";
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      loading.style.display =
-        "none";
-
-      showMessage(
-        "Failed to load settings: " +
-        error.message,
-        "error"
-      );
-
-    }
-
+    await loadFormFields();
   }
 
 
-  /* =========================================================
-     FILE EXTENSION
-  ========================================================= */
-
-  function getFileExtension(file) {
-
-    const name =
-      file.name || "";
-
-    const parts =
-      name.split(".");
-
-
-    if (parts.length > 1) {
-
-      return parts
-        .pop()
-        .toLowerCase();
-
-    }
-
-
-    if (file.type === "image/png") {
-      return "png";
-    }
-
-    if (file.type === "image/jpeg") {
-      return "jpg";
-    }
-
-    if (file.type === "image/webp") {
-      return "webp";
-    }
-
-    return "jpg";
-
-  }
-
-
-  /* =========================================================
-     UPLOAD HOME LOGO
-  ========================================================= */
-
-  async function uploadLogo(user) {
-
-    if (!selectedLogoFile) {
-
-      return currentLogoUrl;
-
-    }
-
-
-    const extension =
-      getFileExtension(
-        selectedLogoFile
-      );
-
-
-    const filePath =
-      "logo-" +
-      crypto.randomUUID() +
-      "." +
-      extension;
-
-
-    uploadStatus.style.display =
-      "block";
-
-    uploadStatus.textContent =
-      "⏳ Uploading Home Logo...";
-
-
-    const {
-      error: uploadError
-    } =
-      await supabaseClient.storage
-        .from("app-assets")
-        .upload(
-          filePath,
-          selectedLogoFile,
-          {
-            cacheControl: "3600",
-            upsert: false,
-            contentType:
-              selectedLogoFile.type
-          }
-        );
-
-
-    if (uploadError) {
-
-      throw uploadError;
-
-    }
-
-
-    const {
-      data
-    } =
-      supabaseClient.storage
-        .from("app-assets")
-        .getPublicUrl(
-          filePath
-        );
-
-
-    if (!data || !data.publicUrl) {
-
-      throw new Error(
-        "Could not create Home Logo URL."
-      );
-
-    }
-
-
-    uploadStatus.textContent =
-      "Home Logo uploaded successfully.";
-
-    return data.publicUrl;
-
-  }
-
-
-  /* =========================================================
-     UPLOAD LOGIN LOGO
-  ========================================================= */
-
-  async function uploadLoginLogo(user) {
-
-    if (!selectedLoginLogoFile) {
-
-      return currentLoginLogoUrl;
-
-    }
-
-
-    const extension =
-      getFileExtension(
-        selectedLoginLogoFile
-      );
-
-
-    const filePath =
-      "login-logo-" +
-      crypto.randomUUID() +
-      "." +
-      extension;
-
-
-    loginUploadStatus.style.display =
-      "block";
-
-    loginUploadStatus.textContent =
-      "⏳ Uploading Login Logo...";
-
-
-    const {
-      error: uploadError
-    } =
-      await supabaseClient.storage
-        .from("app-assets")
-        .upload(
-          filePath,
-          selectedLoginLogoFile,
-          {
-            cacheControl: "3600",
-            upsert: false,
-            contentType:
-              selectedLoginLogoFile.type
-          }
-        );
-
-
-    if (uploadError) {
-
-      throw uploadError;
-
-    }
-
-
-    const {
-      data
-    } =
-      supabaseClient.storage
-        .from("app-assets")
-        .getPublicUrl(
-          filePath
-        );
-
-
-    if (!data || !data.publicUrl) {
-
-      throw new Error(
-        "Could not create Login Logo URL."
-      );
-
-    }
-
-
-    loginUploadStatus.textContent =
-      "Login Logo uploaded successfully.";
-
-    return data.publicUrl;
-
-  }
-
-
-  /* =========================================================
-     SAVE EXISTING SETTINGS
-  ========================================================= */
-
-  async function saveSettings() {
-
-    saveButton.disabled =
-      true;
-
-    saveButton.textContent =
-      "⏳ Saving...";
-
-
-    message.style.display =
-      "none";
-
-
-    try {
-
-      const user =
-        await checkAdmin();
-
-
-      if (!user) {
-        return;
-      }
-
-
-      const {
-        data: existing,
-        error: existingError
-      } =
-      await supabaseClient
-        .from("app_settings")
-        .select(
-          "id, logo_url, login_logo_url"
-        )
-        .limit(1)
-        .maybeSingle();
-
-
-      if (existingError) {
-
-        throw existingError;
-
-      }
-
-
-      let logoUrl =
-        existing?.logo_url ||
-        currentLogoUrl ||
-        "";
-
-
-      let loginLogoUrl =
-        existing?.login_logo_url ||
-        currentLoginLogoUrl ||
-        "";
-
-
-      if (selectedLogoFile) {
-
-        logoUrl =
-          await uploadLogo(user);
-
-      }
-
-
-      if (removeLogoRequested) {
-
-        logoUrl =
-          "";
-
-      }
-
-
-      if (selectedLoginLogoFile) {
-
-        loginLogoUrl =
-          await uploadLoginLogo(user);
-
-      }
-
-
-      if (removeLoginLogoRequested) {
-
-        loginLogoUrl =
-          "";
-
-      }
-
-
-      const settingsData = {
-
-        app_name:
-          appName.value.trim(),
-
-        church_name:
-          churchName.value.trim(),
-
-        subtitle:
-          subtitle.value.trim(),
-
-        welcome_text:
-          welcomeText.value.trim(),
-
-        logo_url:
-          logoUrl,
-
-        login_logo_url:
-          loginLogoUrl,
-
-        register_button_text:
-          registerButtonText.value.trim(),
-
-        members_button_text:
-          membersButtonText.value.trim(),
-
-        search_button_text:
-          searchButtonText.value.trim(),
-
-        updated_at:
-          new Date().toISOString()
-
-      };
-
-
-      let result;
-
-
-      if (existing) {
-
-        result =
-          await supabaseClient
-            .from("app_settings")
-            .update(
-              settingsData
-            )
-            .eq(
-              "id",
-              existing.id
-            );
-
-      } else {
-
-        result =
-          await supabaseClient
-            .from("app_settings")
-            .insert(
-              settingsData
-            );
-
-      }
-
-
-      if (result.error) {
-
-        throw result.error;
-
-      }
-
-
-      currentLogoUrl =
-        logoUrl;
-
-      selectedLogoFile =
-        null;
-
-      removeLogoRequested =
-        false;
-
-      logoFile.value =
-        "";
-
-
-      currentLoginLogoUrl =
-        loginLogoUrl;
-
-      selectedLoginLogoFile =
-        null;
-
-      removeLoginLogoRequested =
-        false;
-
-      loginLogoFile.value =
-        "";
-
-
-      showCurrentLogo(
-        logoUrl
-      );
-
-      showCurrentLoginLogo(
-        loginLogoUrl
-      );
-
-
-      showMessage(
-        "Settings saved successfully! ✅",
-        "success"
-      );
-
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "Failed to save settings: " +
-        error.message,
-        "error"
-      );
-
-    }
-
-
-    saveButton.disabled =
-      false;
-
-    saveButton.textContent =
-      "💾 Save Settings";
-
-  }
-
-
-  /* =========================================================
-     EVENTS
-  ========================================================= */
-
-  saveButton.addEventListener(
-    "click",
-    saveSettings
-  );
-
-
-  saveControlButton.addEventListener(
-    "click",
-    saveAppConfig
-  );
-
-
-  saveFormButton.addEventListener(
-    "click",
-    saveFormFields
-  );
-
-
-  /* =========================================================
-     START
-  ========================================================= */
-
-  loadSettings();
+  initialize();
 
 </script>
 

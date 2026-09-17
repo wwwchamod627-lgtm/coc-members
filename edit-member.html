@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Edit Member - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -196,6 +197,10 @@
       border-bottom: 1px solid #ddd;
     }
 
+    .hidden-field {
+      display: none !important;
+    }
+
     @media (max-width: 600px) {
 
       .container {
@@ -216,10 +221,21 @@
 <body>
 
   <div class="header">
-    <h1>COC Members</h1>
-    <p>Church Of Christ Sri Lanka</p>
-    <p>Members Registration</p>
+
+    <h1 id="appName">
+      COC Members
+    </h1>
+
+    <p id="churchName">
+      Church Of Christ Sri Lanka
+    </p>
+
+    <p id="subtitle">
+      Members Registration
+    </p>
+
   </div>
+
 
   <div class="container">
 
@@ -230,17 +246,26 @@
       ← Back to Profile
     </button>
 
+
     <div class="card">
 
-      <h2>Edit Member</h2>
+      <h2 id="editTitle">
+        Edit Member
+      </h2>
+
 
       <form id="editForm">
 
-        <!-- Member ID -->
+        <!-- MEMBER ID -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_member_id"
+        >
 
-          <label>Member ID</label>
+          <label id="label_member_id">
+            Member ID
+          </label>
 
           <input
             type="text"
@@ -251,48 +276,38 @@
         </div>
 
 
-        <!-- Member Type -->
+        <!-- MEMBER TYPE -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_member_type"
+        >
 
-          <label>Member Type</label>
+          <label id="label_member_type">
+            Member Type
+          </label>
 
           <select
             id="memberType"
-            required
-          >
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Pastor">
-              Pastor
-            </option>
-
-            <option value="Brother">
-              Brother
-            </option>
-
-            <option value="Sister">
-              Sister
-            </option>
-
-          </select>
+          ></select>
 
         </div>
 
 
-        <!-- Full Name -->
+        <!-- FULL NAME -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_full_name"
+        >
 
-          <label>Full Name</label>
+          <label id="label_full_name">
+            Full Name
+          </label>
 
           <input
             type="text"
             id="fullName"
-            required
           >
 
         </div>
@@ -300,9 +315,14 @@
 
         <!-- NIC -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_nic_number"
+        >
 
-          <label>NIC Number</label>
+          <label id="label_nic_number">
+            NIC Number
+          </label>
 
           <input
             type="text"
@@ -313,11 +333,16 @@
         </div>
 
 
-        <!-- Date of Birth -->
+        <!-- DATE OF BIRTH -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_date_of_birth"
+        >
 
-          <label>Date of Birth</label>
+          <label id="label_date_of_birth">
+            Date of Birth
+          </label>
 
           <div class="date-inputs">
 
@@ -354,36 +379,34 @@
         </div>
 
 
-        <!-- Gender -->
+        <!-- GENDER -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_gender"
+        >
 
-          <label>Gender</label>
+          <label id="label_gender">
+            Gender
+          </label>
 
-          <select id="gender">
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Male">
-              Male
-            </option>
-
-            <option value="Female">
-              Female
-            </option>
-
-          </select>
+          <select
+            id="gender"
+          ></select>
 
         </div>
 
 
-        <!-- Phone -->
+        <!-- PHONE -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_phone_whatsapp"
+        >
 
-          <label>Phone / WhatsApp</label>
+          <label id="label_phone_whatsapp">
+            Phone / WhatsApp
+          </label>
 
           <input
             type="tel"
@@ -393,11 +416,16 @@
         </div>
 
 
-        <!-- Address -->
+        <!-- ADDRESS -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_address"
+        >
 
-          <label>Address</label>
+          <label id="label_address">
+            Address
+          </label>
 
           <textarea
             id="address"
@@ -406,44 +434,34 @@
         </div>
 
 
-        <!-- Marital Status -->
+        <!-- MARITAL STATUS -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_marital_status"
+        >
 
-          <label>Marital Status</label>
+          <label id="label_marital_status">
+            Marital Status
+          </label>
 
-          <select id="maritalStatus">
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Single">
-              Single
-            </option>
-
-            <option value="Married">
-              Married
-            </option>
-
-            <option value="Divorced">
-              Divorced
-            </option>
-
-            <option value="Widowed">
-              Widowed
-            </option>
-
-          </select>
+          <select
+            id="maritalStatus"
+          ></select>
 
         </div>
 
 
-        <!-- Date of Salvation -->
+        <!-- DATE OF SALVATION -->
 
-        <div class="field">
+        <div
+          class="field"
+          id="field_date_of_salvation"
+        >
 
-          <label>Date of Salvation</label>
+          <label id="label_date_of_salvation">
+            Date of Salvation
+          </label>
 
           <div class="date-inputs">
 
@@ -482,84 +500,103 @@
 
         <!-- PHOTO -->
 
-        <h3 class="section-title">
-          Member Photo
-        </h3>
+        <div
+          class="field"
+          id="field_member_photo"
+        >
 
-        <div class="field">
+          <h3 class="section-title">
+            <span id="label_member_photo">
+              Member Photo
+            </span>
+          </h3>
 
-          <label>Current Photo</label>
 
-          <img
-            id="currentPhoto"
-            class="photo-current"
-            alt="Current Member Photo"
-          >
+          <div class="field">
 
-          <div
-            id="noPhoto"
-            class="no-photo"
-          >
-            No Photo
+            <label>
+              Current Photo
+            </label>
+
+            <img
+              id="currentPhoto"
+              class="photo-current"
+              alt="Current Member Photo"
+            >
+
+            <div
+              id="noPhoto"
+              class="no-photo"
+            >
+              No Photo
+            </div>
+
+          </div>
+
+
+          <div class="field">
+
+            <label>
+              Change Photo
+            </label>
+
+            <div class="photo-buttons">
+
+              <button
+                type="button"
+                onclick="openCamera()"
+              >
+                📷 Take Photo
+              </button>
+
+              <button
+                type="button"
+                onclick="openGallery()"
+              >
+                🖼️ Gallery
+              </button>
+
+            </div>
+
+
+            <input
+              type="file"
+              id="cameraInput"
+              class="hidden-file"
+              accept="image/*"
+              capture="environment"
+            >
+
+
+            <input
+              type="file"
+              id="galleryInput"
+              class="hidden-file"
+              accept="image/*"
+            >
+
+
+            <img
+              id="newPhotoPreview"
+              class="new-photo-preview"
+              alt="New Photo Preview"
+            >
+
           </div>
 
         </div>
 
 
-        <div class="field">
+        <!-- NOTES -->
 
-          <label>Change Photo</label>
+        <div
+          class="field"
+          id="field_additional_notes"
+        >
 
-          <div class="photo-buttons">
-
-            <button
-              type="button"
-              onclick="openCamera()"
-            >
-              📷 Take Photo
-            </button>
-
-            <button
-              type="button"
-              onclick="openGallery()"
-            >
-              🖼️ Gallery
-            </button>
-
-          </div>
-
-
-          <input
-            type="file"
-            id="cameraInput"
-            class="hidden-file"
-            accept="image/*"
-            capture="environment"
-          >
-
-
-          <input
-            type="file"
-            id="galleryInput"
-            class="hidden-file"
-            accept="image/*"
-          >
-
-
-          <img
-            id="newPhotoPreview"
-            class="new-photo-preview"
-            alt="New Photo Preview"
-          >
-
-        </div>
-
-
-        <!-- Notes -->
-
-        <div class="field">
-
-          <label>Additional Notes</label>
+          <label id="label_additional_notes">
+            Additional Notes
+          </label>
 
           <textarea
             id="additionalNotes"
@@ -590,6 +627,10 @@
 
 <script>
 
+  /* =========================================================
+     SUPABASE
+  ========================================================= */
+
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
@@ -604,6 +645,10 @@
       SUPABASE_PUBLISHABLE_KEY
     );
 
+
+  /* =========================================================
+     ELEMENTS
+  ========================================================= */
 
   const editForm =
     document.getElementById(
@@ -653,6 +698,10 @@
     );
 
 
+  /* =========================================================
+     GLOBAL DATA
+  ========================================================= */
+
   let selectedPhotoFile =
     null;
 
@@ -661,11 +710,104 @@
     null;
 
 
+  let formFields =
+    [];
+
+
+  let appSettings =
+    {};
+
+
   const memberUuid =
     new URLSearchParams(
       window.location.search
     ).get("id");
 
+
+  /* =========================================================
+     FIELD DATABASE MAP
+  ========================================================= */
+
+  const fieldDatabaseMap = {
+
+    member_id:
+      "member_id",
+
+    member_type:
+      "member_type",
+
+    full_name:
+      "full_name",
+
+    nic_number:
+      "nic_number",
+
+    date_of_birth:
+      "date_of_birth",
+
+    gender:
+      "gender",
+
+    phone_whatsapp:
+      "phone_whatsapp",
+
+    address:
+      "address",
+
+    marital_status:
+      "marital_status",
+
+    date_of_salvation:
+      "date_of_salvation",
+
+    member_photo:
+      "photo_url",
+
+    additional_notes:
+      "additional_notes"
+
+  };
+
+
+  /* =========================================================
+     FIELD ELEMENT MAP
+  ========================================================= */
+
+  const fieldElementMap = {
+
+    member_id:
+      "memberId",
+
+    member_type:
+      "memberType",
+
+    full_name:
+      "fullName",
+
+    nic_number:
+      "nicNumber",
+
+    gender:
+      "gender",
+
+    phone_whatsapp:
+      "phoneWhatsapp",
+
+    address:
+      "address",
+
+    marital_status:
+      "maritalStatus",
+
+    additional_notes:
+      "additionalNotes"
+
+  };
+
+
+  /* =========================================================
+     GO BACK
+  ========================================================= */
 
   function goBack() {
 
@@ -686,6 +828,10 @@
 
   }
 
+
+  /* =========================================================
+     MESSAGE
+  ========================================================= */
 
   function showMessage(
     text,
@@ -714,6 +860,10 @@
 
   }
 
+
+  /* =========================================================
+     CURRENT USER
+  ========================================================= */
 
   async function getCurrentUser() {
 
@@ -744,6 +894,484 @@
   }
 
 
+  /* =========================================================
+     LOAD APP SETTINGS
+  ========================================================= */
+
+  async function loadAppSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select(`
+          app_name,
+          church_name,
+          subtitle
+        `)
+        .limit(1)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "App settings error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    appSettings =
+      data || {};
+
+
+    document.getElementById(
+      "appName"
+    ).textContent =
+      appSettings.app_name ||
+      "COC Members";
+
+
+    document.getElementById(
+      "churchName"
+    ).textContent =
+      appSettings.church_name ||
+      "Church Of Christ Sri Lanka";
+
+
+    document.getElementById(
+      "subtitle"
+    ).textContent =
+      appSettings.subtitle ||
+      "Members Registration";
+
+  }
+
+
+  /* =========================================================
+     LOAD FORM FIELDS
+  ========================================================= */
+
+  async function loadFormFields() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("form_fields")
+        .select(`
+          id,
+          field_key,
+          field_label,
+          field_type,
+          is_visible,
+          is_required,
+          display_order,
+          options
+        `)
+        .order(
+          "display_order",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Form fields error:",
+        error
+      );
+
+      throw error;
+
+    }
+
+
+    formFields =
+      data || [];
+
+  }
+
+
+  /* =========================================================
+     GET FIELD
+  ========================================================= */
+
+  function getField(
+    fieldKey
+  ) {
+
+    return formFields.find(
+      function(field) {
+
+        return (
+          field.field_key ===
+          fieldKey
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     GET OPTIONS
+  ========================================================= */
+
+  function getOptions(
+    field
+  ) {
+
+    if (
+      !field ||
+      !field.options
+    ) {
+
+      return [];
+
+    }
+
+
+    if (
+      Array.isArray(
+        field.options
+      )
+    ) {
+
+      return field.options;
+
+    }
+
+
+    return [];
+
+  }
+
+
+  /* =========================================================
+     SET SELECT OPTIONS
+  ========================================================= */
+
+  function setSelectOptions(
+    selectId,
+    field
+  ) {
+
+    const select =
+      document.getElementById(
+        selectId
+      );
+
+
+    if (!select) return;
+
+
+    const currentValue =
+      select.getAttribute(
+        "data-current-value"
+      ) ||
+      select.value;
+
+
+    select.innerHTML =
+      "";
+
+
+    const placeholder =
+      document.createElement(
+        "option"
+      );
+
+    placeholder.value =
+      "";
+
+    placeholder.textContent =
+      "Select...";
+
+
+    select.appendChild(
+      placeholder
+    );
+
+
+    const options =
+      getOptions(field);
+
+
+    options.forEach(
+      function(optionValue) {
+
+        const option =
+          document.createElement(
+            "option"
+          );
+
+        option.value =
+          optionValue;
+
+        option.textContent =
+          optionValue;
+
+        select.appendChild(
+          option
+        );
+
+      }
+    );
+
+
+    if (
+      currentValue
+    ) {
+
+      select.value =
+        currentValue;
+
+    }
+
+  }
+
+
+  /* =========================================================
+     APPLY FORM FIELD SETTINGS
+  ========================================================= */
+
+  function applyFormFieldSettings() {
+
+    formFields.forEach(
+      function(field) {
+
+        const wrapper =
+          document.getElementById(
+            "field_" +
+            field.field_key
+          );
+
+
+        if (!wrapper) return;
+
+
+        /* LABEL */
+
+        const label =
+          document.getElementById(
+            "label_" +
+            field.field_key
+          );
+
+
+        if (label) {
+
+          label.textContent =
+            field.field_label ||
+            field.field_key;
+
+        }
+
+
+        /* VISIBILITY */
+
+        if (
+          field.is_visible === true
+        ) {
+
+          wrapper.classList.remove(
+            "hidden-field"
+          );
+
+        } else {
+
+          wrapper.classList.add(
+            "hidden-field"
+          );
+
+        }
+
+
+        /* REQUIRED */
+
+        const elementId =
+          fieldElementMap[
+            field.field_key
+          ];
+
+
+        if (elementId) {
+
+          const element =
+            document.getElementById(
+              elementId
+            );
+
+
+          if (element) {
+
+            if (
+              field.is_required === true
+            ) {
+
+              element.required =
+                true;
+
+            } else {
+
+              element.required =
+                false;
+
+            }
+
+          }
+
+        }
+
+
+        /* DROPDOWN OPTIONS */
+
+        if (
+          field.field_type ===
+            "select"
+        ) {
+
+          if (
+            field.field_key ===
+            "member_type"
+          ) {
+
+            setSelectOptions(
+              "memberType",
+              field
+            );
+
+          }
+
+
+          if (
+            field.field_key ===
+            "gender"
+          ) {
+
+            setSelectOptions(
+              "gender",
+              field
+            );
+
+          }
+
+
+          if (
+            field.field_key ===
+            "marital_status"
+          ) {
+
+            setSelectOptions(
+              "maritalStatus",
+              field
+            );
+
+          }
+
+        }
+
+      }
+    );
+
+
+    /* =====================================================
+       PHOTO FIELD
+    ===================================================== */
+
+    const photoField =
+      getField(
+        "member_photo"
+      );
+
+
+    const photoWrapper =
+      document.getElementById(
+        "field_member_photo"
+      );
+
+
+    if (
+      photoWrapper &&
+      photoField
+    ) {
+
+      if (
+        photoField.is_visible === true
+      ) {
+
+        photoWrapper.classList.remove(
+          "hidden-field"
+        );
+
+      } else {
+
+        photoWrapper.classList.add(
+          "hidden-field"
+        );
+
+      }
+
+    }
+
+
+    /* =====================================================
+       MEMBER ID
+    ===================================================== */
+
+    const memberIdField =
+      getField(
+        "member_id"
+      );
+
+
+    if (
+      memberIdField
+    ) {
+
+      const memberIdWrapper =
+        document.getElementById(
+          "field_member_id"
+        );
+
+
+      if (
+        memberIdField.is_visible ===
+        true
+      ) {
+
+        memberIdWrapper.classList.remove(
+          "hidden-field"
+        );
+
+      } else {
+
+        memberIdWrapper.classList.add(
+          "hidden-field"
+        );
+
+      }
+
+    }
+
+  }
+
+
+  /* =========================================================
+     DATE INPUTS
+  ========================================================= */
+
   function setDateInputs(
     dateValue,
     dayId,
@@ -771,10 +1399,12 @@
 
 
     const parts =
-      dateValue.split("-");
+      String(dateValue).split("-");
 
 
-    if (parts.length !== 3) return;
+    if (
+      parts.length !== 3
+    ) return;
 
 
     document.getElementById(
@@ -796,6 +1426,10 @@
 
   }
 
+
+  /* =========================================================
+     GET DATE
+  ========================================================= */
 
   function getDateFromInputs(
     dayId,
@@ -847,16 +1481,6 @@
     }
 
 
-    const dayNumber =
-      Number(day);
-
-    const monthNumber =
-      Number(month);
-
-    const yearNumber =
-      Number(year);
-
-
     if (
       !/^\d+$/.test(day) ||
       !/^\d+$/.test(month) ||
@@ -869,6 +1493,18 @@
       );
 
     }
+
+
+    const dayNumber =
+      Number(day);
+
+
+    const monthNumber =
+      Number(month);
+
+
+    const yearNumber =
+      Number(year);
 
 
     if (
@@ -948,6 +1584,10 @@
 
   }
 
+
+  /* =========================================================
+     PHOTO
+  ========================================================= */
 
   function showNewPhoto(file) {
 
@@ -1031,6 +1671,10 @@
   );
 
 
+  /* =========================================================
+     LOAD MEMBER
+  ========================================================= */
+
   async function loadMember() {
 
     const user =
@@ -1052,10 +1696,22 @@
     }
 
 
-    const {
-      data,
-      error
-    } =
+    try {
+
+      await loadAppSettings();
+
+      await loadFormFields();
+
+
+      /* APPLY SETTINGS BEFORE DATA */
+
+      applyFormFieldSettings();
+
+
+      const {
+        data,
+        error
+      } =
       await supabaseClient
         .from("members")
         .select(`
@@ -1080,118 +1736,189 @@
         .single();
 
 
-    if (error) {
+      if (error) {
 
-      console.error(error);
+        console.error(
+          error
+        );
+
+
+        showMessage(
+          "Failed to load member: " +
+          error.message,
+          "error"
+        );
+
+        return;
+
+      }
+
+
+      currentMember =
+        data;
+
+
+      /* =====================================================
+         MEMBER ID
+      ===================================================== */
+
+      document.getElementById(
+        "memberId"
+      ).value =
+        data.member_id || "";
+
+
+      /* =====================================================
+         MEMBER TYPE
+      ===================================================== */
+
+      document.getElementById(
+        "memberType"
+      ).value =
+        data.member_type || "";
+
+
+      /* =====================================================
+         FULL NAME
+      ===================================================== */
+
+      document.getElementById(
+        "fullName"
+      ).value =
+        data.full_name || "";
+
+
+      /* =====================================================
+         NIC
+      ===================================================== */
+
+      document.getElementById(
+        "nicNumber"
+      ).value =
+        data.nic_number || "";
+
+
+      /* =====================================================
+         DOB
+      ===================================================== */
+
+      setDateInputs(
+        data.date_of_birth,
+        "dobDay",
+        "dobMonth",
+        "dobYear"
+      );
+
+
+      /* =====================================================
+         GENDER
+      ===================================================== */
+
+      document.getElementById(
+        "gender"
+      ).value =
+        data.gender || "";
+
+
+      /* =====================================================
+         PHONE
+      ===================================================== */
+
+      document.getElementById(
+        "phoneWhatsapp"
+      ).value =
+        data.phone_whatsapp || "";
+
+
+      /* =====================================================
+         ADDRESS
+      ===================================================== */
+
+      document.getElementById(
+        "address"
+      ).value =
+        data.address || "";
+
+
+      /* =====================================================
+         MARITAL STATUS
+      ===================================================== */
+
+      document.getElementById(
+        "maritalStatus"
+      ).value =
+        data.marital_status || "";
+
+
+      /* =====================================================
+         SALVATION DATE
+      ===================================================== */
+
+      setDateInputs(
+        data.date_of_salvation,
+        "salvationDay",
+        "salvationMonth",
+        "salvationYear"
+      );
+
+
+      /* =====================================================
+         NOTES
+      ===================================================== */
+
+      document.getElementById(
+        "additionalNotes"
+      ).value =
+        data.additional_notes || "";
+
+
+      /* =====================================================
+         CURRENT PHOTO
+      ===================================================== */
+
+      if (data.photo_url) {
+
+        currentPhoto.src =
+          data.photo_url;
+
+        currentPhoto.style.display =
+          "block";
+
+        noPhoto.style.display =
+          "none";
+
+      } else {
+
+        currentPhoto.style.display =
+          "none";
+
+        noPhoto.style.display =
+          "flex";
+
+      }
+
+    } catch (error) {
+
+      console.error(
+        "Load error:",
+        error
+      );
+
 
       showMessage(
-        "Failed to load member: " +
+        "Failed to load Edit Member settings: " +
         error.message,
         "error"
       );
-
-      return;
-
-    }
-
-
-    currentMember =
-      data;
-
-
-    document.getElementById(
-      "memberId"
-    ).value =
-      data.member_id || "";
-
-
-    document.getElementById(
-      "memberType"
-    ).value =
-      data.member_type || "";
-
-
-    document.getElementById(
-      "fullName"
-    ).value =
-      data.full_name || "";
-
-
-    document.getElementById(
-      "nicNumber"
-    ).value =
-      data.nic_number || "";
-
-
-    setDateInputs(
-      data.date_of_birth,
-      "dobDay",
-      "dobMonth",
-      "dobYear"
-    );
-
-
-    document.getElementById(
-      "gender"
-    ).value =
-      data.gender || "";
-
-
-    document.getElementById(
-      "phoneWhatsapp"
-    ).value =
-      data.phone_whatsapp || "";
-
-
-    document.getElementById(
-      "address"
-    ).value =
-      data.address || "";
-
-
-    document.getElementById(
-      "maritalStatus"
-    ).value =
-      data.marital_status || "";
-
-
-    setDateInputs(
-      data.date_of_salvation,
-      "salvationDay",
-      "salvationMonth",
-      "salvationYear"
-    );
-
-
-    document.getElementById(
-      "additionalNotes"
-    ).value =
-      data.additional_notes || "";
-
-
-    if (data.photo_url) {
-
-      currentPhoto.src =
-        data.photo_url;
-
-      currentPhoto.style.display =
-        "block";
-
-      noPhoto.style.display =
-        "none";
-
-    } else {
-
-      currentPhoto.style.display =
-        "none";
-
-      noPhoto.style.display =
-        "flex";
 
     }
 
   }
 
+
+  /* =========================================================
+     UPLOAD NEW PHOTO
+  ========================================================= */
 
   async function uploadNewPhoto(
     user,
@@ -1202,7 +1929,9 @@
 
 
     if (
-      !file.type.startsWith("image/")
+      !file.type.startsWith(
+        "image/"
+      )
     ) {
 
       throw new Error(
@@ -1213,7 +1942,8 @@
 
 
     if (
-      file.size > 5 * 1024 * 1024
+      file.size >
+      5 * 1024 * 1024
     ) {
 
       throw new Error(
@@ -1228,16 +1958,20 @@
 
 
     if (
-      file.type === "image/png"
+      file.type ===
+      "image/png"
     ) {
 
-      extension = "png";
+      extension =
+        "png";
 
     } else if (
-      file.type === "image/webp"
+      file.type ===
+      "image/webp"
     ) {
 
-      extension = "webp";
+      extension =
+        "webp";
 
     }
 
@@ -1253,18 +1987,24 @@
     const {
       error
     } =
-      await supabaseClient
-        .storage
-        .from("member-photos")
-        .upload(
-          filePath,
-          file,
-          {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: file.type
-          }
-        );
+    await supabaseClient
+      .storage
+      .from("member-photos")
+      .upload(
+        filePath,
+        file,
+        {
+          cacheControl:
+            "3600",
+
+          upsert:
+            false,
+
+          contentType:
+            file.type
+
+        }
+      );
 
 
     if (error) {
@@ -1273,6 +2013,7 @@
         "Photo Upload Error:",
         error
       );
+
 
       throw new Error(
         "Photo upload failed: " +
@@ -1285,12 +2026,12 @@
     const {
       data
     } =
-      supabaseClient
-        .storage
-        .from("member-photos")
-        .getPublicUrl(
-          filePath
-        );
+    supabaseClient
+      .storage
+      .from("member-photos")
+      .getPublicUrl(
+        filePath
+      );
 
 
     if (
@@ -1306,12 +2047,20 @@
 
 
     return {
-      path: filePath,
-      url: data.publicUrl
+      path:
+        filePath,
+
+      url:
+        data.publicUrl
+
     };
 
   }
 
+
+  /* =========================================================
+     STORAGE PATH
+  ========================================================= */
 
   function getStoragePathFromUrl(
     photoUrl
@@ -1325,10 +2074,14 @@
 
 
     const index =
-      photoUrl.indexOf(marker);
+      photoUrl.indexOf(
+        marker
+      );
 
 
-    if (index === -1) {
+    if (
+      index === -1
+    ) {
 
       return null;
 
@@ -1342,6 +2095,10 @@
   }
 
 
+  /* =========================================================
+     DELETE OLD PHOTO
+  ========================================================= */
+
   async function deleteOldPhoto(
     photoUrl
   ) {
@@ -1352,22 +2109,18 @@
       );
 
 
-    if (!oldPath) {
-
-      return;
-
-    }
+    if (!oldPath) return;
 
 
     const {
       error
     } =
-      await supabaseClient
-        .storage
-        .from("member-photos")
-        .remove([
-          oldPath
-        ]);
+    await supabaseClient
+      .storage
+      .from("member-photos")
+      .remove([
+        oldPath
+      ]);
 
 
     if (error) {
@@ -1381,6 +2134,10 @@
 
   }
 
+
+  /* =========================================================
+     SUBMIT UPDATE
+  ========================================================= */
 
   editForm.addEventListener(
     "submit",
@@ -1421,6 +2178,10 @@
 
         }
 
+
+        /* ===================================================
+           GET VALUES
+        =================================================== */
 
         const memberType =
           document.getElementById(
@@ -1488,14 +2249,146 @@
           ).value.trim();
 
 
+        /* ===================================================
+           REQUIRED CHECKS
+        =================================================== */
+
+        const requiredFields =
+          formFields.filter(
+            function(field) {
+
+              return (
+                field.is_required ===
+                true &&
+                field.is_visible ===
+                true
+              );
+
+            }
+          );
+
+
+        for (
+          const field of requiredFields
+        ) {
+
+          if (
+            field.field_key ===
+            "member_id"
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            field.field_key ===
+            "member_photo"
+          ) {
+
+            continue;
+
+          }
+
+
+          if (
+            field.field_key ===
+            "date_of_birth"
+          ) {
+
+            if (
+              !dateOfBirth
+            ) {
+
+              throw new Error(
+                (
+                  field.field_label ||
+                  "Date of Birth"
+                ) +
+                ": This field is required."
+              );
+
+            }
+
+            continue;
+
+          }
+
+
+          if (
+            field.field_key ===
+            "date_of_salvation"
+          ) {
+
+            if (
+              !dateOfSalvation
+            ) {
+
+              throw new Error(
+                (
+                  field.field_label ||
+                  "Date of Salvation"
+                ) +
+                ": This field is required."
+              );
+
+            }
+
+            continue;
+
+          }
+
+
+          const elementId =
+            fieldElementMap[
+              field.field_key
+            ];
+
+
+          if (!elementId) {
+            continue;
+          }
+
+
+          const element =
+            document.getElementById(
+              elementId
+            );
+
+
+          if (!element) {
+            continue;
+          }
+
+
+          if (
+            String(
+              element.value || ""
+            ).trim() === ""
+          ) {
+
+            throw new Error(
+              (
+                field.field_label ||
+                field.field_key
+              ) +
+              ": This field is required."
+            );
+
+          }
+
+        }
+
+
+        /* ===================================================
+           PHOTO
+        =================================================== */
+
         let photoUrl =
           currentMember.photo_url ||
           null;
 
-
-        /*
-          Upload new photo first.
-        */
 
         if (selectedPhotoFile) {
 
@@ -1516,6 +2409,10 @@
         }
 
 
+        /* ===================================================
+           UPDATE DATA
+        =================================================== */
+
         const updateData = {
 
           member_type:
@@ -1525,7 +2422,8 @@
             fullName,
 
           nic_number:
-            nicNumber || null,
+            nicNumber ||
+            null,
 
           date_of_birth:
             dateOfBirth,
@@ -1564,23 +2462,22 @@
         const {
           error
         } =
-          await supabaseClient
-            .from("members")
-            .update(updateData)
-            .eq(
-              "id",
-              memberUuid
-            );
+        await supabaseClient
+          .from("members")
+          .update(
+            updateData
+          )
+          .eq(
+            "id",
+            memberUuid
+          );
 
 
         if (error) {
 
-          /*
-            If database update fails,
-            remove newly uploaded photo.
-          */
-
-          if (uploadedNewPhoto) {
+          if (
+            uploadedNewPhoto
+          ) {
 
             await supabaseClient
               .storage
@@ -1597,10 +2494,9 @@
         }
 
 
-        /*
-          Delete old photo only after
-          successful database update.
-        */
+        /* ===================================================
+           DELETE OLD PHOTO
+        =================================================== */
 
         if (
           uploadedNewPhoto &&
@@ -1613,6 +2509,10 @@
 
         }
 
+
+        /* ===================================================
+           SUCCESS
+        =================================================== */
 
         showMessage(
           "Member Updated Successfully!",
@@ -1662,7 +2562,6 @@
         updateButton.disabled =
           false;
 
-
         updateButton.textContent =
           "UPDATE MEMBER";
 
@@ -1671,6 +2570,10 @@
     }
   );
 
+
+  /* =========================================================
+     START
+  ========================================================= */
 
   loadMember();
 

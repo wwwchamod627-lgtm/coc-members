@@ -1,0 +1,1680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Edit Member - COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f5f1e8;
+      color: #222;
+    }
+
+    .header {
+      background: #174d3c;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+    }
+
+    .header p {
+      margin: 6px 0 0;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 700px;
+      margin: 20px auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 22px;
+      border-radius: 14px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 7px;
+    }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+
+    textarea {
+      min-height: 100px;
+      resize: vertical;
+    }
+
+    input[readonly] {
+      background: #eee;
+    }
+
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.5fr;
+      gap: 8px;
+    }
+
+    .date-inputs input {
+      text-align: center;
+    }
+
+    .date-inputs input::placeholder {
+      color: #888;
+    }
+
+    .date-help {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+    }
+
+    .photo-current {
+      width: 150px;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .no-photo {
+      width: 150px;
+      height: 150px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      background: #eee;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: #777;
+      margin-bottom: 12px;
+    }
+
+    .photo-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .photo-buttons button {
+      flex: 1;
+      width: auto;
+      background: #174d3c;
+    }
+
+    .hidden-file {
+      display: none;
+    }
+
+    .new-photo-preview {
+      width: 130px;
+      height: 130px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #ccc;
+      display: none;
+      margin-top: 12px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      font-size: 17px;
+      font-weight: bold;
+      cursor: pointer;
+      background: #174d3c;
+      color: white;
+    }
+
+    button:disabled {
+      background: #999;
+      cursor: not-allowed;
+    }
+
+    .back-btn {
+      background: #777;
+      margin-bottom: 15px;
+    }
+
+    .message {
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 8px;
+      display: none;
+      text-align: center;
+      font-weight: bold;
+      white-space: pre-line;
+    }
+
+    .success {
+      background: #dff3e7;
+      color: #176b3a;
+    }
+
+    .error {
+      background: #f8dddd;
+      color: #a00000;
+    }
+
+    .section-title {
+      margin-top: 25px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #ddd;
+    }
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .date-inputs {
+        grid-template-columns: 1fr 1fr 1.4fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="header">
+    <h1>COC Members</h1>
+    <p>Church Of Christ Sri Lanka</p>
+    <p>Members Registration</p>
+  </div>
+
+  <div class="container">
+
+    <button
+      class="back-btn"
+      onclick="goBack()"
+    >
+      ← Back to Profile
+    </button>
+
+    <div class="card">
+
+      <h2>Edit Member</h2>
+
+      <form id="editForm">
+
+        <!-- Member ID -->
+
+        <div class="field">
+
+          <label>Member ID</label>
+
+          <input
+            type="text"
+            id="memberId"
+            readonly
+          >
+
+        </div>
+
+
+        <!-- Member Type -->
+
+        <div class="field">
+
+          <label>Member Type</label>
+
+          <select
+            id="memberType"
+            required
+          >
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Pastor">
+              Pastor
+            </option>
+
+            <option value="Brother">
+              Brother
+            </option>
+
+            <option value="Sister">
+              Sister
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Full Name -->
+
+        <div class="field">
+
+          <label>Full Name</label>
+
+          <input
+            type="text"
+            id="fullName"
+            required
+          >
+
+        </div>
+
+
+        <!-- NIC -->
+
+        <div class="field">
+
+          <label>NIC Number</label>
+
+          <input
+            type="text"
+            id="nicNumber"
+            placeholder="Optional"
+          >
+
+        </div>
+
+
+        <!-- Date of Birth -->
+
+        <div class="field">
+
+          <label>Date of Birth</label>
+
+          <div class="date-inputs">
+
+            <input
+              type="text"
+              id="dobDay"
+              placeholder="DD"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="dobMonth"
+              placeholder="MM"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="dobYear"
+              placeholder="YYYY"
+              inputmode="numeric"
+              maxlength="4"
+            >
+
+          </div>
+
+          <div class="date-help">
+            Enter as DD / MM / YYYY
+          </div>
+
+        </div>
+
+
+        <!-- Gender -->
+
+        <div class="field">
+
+          <label>Gender</label>
+
+          <select id="gender">
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Male">
+              Male
+            </option>
+
+            <option value="Female">
+              Female
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Phone -->
+
+        <div class="field">
+
+          <label>Phone / WhatsApp</label>
+
+          <input
+            type="tel"
+            id="phoneWhatsapp"
+          >
+
+        </div>
+
+
+        <!-- Address -->
+
+        <div class="field">
+
+          <label>Address</label>
+
+          <textarea
+            id="address"
+          ></textarea>
+
+        </div>
+
+
+        <!-- Marital Status -->
+
+        <div class="field">
+
+          <label>Marital Status</label>
+
+          <select id="maritalStatus">
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Single">
+              Single
+            </option>
+
+            <option value="Married">
+              Married
+            </option>
+
+            <option value="Divorced">
+              Divorced
+            </option>
+
+            <option value="Widowed">
+              Widowed
+            </option>
+
+          </select>
+
+        </div>
+
+
+        <!-- Date of Salvation -->
+
+        <div class="field">
+
+          <label>Date of Salvation</label>
+
+          <div class="date-inputs">
+
+            <input
+              type="text"
+              id="salvationDay"
+              placeholder="DD"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="salvationMonth"
+              placeholder="MM"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="salvationYear"
+              placeholder="YYYY"
+              inputmode="numeric"
+              maxlength="4"
+            >
+
+          </div>
+
+          <div class="date-help">
+            Enter as DD / MM / YYYY
+          </div>
+
+        </div>
+
+
+        <!-- PHOTO -->
+
+        <h3 class="section-title">
+          Member Photo
+        </h3>
+
+        <div class="field">
+
+          <label>Current Photo</label>
+
+          <img
+            id="currentPhoto"
+            class="photo-current"
+            alt="Current Member Photo"
+          >
+
+          <div
+            id="noPhoto"
+            class="no-photo"
+          >
+            No Photo
+          </div>
+
+        </div>
+
+
+        <div class="field">
+
+          <label>Change Photo</label>
+
+          <div class="photo-buttons">
+
+            <button
+              type="button"
+              onclick="openCamera()"
+            >
+              📷 Take Photo
+            </button>
+
+            <button
+              type="button"
+              onclick="openGallery()"
+            >
+              🖼️ Gallery
+            </button>
+
+          </div>
+
+
+          <input
+            type="file"
+            id="cameraInput"
+            class="hidden-file"
+            accept="image/*"
+            capture="environment"
+          >
+
+
+          <input
+            type="file"
+            id="galleryInput"
+            class="hidden-file"
+            accept="image/*"
+          >
+
+
+          <img
+            id="newPhotoPreview"
+            class="new-photo-preview"
+            alt="New Photo Preview"
+          >
+
+        </div>
+
+
+        <!-- Notes -->
+
+        <div class="field">
+
+          <label>Additional Notes</label>
+
+          <textarea
+            id="additionalNotes"
+          ></textarea>
+
+        </div>
+
+
+        <button
+          type="submit"
+          id="updateButton"
+        >
+          UPDATE MEMBER
+        </button>
+
+      </form>
+
+
+      <div
+        id="message"
+        class="message"
+      ></div>
+
+    </div>
+
+  </div>
+
+
+<script>
+
+  const SUPABASE_URL =
+    "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  const editForm =
+    document.getElementById(
+      "editForm"
+    );
+
+
+  const updateButton =
+    document.getElementById(
+      "updateButton"
+    );
+
+
+  const message =
+    document.getElementById(
+      "message"
+    );
+
+
+  const cameraInput =
+    document.getElementById(
+      "cameraInput"
+    );
+
+
+  const galleryInput =
+    document.getElementById(
+      "galleryInput"
+    );
+
+
+  const currentPhoto =
+    document.getElementById(
+      "currentPhoto"
+    );
+
+
+  const noPhoto =
+    document.getElementById(
+      "noPhoto"
+    );
+
+
+  const newPhotoPreview =
+    document.getElementById(
+      "newPhotoPreview"
+    );
+
+
+  let selectedPhotoFile =
+    null;
+
+
+  let currentMember =
+    null;
+
+
+  const memberUuid =
+    new URLSearchParams(
+      window.location.search
+    ).get("id");
+
+
+  function goBack() {
+
+    if (memberUuid) {
+
+      window.location.href =
+        "member.html?id=" +
+        encodeURIComponent(
+          memberUuid
+        );
+
+    } else {
+
+      window.location.href =
+        "members.html";
+
+    }
+
+  }
+
+
+  function showMessage(
+    text,
+    type
+  ) {
+
+    message.textContent =
+      text;
+
+    message.className =
+      "message " + type;
+
+    message.style.display =
+      "block";
+
+  }
+
+
+  function clearMessage() {
+
+    message.textContent =
+      "";
+
+    message.style.display =
+      "none";
+
+  }
+
+
+  async function getCurrentUser() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .auth
+        .getUser();
+
+
+    if (
+      error ||
+      !data.user
+    ) {
+
+      window.location.href =
+        "index.html";
+
+      return null;
+
+    }
+
+
+    return data.user;
+
+  }
+
+
+  function setDateInputs(
+    dateValue,
+    dayId,
+    monthId,
+    yearId
+  ) {
+
+    if (!dateValue) {
+
+      document.getElementById(
+        dayId
+      ).value = "";
+
+      document.getElementById(
+        monthId
+      ).value = "";
+
+      document.getElementById(
+        yearId
+      ).value = "";
+
+      return;
+
+    }
+
+
+    const parts =
+      dateValue.split("-");
+
+
+    if (parts.length !== 3) return;
+
+
+    document.getElementById(
+      dayId
+    ).value =
+      parts[2];
+
+
+    document.getElementById(
+      monthId
+    ).value =
+      parts[1];
+
+
+    document.getElementById(
+      yearId
+    ).value =
+      parts[0];
+
+  }
+
+
+  function getDateFromInputs(
+    dayId,
+    monthId,
+    yearId,
+    fieldName
+  ) {
+
+    const day =
+      document.getElementById(
+        dayId
+      ).value.trim();
+
+
+    const month =
+      document.getElementById(
+        monthId
+      ).value.trim();
+
+
+    const year =
+      document.getElementById(
+        yearId
+      ).value.trim();
+
+
+    if (
+      day === "" &&
+      month === "" &&
+      year === ""
+    ) {
+
+      return null;
+
+    }
+
+
+    if (
+      day === "" ||
+      month === "" ||
+      year === ""
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter DD, MM and YYYY."
+      );
+
+    }
+
+
+    const dayNumber =
+      Number(day);
+
+    const monthNumber =
+      Number(month);
+
+    const yearNumber =
+      Number(year);
+
+
+    if (
+      !/^\d+$/.test(day) ||
+      !/^\d+$/.test(month) ||
+      !/^\d+$/.test(year)
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter numbers only."
+      );
+
+    }
+
+
+    if (
+      monthNumber < 1 ||
+      monthNumber > 12
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Month must be between 01 and 12."
+      );
+
+    }
+
+
+    if (
+      dayNumber < 1 ||
+      dayNumber > 31
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Day must be between 01 and 31."
+      );
+
+    }
+
+
+    if (
+      year.length !== 4 ||
+      yearNumber < 1000 ||
+      yearNumber > 9999
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter a valid 4-digit year."
+      );
+
+    }
+
+
+    const testDate =
+      new Date(
+        yearNumber,
+        monthNumber - 1,
+        dayNumber
+      );
+
+
+    if (
+      testDate.getFullYear() !==
+        yearNumber ||
+      testDate.getMonth() !==
+        monthNumber - 1 ||
+      testDate.getDate() !==
+        dayNumber
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Invalid date."
+      );
+
+    }
+
+
+    return (
+      year +
+      "-" +
+      String(monthNumber)
+        .padStart(2, "0") +
+      "-" +
+      String(dayNumber)
+        .padStart(2, "0")
+    );
+
+  }
+
+
+  function showNewPhoto(file) {
+
+    if (!file) return;
+
+
+    selectedPhotoFile =
+      file;
+
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function(event) {
+
+        newPhotoPreview.src =
+          event.target.result;
+
+        newPhotoPreview.style.display =
+          "block";
+
+      };
+
+
+    reader.readAsDataURL(file);
+
+  }
+
+
+  function openCamera() {
+
+    cameraInput.click();
+
+  }
+
+
+  function openGallery() {
+
+    galleryInput.click();
+
+  }
+
+
+  cameraInput.addEventListener(
+    "change",
+    function() {
+
+      if (
+        this.files &&
+        this.files[0]
+      ) {
+
+        showNewPhoto(
+          this.files[0]
+        );
+
+      }
+
+    }
+  );
+
+
+  galleryInput.addEventListener(
+    "change",
+    function() {
+
+      if (
+        this.files &&
+        this.files[0]
+      ) {
+
+        showNewPhoto(
+          this.files[0]
+        );
+
+      }
+
+    }
+  );
+
+
+  async function loadMember() {
+
+    const user =
+      await getCurrentUser();
+
+
+    if (!user) return;
+
+
+    if (!memberUuid) {
+
+      showMessage(
+        "Member ID not found.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("members")
+        .select(`
+          id,
+          member_id,
+          member_type,
+          full_name,
+          nic_number,
+          date_of_birth,
+          gender,
+          phone_whatsapp,
+          address,
+          marital_status,
+          date_of_salvation,
+          photo_url,
+          additional_notes
+        `)
+        .eq(
+          "id",
+          memberUuid
+        )
+        .single();
+
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to load member: " +
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    currentMember =
+      data;
+
+
+    document.getElementById(
+      "memberId"
+    ).value =
+      data.member_id || "";
+
+
+    document.getElementById(
+      "memberType"
+    ).value =
+      data.member_type || "";
+
+
+    document.getElementById(
+      "fullName"
+    ).value =
+      data.full_name || "";
+
+
+    document.getElementById(
+      "nicNumber"
+    ).value =
+      data.nic_number || "";
+
+
+    setDateInputs(
+      data.date_of_birth,
+      "dobDay",
+      "dobMonth",
+      "dobYear"
+    );
+
+
+    document.getElementById(
+      "gender"
+    ).value =
+      data.gender || "";
+
+
+    document.getElementById(
+      "phoneWhatsapp"
+    ).value =
+      data.phone_whatsapp || "";
+
+
+    document.getElementById(
+      "address"
+    ).value =
+      data.address || "";
+
+
+    document.getElementById(
+      "maritalStatus"
+    ).value =
+      data.marital_status || "";
+
+
+    setDateInputs(
+      data.date_of_salvation,
+      "salvationDay",
+      "salvationMonth",
+      "salvationYear"
+    );
+
+
+    document.getElementById(
+      "additionalNotes"
+    ).value =
+      data.additional_notes || "";
+
+
+    if (data.photo_url) {
+
+      currentPhoto.src =
+        data.photo_url;
+
+      currentPhoto.style.display =
+        "block";
+
+      noPhoto.style.display =
+        "none";
+
+    } else {
+
+      currentPhoto.style.display =
+        "none";
+
+      noPhoto.style.display =
+        "flex";
+
+    }
+
+  }
+
+
+  async function uploadNewPhoto(
+    user,
+    file
+  ) {
+
+    if (!file) return null;
+
+
+    if (
+      !file.type.startsWith("image/")
+    ) {
+
+      throw new Error(
+        "Please select an image file."
+      );
+
+    }
+
+
+    if (
+      file.size > 5 * 1024 * 1024
+    ) {
+
+      throw new Error(
+        "Photo is too large. Please select a photo smaller than 5 MB."
+      );
+
+    }
+
+
+    let extension =
+      "jpg";
+
+
+    if (
+      file.type === "image/png"
+    ) {
+
+      extension = "png";
+
+    } else if (
+      file.type === "image/webp"
+    ) {
+
+      extension = "webp";
+
+    }
+
+
+    const filePath =
+      user.id +
+      "/" +
+      crypto.randomUUID() +
+      "." +
+      extension;
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .storage
+        .from("member-photos")
+        .upload(
+          filePath,
+          file,
+          {
+            cacheControl: "3600",
+            upsert: false,
+            contentType: file.type
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Photo Upload Error:",
+        error
+      );
+
+      throw new Error(
+        "Photo upload failed: " +
+        error.message
+      );
+
+    }
+
+
+    const {
+      data
+    } =
+      supabaseClient
+        .storage
+        .from("member-photos")
+        .getPublicUrl(
+          filePath
+        );
+
+
+    if (
+      !data ||
+      !data.publicUrl
+    ) {
+
+      throw new Error(
+        "Could not create photo URL."
+      );
+
+    }
+
+
+    return {
+      path: filePath,
+      url: data.publicUrl
+    };
+
+  }
+
+
+  function getStoragePathFromUrl(
+    photoUrl
+  ) {
+
+    if (!photoUrl) return null;
+
+
+    const marker =
+      "/storage/v1/object/public/member-photos/";
+
+
+    const index =
+      photoUrl.indexOf(marker);
+
+
+    if (index === -1) {
+
+      return null;
+
+    }
+
+
+    return photoUrl.substring(
+      index + marker.length
+    );
+
+  }
+
+
+  async function deleteOldPhoto(
+    photoUrl
+  ) {
+
+    const oldPath =
+      getStoragePathFromUrl(
+        photoUrl
+      );
+
+
+    if (!oldPath) {
+
+      return;
+
+    }
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .storage
+        .from("member-photos")
+        .remove([
+          oldPath
+        ]);
+
+
+    if (error) {
+
+      console.error(
+        "Old Photo Delete Error:",
+        error
+      );
+
+    }
+
+  }
+
+
+  editForm.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+
+      clearMessage();
+
+
+      updateButton.disabled =
+        true;
+
+
+      updateButton.textContent =
+        "UPDATING...";
+
+
+      let uploadedNewPhoto =
+        null;
+
+
+      try {
+
+        const user =
+          await getCurrentUser();
+
+
+        if (!user) return;
+
+
+        if (!currentMember) {
+
+          throw new Error(
+            "Member data not loaded."
+          );
+
+        }
+
+
+        const memberType =
+          document.getElementById(
+            "memberType"
+          ).value;
+
+
+        const fullName =
+          document.getElementById(
+            "fullName"
+          ).value.trim();
+
+
+        const nicNumber =
+          document.getElementById(
+            "nicNumber"
+          ).value.trim();
+
+
+        const dateOfBirth =
+          getDateFromInputs(
+            "dobDay",
+            "dobMonth",
+            "dobYear",
+            "Date of Birth"
+          );
+
+
+        const gender =
+          document.getElementById(
+            "gender"
+          ).value;
+
+
+        const phoneWhatsapp =
+          document.getElementById(
+            "phoneWhatsapp"
+          ).value.trim();
+
+
+        const address =
+          document.getElementById(
+            "address"
+          ).value.trim();
+
+
+        const maritalStatus =
+          document.getElementById(
+            "maritalStatus"
+          ).value;
+
+
+        const dateOfSalvation =
+          getDateFromInputs(
+            "salvationDay",
+            "salvationMonth",
+            "salvationYear",
+            "Date of Salvation"
+          );
+
+
+        const additionalNotes =
+          document.getElementById(
+            "additionalNotes"
+          ).value.trim();
+
+
+        let photoUrl =
+          currentMember.photo_url ||
+          null;
+
+
+        /*
+          Upload new photo first.
+        */
+
+        if (selectedPhotoFile) {
+
+          updateButton.textContent =
+            "UPLOADING PHOTO...";
+
+
+          uploadedNewPhoto =
+            await uploadNewPhoto(
+              user,
+              selectedPhotoFile
+            );
+
+
+          photoUrl =
+            uploadedNewPhoto.url;
+
+        }
+
+
+        const updateData = {
+
+          member_type:
+            memberType,
+
+          full_name:
+            fullName,
+
+          nic_number:
+            nicNumber || null,
+
+          date_of_birth:
+            dateOfBirth,
+
+          gender:
+            gender,
+
+          phone_whatsapp:
+            phoneWhatsapp,
+
+          address:
+            address,
+
+          marital_status:
+            maritalStatus,
+
+          date_of_salvation:
+            dateOfSalvation,
+
+          photo_url:
+            photoUrl,
+
+          additional_notes:
+            additionalNotes,
+
+          updated_at:
+            new Date().toISOString()
+
+        };
+
+
+        updateButton.textContent =
+          "SAVING CHANGES...";
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("members")
+            .update(updateData)
+            .eq(
+              "id",
+              memberUuid
+            );
+
+
+        if (error) {
+
+          /*
+            If database update fails,
+            remove newly uploaded photo.
+          */
+
+          if (uploadedNewPhoto) {
+
+            await supabaseClient
+              .storage
+              .from("member-photos")
+              .remove([
+                uploadedNewPhoto.path
+              ]);
+
+          }
+
+
+          throw error;
+
+        }
+
+
+        /*
+          Delete old photo only after
+          successful database update.
+        */
+
+        if (
+          uploadedNewPhoto &&
+          currentMember.photo_url
+        ) {
+
+          await deleteOldPhoto(
+            currentMember.photo_url
+          );
+
+        }
+
+
+        showMessage(
+          "Member Updated Successfully!",
+          "success"
+        );
+
+
+        currentMember.photo_url =
+          photoUrl;
+
+
+        selectedPhotoFile =
+          null;
+
+
+        setTimeout(
+          function() {
+
+            window.location.href =
+              "member.html?id=" +
+              encodeURIComponent(
+                memberUuid
+              );
+
+          },
+          1200
+        );
+
+
+      } catch (error) {
+
+        console.error(
+          "Update Error:",
+          error
+        );
+
+
+        showMessage(
+          "Error: " +
+          error.message,
+          "error"
+        );
+
+
+      } finally {
+
+        updateButton.disabled =
+          false;
+
+
+        updateButton.textContent =
+          "UPDATE MEMBER";
+
+      }
+
+    }
+  );
+
+
+  loadMember();
+
+</script>
+
+</body>
+</html>

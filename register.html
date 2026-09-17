@@ -78,6 +78,18 @@
       background: #eee;
     }
 
+    .photo-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 8px;
+    }
+
+    .photo-buttons button {
+      flex: 1;
+      width: auto;
+      background: #174d3c;
+    }
+
     .photo-preview {
       width: 130px;
       height: 130px;
@@ -85,7 +97,7 @@
       border-radius: 10px;
       border: 1px solid #ccc;
       display: none;
-      margin-top: 10px;
+      margin-top: 12px;
     }
 
     button {
@@ -127,6 +139,10 @@
     .error {
       background: #f8dddd;
       color: #a00000;
+    }
+
+    .hidden-file {
+      display: none;
     }
   </style>
 </head>
@@ -173,10 +189,7 @@
 
         <div class="field">
           <label>Date of Birth</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-          >
+          <input type="date" id="dateOfBirth">
         </div>
 
         <div class="field">
@@ -218,18 +231,12 @@
 
         <div class="field">
           <label>Church Joining Date</label>
-          <input
-            type="date"
-            id="churchJoiningDate"
-          >
+          <input type="date" id="churchJoiningDate">
         </div>
 
         <div class="field">
           <label>Date of Salvation</label>
-          <input
-            type="date"
-            id="dateOfSalvation"
-          >
+          <input type="date" id="dateOfSalvation">
         </div>
 
         <div class="field">
@@ -244,12 +251,34 @@
 
         <div class="field">
           <label>Member Photo</label>
+
+          <div class="photo-buttons">
+
+            <button type="button" onclick="openCamera()">
+              📷 Take Photo
+            </button>
+
+            <button type="button" onclick="openGallery()">
+              🖼️ Gallery
+            </button>
+
+          </div>
+
           <input
             type="file"
-            id="memberPhoto"
+            id="cameraInput"
+            class="hidden-file"
             accept="image/*"
             capture="environment"
           >
+
+          <input
+            type="file"
+            id="galleryInput"
+            class="hidden-file"
+            accept="image/*"
+          >
+
           <img
             id="photoPreview"
             class="photo-preview"
@@ -277,7 +306,9 @@
   </div>
 
 <script>
-  const SUPABASE_URL = "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+  const SUPABASE_URL =
+    "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
@@ -290,188 +321,347 @@
   const form = document.getElementById("memberForm");
   const saveButton = document.getElementById("saveButton");
   const message = document.getElementById("message");
-  const photoInput = document.getElementById("memberPhoto");
-  const photoPreview = document.getElementById("photoPreview");
 
-  let selectedPhoto = null;
+  const cameraInput =
+    document.getElementById("cameraInput");
 
-  function showMessage(text, type) {
-    message.textContent = text;
-    message.className = "message " + type;
-    message.style.display = "block";
+  const galleryInput =
+    document.getElementById("galleryInput");
+
+  const photoPreview =
+    document.getElementById("photoPreview");
+
+
+  function openCamera() {
+    cameraInput.click();
   }
 
-  function clearMessage() {
-    message.textContent = "";
-    message.style.display = "none";
+
+  function openGallery() {
+    galleryInput.click();
   }
 
-  photoInput.addEventListener("change", function () {
-    const file = this.files[0];
 
-    if (!file) {
-      selectedPhoto = null;
-      photoPreview.style.display = "none";
-      return;
-    }
+  function showPhoto(file) {
 
-    selectedPhoto = file;
+    if (!file) return;
 
     const reader = new FileReader();
 
-    reader.onload = function (event) {
+    reader.onload = function(event) {
+
       photoPreview.src = event.target.result;
+
       photoPreview.style.display = "block";
+
     };
 
     reader.readAsDataURL(file);
+  }
+
+
+  cameraInput.addEventListener("change", function() {
+
+    if (this.files && this.files[0]) {
+
+      showPhoto(this.files[0]);
+
+    }
+
   });
 
+
+  galleryInput.addEventListener("change", function() {
+
+    if (this.files && this.files[0]) {
+
+      showPhoto(this.files[0]);
+
+    }
+
+  });
+
+
+  function showMessage(text, type) {
+
+    message.textContent = text;
+
+    message.className =
+      "message " + type;
+
+    message.style.display = "block";
+
+  }
+
+
+  function clearMessage() {
+
+    message.textContent = "";
+
+    message.style.display = "none";
+
+  }
+
+
   async function checkLogin() {
+
     const {
       data: { session },
       error
     } = await supabaseClient.auth.getSession();
 
     if (error || !session) {
+
       window.location.href = "index.html";
+
       return null;
+
     }
 
     return session;
+
   }
 
+
   async function getCurrentUser() {
+
     const {
       data: { user },
       error
     } = await supabaseClient.auth.getUser();
 
     if (error) {
+
       return null;
+
     }
 
     return user;
+
   }
+
 
   checkLogin();
 
-  form.addEventListener("submit", async function (event) {
-    event.preventDefault();
 
-    clearMessage();
+  form.addEventListener(
+    "submit",
+    async function(event) {
 
-    saveButton.disabled = true;
-    saveButton.textContent = "SAVING...";
+      event.preventDefault();
 
-    try {
-      const user = await getCurrentUser();
+      clearMessage();
 
-      if (!user) {
-        window.location.href = "index.html";
-        return;
+      saveButton.disabled = true;
+
+      saveButton.textContent = "SAVING...";
+
+
+      try {
+
+        const user =
+          await getCurrentUser();
+
+
+        if (!user) {
+
+          window.location.href =
+            "index.html";
+
+          return;
+
+        }
+
+
+        const fullName =
+          document.getElementById(
+            "fullName"
+          ).value.trim();
+
+
+        const dateOfBirth =
+          document.getElementById(
+            "dateOfBirth"
+          ).value || null;
+
+
+        const gender =
+          document.getElementById(
+            "gender"
+          ).value || null;
+
+
+        const phoneWhatsapp =
+          document.getElementById(
+            "phoneWhatsapp"
+          ).value.trim() || null;
+
+
+        const address =
+          document.getElementById(
+            "address"
+          ).value.trim() || null;
+
+
+        const maritalStatus =
+          document.getElementById(
+            "maritalStatus"
+          ).value || null;
+
+
+        const churchJoiningDate =
+          document.getElementById(
+            "churchJoiningDate"
+          ).value || null;
+
+
+        const dateOfSalvation =
+          document.getElementById(
+            "dateOfSalvation"
+          ).value || null;
+
+
+        const memberType =
+          document.getElementById(
+            "memberType"
+          ).value || null;
+
+
+        const additionalNotes =
+          document.getElementById(
+            "additionalNotes"
+          ).value.trim() || null;
+
+
+        if (!fullName) {
+
+          throw new Error(
+            "Please enter Full Name."
+          );
+
+        }
+
+
+        /*
+          IMPORTANT:
+          These names exactly match
+          the actual Supabase columns.
+        */
+
+        const memberData = {
+
+          full_name: fullName,
+
+          date_of_birth: dateOfBirth,
+
+          gender: gender,
+
+          phone_whatsapp: phoneWhatsapp,
+
+          address: address,
+
+          marital_status: maritalStatus,
+
+          church_joining_date:
+            churchJoiningDate,
+
+          date_of_salvation:
+            dateOfSalvation,
+
+          member_type:
+            memberType,
+
+          additional_notes:
+            additionalNotes,
+
+          created_by:
+            user.id
+
+        };
+
+
+        const {
+          data,
+          error
+        } = await supabaseClient
+
+          .from("members")
+
+          .insert([memberData])
+
+          .select(
+            "id, member_id, full_name"
+          )
+
+          .single();
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+
+        document.getElementById(
+          "memberId"
+        ).value = data.member_id || "";
+
+
+        showMessage(
+
+          "Member Registered Successfully — Member ID: "
+          + data.member_id,
+
+          "success"
+
+        );
+
+
+        form.reset();
+
+
+        document.getElementById(
+          "memberId"
+        ).value =
+          data.member_id || "";
+
+
+        photoPreview.style.display =
+          "none";
+
+        photoPreview.src = "";
+
+
+      } catch (error) {
+
+        console.error(error);
+
+
+        showMessage(
+
+          "Error: "
+          + (
+            error.message ||
+            "Failed to register member."
+          ),
+
+          "error"
+
+        );
+
+      } finally {
+
+        saveButton.disabled = false;
+
+        saveButton.textContent =
+          "SAVE MEMBER";
+
       }
-
-      const fullName =
-        document.getElementById("fullName").value.trim();
-
-      const dateOfBirth =
-        document.getElementById("dateOfBirth").value || null;
-
-      const gender =
-        document.getElementById("gender").value || null;
-
-      const phoneWhatsapp =
-        document.getElementById("phoneWhatsapp").value.trim() || null;
-
-      const address =
-        document.getElementById("address").value.trim() || null;
-
-      const maritalStatus =
-        document.getElementById("maritalStatus").value || null;
-
-      const churchJoiningDate =
-        document.getElementById("churchJoiningDate").value || null;
-
-      const dateOfSalvation =
-        document.getElementById("dateOfSalvation").value || null;
-
-      const memberType =
-        document.getElementById("memberType").value || null;
-
-      const additionalNotes =
-        document.getElementById("additionalNotes").value.trim() || null;
-
-      if (!fullName) {
-        throw new Error("Please enter Full Name.");
-      }
-
-      const memberData = {
-        full_name: fullName,
-        date_of_birth: dateOfBirth,
-        gender: gender,
-        phone_whatsapp: phoneWhatsapp,
-        address: address,
-        marital_status: maritalStatus,
-        church_joining_date: churchJoiningDate,
-        "date of salvation": dateOfSalvation,
-        member_type: memberType,
-        additional_notes: additionalNotes,
-        created_by: user.id
-      };
-
-      /*
-        Member ID is NOT included here.
-        Supabase automatically generates it using the database sequence.
-      */
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("members")
-        .insert([memberData])
-        .select("id, member_id, full_name")
-        .single();
-
-      if (error) {
-        throw error;
-      }
-
-      document.getElementById("memberId").value =
-        data.member_id || "";
-
-      showMessage(
-        "Member Registered Successfully — Member ID: " +
-        data.member_id,
-        "success"
-      );
-
-      form.reset();
-
-      document.getElementById("memberId").value =
-        data.member_id || "";
-
-      photoPreview.style.display = "none";
-      photoPreview.src = "";
-      selectedPhoto = null;
-
-    } catch (error) {
-
-      console.error(error);
-
-      showMessage(
-        "Error: " + (error.message || "Failed to register member."),
-        "error"
-      );
-
-    } finally {
-
-      saveButton.disabled = false;
-      saveButton.textContent = "SAVE MEMBER";
 
     }
-  });
+  );
+
 </script>
 
 </body>

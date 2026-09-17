@@ -3,9 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Members - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- PDF Library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
   <style>
     * {
@@ -69,7 +73,25 @@
       border: 1px solid #ccc;
       border-radius: 9px;
       font-size: 16px;
+      margin-bottom: 12px;
+    }
+
+    .pdf-all-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #8b6b2e;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
       margin-bottom: 18px;
+    }
+
+    .pdf-all-btn:disabled {
+      background: #aaa;
+      cursor: not-allowed;
     }
 
     .member-card {
@@ -146,7 +168,17 @@
       margin-bottom: 15px;
     }
 
+    .success {
+      background: #dff2e5;
+      color: #176b36;
+      padding: 14px;
+      border-radius: 9px;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
     @media (max-width: 600px) {
+
       .container {
         padding: 12px;
       }
@@ -163,6 +195,7 @@
       .member-name {
         font-size: 16px;
       }
+
     }
   </style>
 </head>
@@ -195,17 +228,27 @@
         placeholder="Search by Name or Member ID"
       >
 
+      <button
+        id="pdfAllButton"
+        class="pdf-all-btn"
+      >
+        📚 Download All Members PDF
+      </button>
+
       <div id="errorBox"></div>
 
       <div id="membersList">
+
         <div class="loading">
           Loading members...
         </div>
+
       </div>
 
     </div>
 
   </div>
+
 
 <script>
 
@@ -215,6 +258,7 @@
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
+
   const supabaseClient =
     supabase.createClient(
       SUPABASE_URL,
@@ -223,13 +267,27 @@
 
 
   const membersList =
-    document.getElementById("membersList");
+    document.getElementById(
+      "membersList"
+    );
+
 
   const searchInput =
-    document.getElementById("searchInput");
+    document.getElementById(
+      "searchInput"
+    );
+
 
   const errorBox =
-    document.getElementById("errorBox");
+    document.getElementById(
+      "errorBox"
+    );
+
+
+  const pdfAllButton =
+    document.getElementById(
+      "pdfAllButton"
+    );
 
 
   let allMembers = [];
@@ -243,7 +301,11 @@
     } =
       await supabaseClient.auth.getUser();
 
-    if (error || !data.user) {
+
+    if (
+      error ||
+      !data.user
+    ) {
 
       window.location.href =
         "index.html";
@@ -252,7 +314,59 @@
 
     }
 
+
     return data.user;
+
+  }
+
+
+  function showValue(value) {
+
+    if (
+      value === null ||
+      value === undefined ||
+      value === ""
+    ) {
+
+      return "Not provided";
+
+    }
+
+
+    return String(value);
+
+  }
+
+
+  function formatDate(date) {
+
+    if (!date) {
+
+      return "Not provided";
+
+    }
+
+
+    const parts =
+      date.split("-");
+
+
+    if (
+      parts.length !== 3
+    ) {
+
+      return date;
+
+    }
+
+
+    return (
+      parts[2] +
+      "/" +
+      parts[1] +
+      "/" +
+      parts[0]
+    );
 
   }
 
@@ -261,131 +375,171 @@
 
     membersList.innerHTML = "";
 
-    if (!members || members.length === 0) {
+
+    if (
+      !members ||
+      members.length === 0
+    ) {
 
       membersList.innerHTML =
-        '<div class="empty">No members found.</div>';
+        '<div class="empty">' +
+        'No members found.' +
+        '</div>';
 
       return;
 
     }
 
 
-    members.forEach(function(member) {
+    members.forEach(
+      function(member) {
 
-      const card =
-        document.createElement("div");
-
-      card.className =
-        "member-card";
-
-
-      card.onclick = function() {
-
-        window.location.href =
-          "member.html?id=" + member.id;
-
-      };
+        const card =
+          document.createElement(
+            "div"
+          );
 
 
-      const photo =
-        document.createElement("img");
-
-      photo.className =
-        "member-photo";
-
-      photo.alt =
-        "Member Photo";
+        card.className =
+          "member-card";
 
 
-      if (member.photo_url) {
+        card.onclick =
+          function() {
 
-        photo.src =
-          member.photo_url;
+            window.location.href =
+              "member.html?id=" +
+              member.id;
 
-      } else {
+          };
 
-        photo.src =
-          "data:image/svg+xml;charset=UTF-8," +
-          encodeURIComponent(`
-            <svg xmlns="http://www.w3.org/2000/svg"
-                 width="100"
-                 height="100">
-              <rect width="100%" height="100%"
-                    fill="#eeeeee"/>
-              <text x="50%" y="50%"
-                    dominant-baseline="middle"
-                    text-anchor="middle"
-                    font-size="12"
-                    fill="#777">
-                No Photo
-              </text>
-            </svg>
-          `);
+
+        const photo =
+          document.createElement(
+            "img"
+          );
+
+
+        photo.className =
+          "member-photo";
+
+
+        photo.alt =
+          "Member Photo";
+
+
+        if (
+          member.photo_url
+        ) {
+
+          photo.src =
+            member.photo_url;
+
+        } else {
+
+          photo.src =
+            "data:image/svg+xml;charset=UTF-8," +
+            encodeURIComponent(`
+              <svg xmlns="http://www.w3.org/2000/svg"
+                   width="100"
+                   height="100">
+                <rect width="100%"
+                      height="100%"
+                      fill="#eeeeee"/>
+                <text x="50%"
+                      y="50%"
+                      dominant-baseline="middle"
+                      text-anchor="middle"
+                      font-size="12"
+                      fill="#777">
+                  No Photo
+                </text>
+              </svg>
+            `);
+
+        }
+
+
+        const info =
+          document.createElement(
+            "div"
+          );
+
+
+        info.className =
+          "member-info";
+
+
+        const id =
+          document.createElement(
+            "div"
+          );
+
+
+        id.className =
+          "member-id";
+
+
+        id.textContent =
+          member.member_id || "";
+
+
+        const name =
+          document.createElement(
+            "div"
+          );
+
+
+        name.className =
+          "member-name";
+
+
+        name.textContent =
+          member.full_name || "";
+
+
+        const type =
+          document.createElement(
+            "div"
+          );
+
+
+        type.className =
+          "member-type";
+
+
+        type.textContent =
+          member.member_type || "";
+
+
+        const phone =
+          document.createElement(
+            "div"
+          );
+
+
+        phone.className =
+          "member-phone";
+
+
+        phone.textContent =
+          member.phone_whatsapp || "";
+
+
+        info.appendChild(id);
+        info.appendChild(name);
+        info.appendChild(type);
+        info.appendChild(phone);
+
+
+        card.appendChild(photo);
+        card.appendChild(info);
+
+
+        membersList.appendChild(card);
 
       }
-
-
-      const info =
-        document.createElement("div");
-
-      info.className =
-        "member-info";
-
-
-      const id =
-        document.createElement("div");
-
-      id.className =
-        "member-id";
-
-      id.textContent =
-        member.member_id || "";
-
-
-      const name =
-        document.createElement("div");
-
-      name.className =
-        "member-name";
-
-      name.textContent =
-        member.full_name || "";
-
-
-      const type =
-        document.createElement("div");
-
-      type.className =
-        "member-type";
-
-      type.textContent =
-        member.member_type || "";
-
-
-      const phone =
-        document.createElement("div");
-
-      phone.className =
-        "member-phone";
-
-      phone.textContent =
-        member.phone_whatsapp || "";
-
-
-      info.appendChild(id);
-      info.appendChild(name);
-      info.appendChild(type);
-      info.appendChild(phone);
-
-
-      card.appendChild(photo);
-      card.appendChild(info);
-
-
-      membersList.appendChild(card);
-
-    });
+    );
 
   }
 
@@ -400,7 +554,9 @@
 
     if (!search) {
 
-      displayMembers(allMembers);
+      displayMembers(
+        allMembers
+      );
 
       return;
 
@@ -408,25 +564,37 @@
 
 
     const filtered =
-      allMembers.filter(function(member) {
+      allMembers.filter(
+        function(member) {
 
-        const name =
-          (member.full_name || "")
+          const name =
+            (
+              member.full_name ||
+              ""
+            )
             .toLowerCase();
 
-        const memberId =
-          (member.member_id || "")
+
+          const memberId =
+            (
+              member.member_id ||
+              ""
+            )
             .toLowerCase();
 
-        return (
-          name.includes(search) ||
-          memberId.includes(search)
-        );
 
-      });
+          return (
+            name.includes(search) ||
+            memberId.includes(search)
+          );
+
+        }
+      );
 
 
-    displayMembers(filtered);
+    displayMembers(
+      filtered
+    );
 
   }
 
@@ -435,6 +603,7 @@
 
     const user =
       await checkUser();
+
 
     if (!user) return;
 
@@ -445,32 +614,46 @@
         data,
         error
       } =
-        await supabaseClient
-          .from("members")
-          .select(`
-            id,
-            member_id,
-            member_type,
-            full_name,
-            phone_whatsapp,
-            photo_url
-          `)
-          .order(
-            "created_at",
-            { ascending: false }
-          );
+      await supabaseClient
+        .from("members")
+        .select(`
+          id,
+          member_id,
+          member_type,
+          full_name,
+          nic_number,
+          date_of_birth,
+          gender,
+          phone_whatsapp,
+          address,
+          marital_status,
+          date_of_salvation,
+          photo_url,
+          additional_notes
+        `)
+        .order(
+          "created_at",
+          {
+            ascending: false
+          }
+        );
 
 
       if (error) {
 
         console.error(error);
 
+
         errorBox.innerHTML =
-          '<div class="error">Error: ' +
+          '<div class="error">' +
+          'Error: ' +
           error.message +
           '</div>';
 
-        membersList.innerHTML = "";
+
+        membersList.innerHTML =
+          "";
+
 
         return;
 
@@ -479,6 +662,7 @@
 
       allMembers =
         data || [];
+
 
       displayMembers(
         allMembers
@@ -489,10 +673,804 @@
 
       console.error(error);
 
+
       errorBox.innerHTML =
-        '<div class="error">Error loading members.</div>';
+        '<div class="error">' +
+        'Error loading members.' +
+        '</div>';
 
     }
+
+  }
+
+
+  /*
+   * Convert online image
+   * into Data URL for PDF.
+   */
+
+  async function imageToDataURL(
+    url
+  ) {
+
+    try {
+
+      const response =
+        await fetch(
+          url,
+          {
+            mode: "cors"
+          }
+        );
+
+
+      if (!response.ok) {
+
+        throw new Error(
+          "Image loading failed"
+        );
+
+      }
+
+
+      const blob =
+        await response.blob();
+
+
+      return await new Promise(
+        function(resolve, reject) {
+
+          const reader =
+            new FileReader();
+
+
+          reader.onloadend =
+            function() {
+
+              resolve(
+                reader.result
+              );
+
+            };
+
+
+          reader.onerror =
+            reject;
+
+
+          reader.readAsDataURL(
+            blob
+          );
+
+        }
+      );
+
+
+    } catch (error) {
+
+      console.error(
+        "Image error:",
+        error
+      );
+
+
+      return null;
+
+    }
+
+  }
+
+
+  /*
+   * Add one member profile
+   * to the PDF.
+   */
+
+  async function addMemberToPDF(
+    pdf,
+    member,
+    profileNumber
+  ) {
+
+    const pageWidth =
+      pdf.internal.pageSize.getWidth();
+
+
+    const pageHeight =
+      pdf.internal.pageSize.getHeight();
+
+
+    const margin = 18;
+
+
+    /*
+     * HEADER
+     */
+
+    pdf.setFillColor(
+      23,
+      77,
+      60
+    );
+
+
+    pdf.rect(
+      0,
+      0,
+      pageWidth,
+      35,
+      "F"
+    );
+
+
+    pdf.setTextColor(
+      255,
+      255,
+      255
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(20);
+
+
+    pdf.text(
+      "COC MEMBERS",
+      pageWidth / 2,
+      14,
+      {
+        align: "center"
+      }
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(10);
+
+
+    pdf.text(
+      "Church Of Christ Sri Lanka",
+      pageWidth / 2,
+      21,
+      {
+        align: "center"
+      }
+    );
+
+
+    pdf.text(
+      "Members Registration",
+      pageWidth / 2,
+      27,
+      {
+        align: "center"
+      }
+    );
+
+
+    let currentY = 45;
+
+
+    /*
+     * PROFILE NUMBER
+     */
+
+    pdf.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    pdf.setFontSize(8);
+
+
+    pdf.text(
+      "Member Profile " +
+      profileNumber,
+      pageWidth - margin,
+      currentY,
+      {
+        align: "right"
+      }
+    );
+
+
+    currentY += 6;
+
+
+    /*
+     * PHOTO
+     */
+
+    if (
+      member.photo_url
+    ) {
+
+      const photoData =
+        await imageToDataURL(
+          member.photo_url
+        );
+
+
+      if (photoData) {
+
+        try {
+
+          pdf.addImage(
+            photoData,
+            "JPEG",
+            pageWidth / 2 - 22,
+            currentY,
+            44,
+            44
+          );
+
+
+          currentY += 51;
+
+        } catch (error) {
+
+          console.error(
+            error
+          );
+
+        }
+
+      }
+
+    }
+
+
+    /*
+     * MEMBER NAME
+     */
+
+    pdf.setTextColor(
+      23,
+      77,
+      60
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(17);
+
+
+    pdf.text(
+      showValue(
+        member.full_name
+      ),
+      pageWidth / 2,
+      currentY,
+      {
+        align: "center"
+      }
+    );
+
+
+    currentY += 7;
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(10);
+
+
+    pdf.text(
+      showValue(
+        member.member_id
+      ),
+      pageWidth / 2,
+      currentY,
+      {
+        align: "center"
+      }
+    );
+
+
+    currentY += 6;
+
+
+    pdf.text(
+      showValue(
+        member.member_type
+      ),
+      pageWidth / 2,
+      currentY,
+      {
+        align: "center"
+      }
+    );
+
+
+    currentY += 11;
+
+
+    /*
+     * INFORMATION HEADER
+     */
+
+    pdf.setFillColor(
+      23,
+      77,
+      60
+    );
+
+
+    pdf.rect(
+      margin,
+      currentY,
+      pageWidth - margin * 2,
+      9,
+      "F"
+    );
+
+
+    pdf.setTextColor(
+      255,
+      255,
+      255
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(10);
+
+
+    pdf.text(
+      "MEMBER INFORMATION",
+      margin + 5,
+      currentY + 6
+    );
+
+
+    currentY += 14;
+
+
+    /*
+     * DETAILS
+     */
+
+    const details = [
+
+      [
+        "NIC Number",
+        showValue(
+          member.nic_number
+        )
+      ],
+
+      [
+        "Date of Birth",
+        formatDate(
+          member.date_of_birth
+        )
+      ],
+
+      [
+        "Gender",
+        showValue(
+          member.gender
+        )
+      ],
+
+      [
+        "Phone / WhatsApp",
+        showValue(
+          member.phone_whatsapp
+        )
+      ],
+
+      [
+        "Address",
+        showValue(
+          member.address
+        )
+      ],
+
+      [
+        "Marital Status",
+        showValue(
+          member.marital_status
+        )
+      ],
+
+      [
+        "Date of Salvation",
+        formatDate(
+          member.date_of_salvation
+        )
+      ]
+
+    ];
+
+
+    details.forEach(
+      function(item) {
+
+        const label =
+          item[0];
+
+
+        const value =
+          item[1];
+
+
+        const valueX =
+          margin + 50;
+
+
+        const maxWidth =
+          pageWidth -
+          valueX -
+          margin -
+          5;
+
+
+        const lines =
+          pdf.splitTextToSize(
+            value,
+            maxWidth
+          );
+
+
+        const rowHeight =
+          Math.max(
+            11,
+            lines.length * 5 + 6
+          );
+
+
+        /*
+         * Background
+         */
+
+        pdf.setFillColor(
+          248,
+          247,
+          243
+        );
+
+
+        pdf.roundedRect(
+          margin,
+          currentY,
+          pageWidth - margin * 2,
+          rowHeight,
+          2,
+          2,
+          "F"
+        );
+
+
+        /*
+         * Label
+         */
+
+        pdf.setFont(
+          "helvetica",
+          "bold"
+        );
+
+
+        pdf.setFontSize(8.5);
+
+
+        pdf.setTextColor(
+          23,
+          77,
+          60
+        );
+
+
+        pdf.text(
+          label,
+          margin + 4,
+          currentY + 7
+        );
+
+
+        /*
+         * Value
+         */
+
+        pdf.setFont(
+          "helvetica",
+          "normal"
+        );
+
+
+        pdf.setTextColor(
+          34,
+          34,
+          34
+        );
+
+
+        pdf.text(
+          lines,
+          valueX,
+          currentY + 7
+        );
+
+
+        currentY +=
+          rowHeight + 3;
+
+      }
+    );
+
+
+    /*
+     * NOTES
+     */
+
+    currentY += 2;
+
+
+    pdf.setFillColor(
+      23,
+      77,
+      60
+    );
+
+
+    pdf.rect(
+      margin,
+      currentY,
+      pageWidth - margin * 2,
+      9,
+      "F"
+    );
+
+
+    pdf.setTextColor(
+      255,
+      255,
+      255
+    );
+
+
+    pdf.setFont(
+      "helvetica",
+      "bold"
+    );
+
+
+    pdf.setFontSize(10);
+
+
+    pdf.text(
+      "ADDITIONAL NOTES",
+      margin + 5,
+      currentY + 6
+    );
+
+
+    currentY += 14;
+
+
+    pdf.setFont(
+      "helvetica",
+      "normal"
+    );
+
+
+    pdf.setFontSize(9);
+
+
+    pdf.setTextColor(
+      34,
+      34,
+      34
+    );
+
+
+    const notes =
+      showValue(
+        member.additional_notes
+      );
+
+
+    const noteLines =
+      pdf.splitTextToSize(
+        notes,
+        pageWidth -
+        margin * 2 -
+        10
+      );
+
+
+    pdf.text(
+      noteLines,
+      margin + 5,
+      currentY + 5
+    );
+
+
+    /*
+     * FOOTER
+     */
+
+    pdf.setDrawColor(
+      210,
+      210,
+      210
+    );
+
+
+    pdf.line(
+      margin,
+      pageHeight - 20,
+      pageWidth - margin,
+      pageHeight - 20
+    );
+
+
+    pdf.setFontSize(8);
+
+
+    pdf.setTextColor(
+      100,
+      100,
+      100
+    );
+
+
+    pdf.text(
+      "COC Members - Church Of Christ Sri Lanka",
+      pageWidth / 2,
+      pageHeight - 14,
+      {
+        align: "center"
+      }
+    );
+
+
+    pdf.text(
+      "Member Profile " +
+      profileNumber,
+      pageWidth / 2,
+      pageHeight - 9,
+      {
+        align: "center"
+      }
+    );
+
+  }
+
+
+  /*
+   * DOWNLOAD ALL MEMBERS PDF
+   */
+
+  async function downloadAllMembersPDF() {
+
+    if (
+      !allMembers ||
+      allMembers.length === 0
+    ) {
+
+      alert(
+        "There are no members to export."
+      );
+
+      return;
+
+    }
+
+
+    pdfAllButton.disabled =
+      true;
+
+
+    pdfAllButton.textContent =
+      "⏳ Creating PDF...";
+
+
+    errorBox.innerHTML =
+      '<div class="success">' +
+      'Creating All Members PDF. Please wait...' +
+      '</div>';
+
+
+    try {
+
+      const {
+        jsPDF
+      } =
+      window.jspdf;
+
+
+      const pdf =
+        new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: "a4"
+        });
+
+
+      for (
+        let i = 0;
+        i < allMembers.length;
+        i++
+      ) {
+
+        if (i > 0) {
+
+          pdf.addPage();
+
+        }
+
+
+        await addMemberToPDF(
+          pdf,
+          allMembers[i],
+          i + 1
+        );
+
+      }
+
+
+      pdf.save(
+        "COC_Members_All_Members.pdf"
+      );
+
+
+      errorBox.innerHTML =
+        '<div class="success">' +
+        'All Members PDF downloaded successfully.' +
+        '</div>';
+
+
+    } catch (error) {
+
+      console.error(
+        "PDF Error:",
+        error
+      );
+
+
+      errorBox.innerHTML =
+        '<div class="error">' +
+        'PDF creation failed: ' +
+        error.message +
+        '</div>';
+
+    }
+
+
+    pdfAllButton.disabled =
+      false;
+
+
+    pdfAllButton.textContent =
+      "📚 Download All Members PDF";
 
   }
 
@@ -500,6 +1478,12 @@
   searchInput.addEventListener(
     "input",
     filterMembers
+  );
+
+
+  pdfAllButton.addEventListener(
+    "click",
+    downloadAllMembersPDF
   );
 
 

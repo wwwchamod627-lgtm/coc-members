@@ -29,6 +29,15 @@
 
     .logo {
       font-size: 45px;
+      margin-bottom: 5px;
+    }
+
+    .logo img {
+      max-width: 110px;
+      max-height: 110px;
+      object-fit: contain;
+      display: none;
+      margin: 0 auto 8px;
     }
 
     .header h1 {
@@ -113,30 +122,51 @@
 <body>
 
   <div class="header">
-    <div class="logo">✔️</div>
-    <h1>COC Members</h1>
-    <p>Church Of Christ Sri Lanka</p>
-    <p>Members Registration</p>
+
+    <div class="logo" id="logoArea">
+      <span id="defaultLogo">✔️</span>
+      <img id="logoImage" alt="Logo">
+    </div>
+
+    <h1 id="appName">COC Members</h1>
+
+    <p id="churchName">
+      Church Of Christ Sri Lanka
+    </p>
+
+    <p id="subtitle">
+      Members Registration
+    </p>
+
   </div>
 
   <div class="container">
 
     <div class="welcome">
+
       <h2>Welcome</h2>
-      <p id="userEmail">Loading...</p>
+
+      <p id="welcomeText">
+        Welcome to Church Of Christ Sri Lanka Members Registration
+      </p>
+
+      <p id="userEmail" style="margin-top:10px;">
+        Loading...
+      </p>
+
     </div>
 
     <div class="menu">
 
-      <button onclick="registerMember()">
+      <button id="registerButton" onclick="registerMember()">
         ➕ Register New Member
       </button>
 
-      <button onclick="membersList()">
+      <button id="membersButton" onclick="membersList()">
         👥 Members List
       </button>
 
-      <button onclick="searchMembers()">
+      <button id="searchButton" onclick="searchMembers()">
         🔍 Search Members
       </button>
 
@@ -164,10 +194,21 @@
         SUPABASE_PUBLISHABLE_KEY
       );
 
+
+    // ==========================================
+    // CHECK LOGIN
+    // ==========================================
+
     async function checkLogin() {
 
-      const { data } =
+      const { data, error } =
         await supabaseClient.auth.getSession();
+
+      if (error) {
+        console.error("Session error:", error);
+        window.location.href = "index.html";
+        return;
+      }
 
       if (!data.session) {
         window.location.href = "index.html";
@@ -176,26 +217,209 @@
 
       document.getElementById("userEmail").textContent =
         data.session.user.email;
+
+      await loadSettings();
     }
+
+
+    // ==========================================
+    // LOAD ADMIN SETTINGS
+    // ==========================================
+
+    async function loadSettings() {
+
+      const { data, error } =
+        await supabaseClient
+          .from("app_settings")
+          .select(`
+            app_name,
+            church_name,
+            subtitle,
+            welcome_text,
+            logo_url,
+            register_button_text,
+            members_button_text,
+            search_button_text
+          `)
+          .limit(1)
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "Failed to load settings:",
+          error
+        );
+
+        return;
+      }
+
+
+      if (!data) {
+        console.log("No app settings found.");
+        return;
+      }
+
+
+      // ------------------------------------------
+      // APP NAME
+      // ------------------------------------------
+
+      if (data.app_name) {
+
+        document.getElementById("appName").textContent =
+          data.app_name;
+
+        document.title =
+          data.app_name;
+
+      }
+
+
+      // ------------------------------------------
+      // CHURCH NAME
+      // ------------------------------------------
+
+      if (data.church_name) {
+
+        document.getElementById("churchName").textContent =
+          data.church_name;
+
+      }
+
+
+      // ------------------------------------------
+      // SUBTITLE
+      // ------------------------------------------
+
+      if (data.subtitle) {
+
+        document.getElementById("subtitle").textContent =
+          data.subtitle;
+
+      }
+
+
+      // ------------------------------------------
+      // WELCOME TEXT
+      // ------------------------------------------
+
+      if (data.welcome_text) {
+
+        document.getElementById("welcomeText").textContent =
+          data.welcome_text;
+
+      }
+
+
+      // ------------------------------------------
+      // REGISTER BUTTON
+      // ------------------------------------------
+
+      if (data.register_button_text) {
+
+        document.getElementById("registerButton").textContent =
+          data.register_button_text;
+
+      }
+
+
+      // ------------------------------------------
+      // MEMBERS BUTTON
+      // ------------------------------------------
+
+      if (data.members_button_text) {
+
+        document.getElementById("membersButton").textContent =
+          data.members_button_text;
+
+      }
+
+
+      // ------------------------------------------
+      // SEARCH BUTTON
+      // ------------------------------------------
+
+      if (data.search_button_text) {
+
+        document.getElementById("searchButton").textContent =
+          data.search_button_text;
+
+      }
+
+
+      // ------------------------------------------
+      // LOGO
+      // ------------------------------------------
+
+      if (data.logo_url) {
+
+        const logoImage =
+          document.getElementById("logoImage");
+
+        const defaultLogo =
+          document.getElementById("defaultLogo");
+
+        logoImage.src =
+          data.logo_url;
+
+        logoImage.style.display =
+          "block";
+
+        defaultLogo.style.display =
+          "none";
+
+      }
+
+    }
+
+
+    // ==========================================
+    // NAVIGATION
+    // ==========================================
 
     function registerMember() {
-      window.location.href = "register.html";
+
+      window.location.href =
+        "register.html";
+
     }
+
 
     function membersList() {
-      window.location.href = "members.html";
+
+      window.location.href =
+        "members.html";
+
     }
 
+
     function searchMembers() {
-      window.location.href = "members.html";
+
+      window.location.href =
+        "members.html";
+
     }
+
+
+    // ==========================================
+    // LOGOUT
+    // ==========================================
 
     async function logout() {
 
       await supabaseClient.auth.signOut();
 
-      window.location.href = "index.html";
+      window.location.href =
+        "index.html";
+
     }
+
+
+    // ==========================================
+    // START
+    // ==========================================
 
     checkLogin();
 

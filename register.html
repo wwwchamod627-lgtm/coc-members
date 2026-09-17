@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>Register New Member - COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -24,6 +25,13 @@
       color: white;
       padding: 20px;
       text-align: center;
+    }
+
+    .header img {
+      max-width: 220px;
+      max-height: 90px;
+      object-fit: contain;
+      margin-bottom: 8px;
     }
 
     .header h1 {
@@ -59,6 +67,11 @@
       margin-bottom: 7px;
     }
 
+    .required-star {
+      color: #c00000;
+      margin-left: 3px;
+    }
+
     input,
     select,
     textarea {
@@ -67,6 +80,7 @@
       border: 1px solid #ccc;
       border-radius: 8px;
       font-size: 16px;
+      background: #fff;
     }
 
     textarea {
@@ -170,6 +184,23 @@
       display: none;
     }
 
+    .loading {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+    }
+
+    .loading-spinner {
+      display: inline-block;
+      margin-right: 7px;
+    }
+
+    .empty-form {
+      text-align: center;
+      padding: 25px;
+      color: #777;
+    }
+
     @media (max-width: 600px) {
 
       .container {
@@ -183,6 +214,10 @@
       .date-inputs {
         grid-template-columns: 1fr 1fr 1.4fr;
       }
+
+      .photo-buttons {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
@@ -190,323 +225,53 @@
 <body>
 
   <div class="header">
-    <h1>COC Members</h1>
-    <p>Church Of Christ Sri Lanka</p>
-    <p>Members Registration</p>
+
+    <img
+      id="headerLogo"
+      src=""
+      alt="COC Members Logo"
+      style="display:none;"
+    >
+
+    <h1 id="headerAppName">
+      COC Members
+    </h1>
+
+    <p id="headerChurchName">
+      Church Of Christ Sri Lanka
+    </p>
+
+    <p id="headerSubtitle">
+      Members Registration
+    </p>
+
   </div>
+
 
   <div class="container">
 
     <button
+      type="button"
       class="back-btn"
       onclick="window.location.href='home.html'"
     >
       ← Back to Dashboard
     </button>
 
+
     <div class="card">
 
-      <h2>Register New Member</h2>
+      <h2 id="formTitle">
+        Register New Member
+      </h2>
 
-      <form id="memberForm">
 
-        <!-- 1. Member ID -->
-        <div class="field">
-          <label>Member ID</label>
+      <form
+        id="memberForm"
+        style="display:none;"
+      >
 
-          <input
-            type="text"
-            id="memberId"
-            placeholder="Automatic"
-            readonly
-          >
-        </div>
-
-
-        <!-- 2. Member Type -->
-        <div class="field">
-
-          <label>Member Type</label>
-
-          <select
-            id="memberType"
-            required
-          >
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Pastor">
-              Pastor
-            </option>
-
-            <option value="Brother">
-              Brother
-            </option>
-
-            <option value="Sister">
-              Sister
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- 3. Full Name -->
-        <div class="field">
-
-          <label>Full Name</label>
-
-          <input
-            type="text"
-            id="fullName"
-            placeholder="Enter Full Name"
-            required
-          >
-
-        </div>
-
-
-        <!-- 4. NIC Number -->
-        <div class="field">
-
-          <label>NIC Number</label>
-
-          <input
-            type="text"
-            id="nicNumber"
-            placeholder="Enter NIC Number (Optional)"
-          >
-
-        </div>
-
-
-        <!-- 5. Date of Birth -->
-        <div class="field">
-
-          <label>Date of Birth</label>
-
-          <div class="date-inputs">
-
-            <input
-              type="text"
-              id="dobDay"
-              placeholder="DD"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              type="text"
-              id="dobMonth"
-              placeholder="MM"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              type="text"
-              id="dobYear"
-              placeholder="YYYY"
-              inputmode="numeric"
-              maxlength="4"
-            >
-
-          </div>
-
-          <div class="date-help">
-            Enter as DD / MM / YYYY
-          </div>
-
-        </div>
-
-
-        <!-- 6. Gender -->
-        <div class="field">
-
-          <label>Gender</label>
-
-          <select id="gender">
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Male">
-              Male
-            </option>
-
-            <option value="Female">
-              Female
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- 7. Phone / WhatsApp -->
-        <div class="field">
-
-          <label>Phone / WhatsApp</label>
-
-          <input
-            type="tel"
-            id="phoneWhatsapp"
-            placeholder="Enter Phone / WhatsApp Number"
-          >
-
-        </div>
-
-
-        <!-- 8. Address -->
-        <div class="field">
-
-          <label>Address</label>
-
-          <textarea
-            id="address"
-            placeholder="Enter Address"
-          ></textarea>
-
-        </div>
-
-
-        <!-- 9. Marital Status -->
-        <div class="field">
-
-          <label>Marital Status</label>
-
-          <select id="maritalStatus">
-
-            <option value="">
-              Select...
-            </option>
-
-            <option value="Single">
-              Single
-            </option>
-
-            <option value="Married">
-              Married
-            </option>
-
-            <option value="Divorced">
-              Divorced
-            </option>
-
-            <option value="Widowed">
-              Widowed
-            </option>
-
-          </select>
-
-        </div>
-
-
-        <!-- 10. Date of Salvation -->
-        <div class="field">
-
-          <label>Date of Salvation</label>
-
-          <div class="date-inputs">
-
-            <input
-              type="text"
-              id="salvationDay"
-              placeholder="DD"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              type="text"
-              id="salvationMonth"
-              placeholder="MM"
-              inputmode="numeric"
-              maxlength="2"
-            >
-
-            <input
-              type="text"
-              id="salvationYear"
-              placeholder="YYYY"
-              inputmode="numeric"
-              maxlength="4"
-            >
-
-          </div>
-
-          <div class="date-help">
-            Enter as DD / MM / YYYY
-          </div>
-
-        </div>
-
-
-        <!-- 11. Member Photo -->
-        <div class="field">
-
-          <label>Member Photo</label>
-
-          <div class="photo-buttons">
-
-            <button
-              type="button"
-              onclick="openCamera()"
-            >
-              📷 Take Photo
-            </button>
-
-            <button
-              type="button"
-              onclick="openGallery()"
-            >
-              🖼️ Gallery
-            </button>
-
-          </div>
-
-
-          <input
-            type="file"
-            id="cameraInput"
-            class="hidden-file"
-            accept="image/*"
-            capture="environment"
-          >
-
-
-          <input
-            type="file"
-            id="galleryInput"
-            class="hidden-file"
-            accept="image/*"
-          >
-
-
-          <img
-            id="photoPreview"
-            class="photo-preview"
-            alt="Member Photo Preview"
-          >
-
-        </div>
-
-
-        <!-- 12. Additional Notes -->
-        <div class="field">
-
-          <label>Additional Notes</label>
-
-          <textarea
-            id="additionalNotes"
-            placeholder="Enter additional notes..."
-          ></textarea>
-
-        </div>
+        <div id="dynamicFieldsContainer"></div>
 
 
         <button
@@ -520,6 +285,15 @@
 
 
       <div
+        id="loadingForm"
+        class="loading"
+      >
+        <span class="loading-spinner">⏳</span>
+        Loading registration form...
+      </div>
+
+
+      <div
         id="message"
         class="message"
       ></div>
@@ -530,6 +304,10 @@
 
 
 <script>
+
+  /* =========================================================
+     SUPABASE
+  ========================================================= */
 
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
@@ -545,6 +323,23 @@
       SUPABASE_PUBLISHABLE_KEY
     );
 
+
+  /* =========================================================
+     GLOBAL VARIABLES
+  ========================================================= */
+
+  let currentUser = null;
+
+  let formFields = [];
+
+  let appConfig = [];
+
+  let selectedPhotoFile = null;
+
+
+  /* =========================================================
+     DOM ELEMENTS
+  ========================================================= */
 
   const form =
     document.getElementById(
@@ -564,111 +359,21 @@
     );
 
 
-  const cameraInput =
+  const loadingForm =
     document.getElementById(
-      "cameraInput"
+      "loadingForm"
     );
 
 
-  const galleryInput =
+  const dynamicFieldsContainer =
     document.getElementById(
-      "galleryInput"
+      "dynamicFieldsContainer"
     );
 
 
-  const photoPreview =
-    document.getElementById(
-      "photoPreview"
-    );
-
-
-  /* Selected photo file */
-
-  let selectedPhotoFile =
-    null;
-
-
-  function openCamera() {
-
-    cameraInput.click();
-
-  }
-
-
-  function openGallery() {
-
-    galleryInput.click();
-
-  }
-
-
-  function showPhoto(file) {
-
-    if (!file) return;
-
-
-    selectedPhotoFile =
-      file;
-
-
-    const reader =
-      new FileReader();
-
-
-    reader.onload =
-      function(event) {
-
-        photoPreview.src =
-          event.target.result;
-
-        photoPreview.style.display =
-          "block";
-
-      };
-
-
-    reader.readAsDataURL(file);
-
-  }
-
-
-  cameraInput.addEventListener(
-    "change",
-    function() {
-
-      if (
-        this.files &&
-        this.files[0]
-      ) {
-
-        showPhoto(
-          this.files[0]
-        );
-
-      }
-
-    }
-  );
-
-
-  galleryInput.addEventListener(
-    "change",
-    function() {
-
-      if (
-        this.files &&
-        this.files[0]
-      ) {
-
-        showPhoto(
-          this.files[0]
-        );
-
-      }
-
-    }
-  );
-
+  /* =========================================================
+     MESSAGE
+  ========================================================= */
 
   function showMessage(
     text,
@@ -692,11 +397,53 @@
     message.textContent =
       "";
 
+    message.className =
+      "message";
+
     message.style.display =
       "none";
 
   }
 
+
+  /* =========================================================
+     ESCAPE HTML
+  ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    return String(
+      value ?? ""
+    )
+      .replace(
+        /&/g,
+        "&amp;"
+      )
+      .replace(
+        /</g,
+        "&lt;"
+      )
+      .replace(
+        />/g,
+        "&gt;"
+      )
+      .replace(
+        /"/g,
+        "&quot;"
+      )
+      .replace(
+        /'/g,
+        "&#039;"
+      );
+
+  }
+
+
+  /* =========================================================
+     GET CURRENT USER
+  ========================================================= */
 
   async function getCurrentUser() {
 
@@ -722,43 +469,1145 @@
     }
 
 
+    currentUser =
+      data.user;
+
+
     return data.user;
 
   }
 
 
+  /* =========================================================
+     LOAD APP SETTINGS
+  ========================================================= */
+
+  async function loadAppSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select(
+          "app_name, church_name, subtitle, logo_url"
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "App Settings Error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    if (!data) return;
+
+
+    document.getElementById(
+      "headerAppName"
+    ).textContent =
+      data.app_name ||
+      "COC Members";
+
+
+    document.getElementById(
+      "headerChurchName"
+    ).textContent =
+      data.church_name ||
+      "Church Of Christ Sri Lanka";
+
+
+    document.getElementById(
+      "headerSubtitle"
+    ).textContent =
+      data.subtitle ||
+      "Members Registration";
+
+
+    if (data.logo_url) {
+
+      const logo =
+        document.getElementById(
+          "headerLogo"
+        );
+
+
+      logo.src =
+        data.logo_url;
+
+
+      logo.style.display =
+        "inline-block";
+
+    }
+
+  }
+
+
+  /* =========================================================
+     LOAD APP CONFIG
+  ========================================================= */
+
+  async function loadAppConfig() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_config")
+        .select(
+          "setting_key, setting_value, setting_type, is_active"
+        );
+
+
+    if (error) {
+
+      console.error(
+        "App Config Error:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    appConfig =
+      data || [];
+
+  }
+
+
+  /* =========================================================
+     GET APP CONFIG VALUE
+  ========================================================= */
+
+  function getConfigValue(
+    key,
+    defaultValue = ""
+  ) {
+
+    const item =
+      appConfig.find(
+        config =>
+          config.setting_key === key &&
+          config.is_active === true
+      );
+
+
+    if (!item) {
+
+      return defaultValue;
+
+    }
+
+
+    return item.setting_value ??
+      defaultValue;
+
+  }
+
+
+  /* =========================================================
+     LOAD FORM FIELDS
+  ========================================================= */
+
+  async function loadFormFields() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("form_fields")
+        .select(`
+          id,
+          field_key,
+          field_label,
+          field_type,
+          is_visible,
+          is_required,
+          display_order,
+          options
+        `)
+        .order(
+          "display_order",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "Form Fields Error:",
+        error
+      );
+
+      throw new Error(
+        "Failed to load registration form settings: " +
+        error.message
+      );
+
+    }
+
+
+    formFields =
+      data || [];
+
+
+    renderDynamicForm();
+
+  }
+
+
+  /* =========================================================
+     RENDER DYNAMIC FORM
+  ========================================================= */
+
+  function renderDynamicForm() {
+
+    dynamicFieldsContainer.innerHTML =
+      "";
+
+
+    const visibleFields =
+      formFields
+        .filter(
+          field =>
+            field.is_visible === true ||
+            field.field_type === "automatic"
+        )
+        .sort(
+          (a, b) =>
+            Number(a.display_order) -
+            Number(b.display_order)
+        );
+
+
+    if (!visibleFields.length) {
+
+      dynamicFieldsContainer.innerHTML = `
+        <div class="empty-form">
+          No registration fields are currently enabled.
+        </div>
+      `;
+
+      form.style.display =
+        "block";
+
+      loadingForm.style.display =
+        "none";
+
+      return;
+
+    }
+
+
+    visibleFields.forEach(
+      field => {
+
+        const element =
+          createFieldElement(
+            field
+          );
+
+
+        if (element) {
+
+          dynamicFieldsContainer
+            .appendChild(
+              element
+            );
+
+        }
+
+      }
+    );
+
+
+    form.style.display =
+      "block";
+
+    loadingForm.style.display =
+      "none";
+
+
+    initializePhotoInputs();
+
+  }
+
+
+  /* =========================================================
+     CREATE FIELD ELEMENT
+  ========================================================= */
+
+  function createFieldElement(
+    field
+  ) {
+
+    const wrapper =
+      document.createElement(
+        "div"
+      );
+
+
+    wrapper.className =
+      "field";
+
+
+    wrapper.dataset.fieldKey =
+      field.field_key;
+
+
+    const label =
+      escapeHtml(
+        field.field_label
+      );
+
+
+    const required =
+      field.is_required === true;
+
+
+    const requiredMark =
+      required
+        ? '<span class="required-star">*</span>'
+        : "";
+
+
+    /* -------------------------------------------------------
+       MEMBER ID
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "member_id"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+        </label>
+
+        <input
+          type="text"
+          id="memberId"
+          placeholder="Automatic"
+          readonly
+        >
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       MEMBER TYPE
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "member_type"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="memberType">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <select
+          id="memberType"
+          ${required ? "required" : ""}
+        >
+          ${createOptions(
+            field.options,
+            "Select..."
+          )}
+        </select>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       FULL NAME
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "full_name"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="fullName">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <input
+          type="text"
+          id="fullName"
+          placeholder="Enter ${escapeHtml(field.field_label)}"
+          ${required ? "required" : ""}
+        >
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       NIC NUMBER
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "nic_number"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="nicNumber">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <input
+          type="text"
+          id="nicNumber"
+          placeholder="Enter ${escapeHtml(field.field_label)}"
+          ${required ? "required" : ""}
+        >
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       DATE OF BIRTH
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "date_of_birth"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <div class="date-inputs">
+
+          <input
+            type="text"
+            id="dobDay"
+            placeholder="DD"
+            inputmode="numeric"
+            maxlength="2"
+            ${required ? "required" : ""}
+          >
+
+          <input
+            type="text"
+            id="dobMonth"
+            placeholder="MM"
+            inputmode="numeric"
+            maxlength="2"
+            ${required ? "required" : ""}
+          >
+
+          <input
+            type="text"
+            id="dobYear"
+            placeholder="YYYY"
+            inputmode="numeric"
+            maxlength="4"
+            ${required ? "required" : ""}
+          >
+
+        </div>
+
+        <div class="date-help">
+          Enter as DD / MM / YYYY
+        </div>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       GENDER
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "gender"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="gender">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <select
+          id="gender"
+          ${required ? "required" : ""}
+        >
+          ${createOptions(
+            field.options,
+            "Select..."
+          )}
+        </select>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       PHONE / WHATSAPP
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "phone_whatsapp"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="phoneWhatsapp">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <input
+          type="tel"
+          id="phoneWhatsapp"
+          placeholder="Enter ${escapeHtml(field.field_label)}"
+          ${required ? "required" : ""}
+        >
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       ADDRESS
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "address"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="address">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <textarea
+          id="address"
+          placeholder="Enter ${escapeHtml(field.field_label)}"
+          ${required ? "required" : ""}
+        ></textarea>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       MARITAL STATUS
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "marital_status"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="maritalStatus">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <select
+          id="maritalStatus"
+          ${required ? "required" : ""}
+        >
+          ${createOptions(
+            field.options,
+            "Select..."
+          )}
+        </select>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       DATE OF SALVATION
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "date_of_salvation"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <div class="date-inputs">
+
+          <input
+            type="text"
+            id="salvationDay"
+            placeholder="DD"
+            inputmode="numeric"
+            maxlength="2"
+            ${required ? "required" : ""}
+          >
+
+          <input
+            type="text"
+            id="salvationMonth"
+            placeholder="MM"
+            inputmode="numeric"
+            maxlength="2"
+            ${required ? "required" : ""}
+          >
+
+          <input
+            type="text"
+            id="salvationYear"
+            placeholder="YYYY"
+            inputmode="numeric"
+            maxlength="4"
+            ${required ? "required" : ""}
+          >
+
+        </div>
+
+        <div class="date-help">
+          Enter as DD / MM / YYYY
+        </div>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       MEMBER PHOTO
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "member_photo"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <div class="photo-buttons">
+
+          <button
+            type="button"
+            onclick="openCamera()"
+          >
+            📷 Take Photo
+          </button>
+
+          <button
+            type="button"
+            onclick="openGallery()"
+          >
+            🖼️ Gallery
+          </button>
+
+        </div>
+
+
+        <input
+          type="file"
+          id="cameraInput"
+          class="hidden-file"
+          accept="image/*"
+          capture="environment"
+          ${required ? "required" : ""}
+        >
+
+
+        <input
+          type="file"
+          id="galleryInput"
+          class="hidden-file"
+          accept="image/*"
+        >
+
+
+        <img
+          id="photoPreview"
+          class="photo-preview"
+          alt="Member Photo Preview"
+        >
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /* -------------------------------------------------------
+       ADDITIONAL NOTES
+    ------------------------------------------------------- */
+
+    if (
+      field.field_key ===
+      "additional_notes"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label for="additionalNotes">
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <textarea
+          id="additionalNotes"
+          placeholder="Enter additional notes..."
+          ${required ? "required" : ""}
+        ></textarea>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    /*
+      Fallback for future text fields.
+    */
+
+    if (
+      field.field_type ===
+      "textarea"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <textarea
+          id="${escapeHtml(field.field_key)}"
+          ${required ? "required" : ""}
+        ></textarea>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    if (
+      field.field_type ===
+      "select"
+    ) {
+
+      wrapper.innerHTML = `
+
+        <label>
+          ${label}
+          ${requiredMark}
+        </label>
+
+        <select
+          id="${escapeHtml(field.field_key)}"
+          ${required ? "required" : ""}
+        >
+          ${createOptions(
+            field.options,
+            "Select..."
+          )}
+        </select>
+
+      `;
+
+
+      return wrapper;
+
+    }
+
+
+    wrapper.innerHTML = `
+
+      <label>
+        ${label}
+        ${requiredMark}
+      </label>
+
+      <input
+        type="text"
+        id="${escapeHtml(field.field_key)}"
+        ${required ? "required" : ""}
+      >
+
+    `;
+
+
+    return wrapper;
+
+  }
+
+
+  /* =========================================================
+     CREATE DROPDOWN OPTIONS
+  ========================================================= */
+
+  function createOptions(
+    options,
+    placeholder
+  ) {
+
+    let html = `
+      <option value="">
+        ${escapeHtml(placeholder)}
+      </option>
+    `;
+
+
+    if (
+      Array.isArray(options)
+    ) {
+
+      options.forEach(
+        option => {
+
+          const value =
+            String(
+              option
+            );
+
+
+          html += `
+            <option value="${escapeHtml(value)}">
+              ${escapeHtml(value)}
+            </option>
+          `;
+
+        }
+      );
+
+    }
+
+
+    return html;
+
+  }
+
+
+  /* =========================================================
+     PHOTO INPUTS
+  ========================================================= */
+
+  function initializePhotoInputs() {
+
+    const cameraInput =
+      document.getElementById(
+        "cameraInput"
+      );
+
+
+    const galleryInput =
+      document.getElementById(
+        "galleryInput"
+      );
+
+
+    if (cameraInput) {
+
+      cameraInput.addEventListener(
+        "change",
+        function() {
+
+          if (
+            this.files &&
+            this.files[0]
+          ) {
+
+            showPhoto(
+              this.files[0]
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+
+    if (galleryInput) {
+
+      galleryInput.addEventListener(
+        "change",
+        function() {
+
+          if (
+            this.files &&
+            this.files[0]
+          ) {
+
+            showPhoto(
+              this.files[0]
+            );
+
+          }
+
+        }
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
+     OPEN CAMERA
+  ========================================================= */
+
+  function openCamera() {
+
+    const input =
+      document.getElementById(
+        "cameraInput"
+      );
+
+
+    if (input) {
+
+      input.click();
+
+    }
+
+  }
+
+
+  /* =========================================================
+     OPEN GALLERY
+  ========================================================= */
+
+  function openGallery() {
+
+    const input =
+      document.getElementById(
+        "galleryInput"
+      );
+
+
+    if (input) {
+
+      input.click();
+
+    }
+
+  }
+
+
+  /* =========================================================
+     SHOW PHOTO
+  ========================================================= */
+
+  function showPhoto(
+    file
+  ) {
+
+    if (!file) return;
+
+
+    selectedPhotoFile =
+      file;
+
+
+    const preview =
+      document.getElementById(
+        "photoPreview"
+      );
+
+
+    if (!preview) return;
+
+
+    const reader =
+      new FileReader();
+
+
+    reader.onload =
+      function(event) {
+
+        preview.src =
+          event.target.result;
+
+        preview.style.display =
+          "block";
+
+      };
+
+
+    reader.readAsDataURL(
+      file
+    );
+
+  }
+
+
+  /* =========================================================
+     DATE VALIDATION
+  ========================================================= */
+
   function getDateFromInputs(
     dayId,
     monthId,
     yearId,
-    fieldName
+    fieldName,
+    isRequired = false
   ) {
 
-    const day =
+    const dayElement =
       document.getElementById(
         dayId
-      ).value.trim();
+      );
+
+
+    const monthElement =
+      document.getElementById(
+        monthId
+      );
+
+
+    const yearElement =
+      document.getElementById(
+        yearId
+      );
+
+
+    if (
+      !dayElement ||
+      !monthElement ||
+      !yearElement
+    ) {
+
+      return null;
+
+    }
+
+
+    const day =
+      dayElement.value.trim();
 
 
     const month =
-      document.getElementById(
-        monthId
-      ).value.trim();
+      monthElement.value.trim();
 
 
     const year =
-      document.getElementById(
-        yearId
-      ).value.trim();
+      yearElement.value.trim();
 
 
-    /* All empty = NULL */
+    /* All empty */
 
     if (
       day === "" &&
       month === "" &&
       year === ""
     ) {
+
+      if (isRequired) {
+
+        throw new Error(
+          fieldName +
+          ": Please enter DD, MM and YYYY."
+        );
+
+      }
+
 
       return null;
 
@@ -784,8 +1633,10 @@
     const dayNumber =
       Number(day);
 
+
     const monthNumber =
       Number(month);
+
 
     const yearNumber =
       Number(year);
@@ -844,11 +1695,6 @@
     }
 
 
-    /*
-      Check whether the actual
-      calendar date exists.
-    */
-
     const testDate =
       new Date(
         yearNumber,
@@ -874,10 +1720,8 @@
     }
 
 
-    /* Return YYYY-MM-DD */
-
     return (
-      year +
+      String(yearNumber) +
       "-" +
       String(monthNumber)
         .padStart(2, "0") +
@@ -889,9 +1733,9 @@
   }
 
 
-  /*
-    Upload Member Photo
-  */
+  /* =========================================================
+     UPLOAD MEMBER PHOTO
+  ========================================================= */
 
   async function uploadMemberPhoto(
     user,
@@ -905,10 +1749,10 @@
     }
 
 
-    /* Check image type */
-
     if (
-      !file.type.startsWith("image/")
+      !file.type.startsWith(
+        "image/"
+      )
     ) {
 
       throw new Error(
@@ -918,13 +1762,9 @@
     }
 
 
-    /*
-      Maximum photo size:
-      5 MB
-    */
-
     if (
-      file.size > 5 * 1024 * 1024
+      file.size >
+      5 * 1024 * 1024
     ) {
 
       throw new Error(
@@ -934,42 +1774,36 @@
     }
 
 
-    /*
-      Get file extension
-    */
-
     let extension =
       "jpg";
 
 
     if (
-      file.type === "image/png"
+      file.type ===
+      "image/png"
     ) {
 
-      extension = "png";
+      extension =
+        "png";
 
     } else if (
-      file.type === "image/webp"
+      file.type ===
+      "image/webp"
     ) {
 
-      extension = "webp";
+      extension =
+        "webp";
 
     } else if (
-      file.type === "image/jpeg"
+      file.type ===
+      "image/jpeg"
     ) {
 
-      extension = "jpg";
+      extension =
+        "jpg";
 
     }
 
-
-    /*
-      Create unique file path
-
-      Example:
-
-      user-id/random-id.jpg
-    */
 
     const filePath =
       user.id +
@@ -978,11 +1812,6 @@
       "." +
       extension;
 
-
-    /*
-      Upload to Supabase Storage
-      bucket: member-photos
-    */
 
     const {
       error
@@ -994,9 +1823,12 @@
           filePath,
           file,
           {
-            cacheControl: "3600",
-            upsert: false,
-            contentType: file.type
+            cacheControl:
+              "3600",
+            upsert:
+              false,
+            contentType:
+              file.type
           }
         );
 
@@ -1015,10 +1847,6 @@
 
     }
 
-
-    /*
-      Get Public URL
-    */
 
     const {
       data
@@ -1044,12 +1872,81 @@
 
 
     return {
-      path: filePath,
-      url: data.publicUrl
+      path:
+        filePath,
+
+      url:
+        data.publicUrl
     };
 
   }
 
+
+  /* =========================================================
+     GET FIELD
+  ========================================================= */
+
+  function getField(
+    key
+  ) {
+
+    return formFields.find(
+      field =>
+        field.field_key === key
+    );
+
+  }
+
+
+  /* =========================================================
+     GET FIELD REQUIRED
+  ========================================================= */
+
+  function isFieldRequired(
+    key
+  ) {
+
+    const field =
+      getField(key);
+
+
+    return !!(
+      field &&
+      field.is_required === true
+    );
+
+  }
+
+
+  /* =========================================================
+     GET FIELD VALUE
+  ========================================================= */
+
+  function getInputValue(
+    id
+  ) {
+
+    const element =
+      document.getElementById(
+        id
+      );
+
+
+    if (!element) {
+
+      return "";
+
+    }
+
+
+    return element.value.trim();
+
+  }
+
+
+  /* =========================================================
+     FORM SUBMIT
+  ========================================================= */
 
   form.addEventListener(
     "submit",
@@ -1079,25 +1976,69 @@
           await getCurrentUser();
 
 
-        if (!user) return;
+        if (!user) {
+
+          return;
+
+        }
+
+
+        /* -----------------------------------------------
+           GET VALUES
+        ------------------------------------------------ */
 
 
         const memberType =
-          document.getElementById(
+          getInputValue(
             "memberType"
-          ).value;
+          );
 
 
         const fullName =
-          document.getElementById(
+          getInputValue(
             "fullName"
-          ).value.trim();
+          );
 
 
         const nicNumber =
-          document.getElementById(
+          getInputValue(
             "nicNumber"
-          ).value.trim();
+          );
+
+
+        const gender =
+          getInputValue(
+            "gender"
+          );
+
+
+        const phoneWhatsapp =
+          getInputValue(
+            "phoneWhatsapp"
+          );
+
+
+        const address =
+          getInputValue(
+            "address"
+          );
+
+
+        const maritalStatus =
+          getInputValue(
+            "maritalStatus"
+          );
+
+
+        const additionalNotes =
+          getInputValue(
+            "additionalNotes"
+          );
+
+
+        /* -----------------------------------------------
+           DATES
+        ------------------------------------------------ */
 
 
         const dateOfBirth =
@@ -1105,32 +2046,11 @@
             "dobDay",
             "dobMonth",
             "dobYear",
-            "Date of Birth"
+            "Date of Birth",
+            isFieldRequired(
+              "date_of_birth"
+            )
           );
-
-
-        const gender =
-          document.getElementById(
-            "gender"
-          ).value;
-
-
-        const phoneWhatsapp =
-          document.getElementById(
-            "phoneWhatsapp"
-          ).value.trim();
-
-
-        const address =
-          document.getElementById(
-            "address"
-          ).value.trim();
-
-
-        const maritalStatus =
-          document.getElementById(
-            "maritalStatus"
-          ).value;
 
 
         const dateOfSalvation =
@@ -1138,19 +2058,42 @@
             "salvationDay",
             "salvationMonth",
             "salvationYear",
-            "Date of Salvation"
+            "Date of Salvation",
+            isFieldRequired(
+              "date_of_salvation"
+            )
           );
 
 
-        const additionalNotes =
-          document.getElementById(
-            "additionalNotes"
-          ).value.trim();
+        /* -----------------------------------------------
+           PHOTO
+        ------------------------------------------------ */
 
 
-        /*
-          Upload photo first.
-        */
+        const photoField =
+          getField(
+            "member_photo"
+          );
+
+
+        const photoRequired =
+          !!(
+            photoField &&
+            photoField.is_required === true
+          );
+
+
+        if (
+          photoRequired &&
+          !selectedPhotoFile
+        ) {
+
+          throw new Error(
+            "Member Photo: Please select a photo."
+          );
+
+        }
+
 
         if (selectedPhotoFile) {
 
@@ -1167,20 +2110,25 @@
         }
 
 
-        /*
-          Member data
-        */
+        /* -----------------------------------------------
+           MEMBER DATA
+        ------------------------------------------------ */
 
         const memberData = {
 
-          member_id:
-            undefined,
+          /*
+            Member ID is intentionally
+            NOT supplied.
+
+            The database automatically
+            generates the Member ID.
+          */
 
           member_type:
-            memberType,
+            memberType || null,
 
           full_name:
-            fullName,
+            fullName || null,
 
           nic_number:
             nicNumber || null,
@@ -1189,16 +2137,16 @@
             dateOfBirth,
 
           gender:
-            gender,
+            gender || null,
 
           phone_whatsapp:
-            phoneWhatsapp,
+            phoneWhatsapp || null,
 
           address:
-            address,
+            address || null,
 
           marital_status:
-            maritalStatus,
+            maritalStatus || null,
 
           date_of_salvation:
             dateOfSalvation,
@@ -1209,13 +2157,17 @@
               : null,
 
           additional_notes:
-            additionalNotes,
+            additionalNotes || null,
 
           created_by:
             user.id
 
         };
 
+
+        /* -----------------------------------------------
+           INSERT MEMBER
+        ------------------------------------------------ */
 
         saveButton.textContent =
           "SAVING MEMBER...";
@@ -1227,19 +2179,25 @@
         } =
           await supabaseClient
             .from("members")
-            .insert(memberData)
+            .insert(
+              memberData
+            )
             .select()
             .single();
 
 
         if (error) {
 
-          console.error(error);
+          console.error(
+            "Database Error:",
+            error
+          );
+
 
           /*
-            If member registration fails
-            after photo upload, delete
-            the uploaded photo.
+            If registration fails after
+            successful photo upload,
+            remove uploaded photo.
           */
 
           if (uploadedPhoto) {
@@ -1259,6 +2217,10 @@
         }
 
 
+        /* -----------------------------------------------
+           SUCCESS
+        ------------------------------------------------ */
+
         showMessage(
           "Member Registered Successfully\n" +
           "Member ID: " +
@@ -1274,18 +2236,42 @@
           null;
 
 
-        photoPreview.src =
-          "";
+        const photoPreview =
+          document.getElementById(
+            "photoPreview"
+          );
 
 
-        photoPreview.style.display =
-          "none";
+        if (photoPreview) {
+
+          photoPreview.src =
+            "";
+
+          photoPreview.style.display =
+            "none";
+
+        }
 
 
-        document.getElementById(
-          "memberId"
-        ).value =
-          data.member_id;
+        const memberIdInput =
+          document.getElementById(
+            "memberId"
+          );
+
+
+        if (memberIdInput) {
+
+          memberIdInput.value =
+            data.member_id || "";
+
+        }
+
+
+        /*
+          After reset, restore Member ID
+          because it is automatically
+          generated by the database.
+        */
 
 
       } catch (error) {
@@ -1318,7 +2304,57 @@
   );
 
 
-  getCurrentUser();
+  /* =========================================================
+     INITIALIZE
+  ========================================================= */
+
+  async function initialize() {
+
+    try {
+
+      const user =
+        await getCurrentUser();
+
+
+      if (!user) {
+
+        return;
+
+      }
+
+
+      await loadAppSettings();
+
+
+      await loadAppConfig();
+
+
+      await loadFormFields();
+
+
+    } catch (error) {
+
+      console.error(
+        "Initialization Error:",
+        error
+      );
+
+
+      loadingForm.style.display =
+        "none";
+
+
+      showMessage(
+        error.message,
+        "error"
+      );
+
+    }
+
+  }
+
+
+  initialize();
 
 </script>
 

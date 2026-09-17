@@ -78,6 +78,30 @@
       background: #eee;
     }
 
+    /* DATE INPUTS */
+
+    .date-inputs {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.5fr;
+      gap: 8px;
+    }
+
+    .date-inputs input {
+      text-align: center;
+    }
+
+    .date-inputs input::placeholder {
+      color: #888;
+    }
+
+    .date-help {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+    }
+
+    /* PHOTO */
+
     .photo-buttons {
       display: flex;
       gap: 10px;
@@ -129,6 +153,7 @@
       display: none;
       text-align: center;
       font-weight: bold;
+      white-space: pre-line;
     }
 
     .success {
@@ -144,6 +169,21 @@
     .hidden-file {
       display: none;
     }
+
+    @media (max-width: 600px) {
+
+      .container {
+        padding: 12px;
+      }
+
+      .card {
+        padding: 18px;
+      }
+
+      .date-inputs {
+        grid-template-columns: 1fr 1fr 1.4fr;
+      }
+    }
   </style>
 </head>
 
@@ -157,7 +197,10 @@
 
   <div class="container">
 
-    <button class="back-btn" onclick="window.location.href='home.html'">
+    <button
+      class="back-btn"
+      onclick="window.location.href='home.html'"
+    >
       ← Back to Dashboard
     </button>
 
@@ -170,6 +213,7 @@
         <!-- 1. Member ID -->
         <div class="field">
           <label>Member ID</label>
+
           <input
             type="text"
             id="memberId"
@@ -178,112 +222,253 @@
           >
         </div>
 
+
         <!-- 2. Member Type -->
         <div class="field">
+
           <label>Member Type</label>
-          <select id="memberType" required>
-            <option value="">Select...</option>
-            <option value="Pastor">Pastor</option>
-            <option value="Brother">Brother</option>
-            <option value="Sister">Sister</option>
+
+          <select
+            id="memberType"
+            required
+          >
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Pastor">
+              Pastor
+            </option>
+
+            <option value="Brother">
+              Brother
+            </option>
+
+            <option value="Sister">
+              Sister
+            </option>
+
           </select>
+
         </div>
+
 
         <!-- 3. Full Name -->
         <div class="field">
+
           <label>Full Name</label>
+
           <input
             type="text"
             id="fullName"
             placeholder="Enter Full Name"
             required
           >
+
         </div>
+
 
         <!-- 4. NIC Number -->
         <div class="field">
+
           <label>NIC Number</label>
+
           <input
             type="text"
             id="nicNumber"
             placeholder="Enter NIC Number (Optional)"
           >
+
         </div>
+
 
         <!-- 5. Date of Birth -->
         <div class="field">
+
           <label>Date of Birth</label>
-          <input
-            type="date"
-            id="dateOfBirth"
-          >
+
+          <div class="date-inputs">
+
+            <input
+              type="text"
+              id="dobDay"
+              placeholder="DD"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="dobMonth"
+              placeholder="MM"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="dobYear"
+              placeholder="YYYY"
+              inputmode="numeric"
+              maxlength="4"
+            >
+
+          </div>
+
+          <div class="date-help">
+            Enter as DD / MM / YYYY
+          </div>
+
         </div>
+
 
         <!-- 6. Gender -->
         <div class="field">
+
           <label>Gender</label>
+
           <select id="gender">
-            <option value="">Select...</option>
-            <option value="Male">Male</option>
-            <option value="Female">Female</option>
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Male">
+              Male
+            </option>
+
+            <option value="Female">
+              Female
+            </option>
+
           </select>
+
         </div>
+
 
         <!-- 7. Phone / WhatsApp -->
         <div class="field">
+
           <label>Phone / WhatsApp</label>
+
           <input
             type="tel"
             id="phoneWhatsapp"
             placeholder="Enter Phone / WhatsApp Number"
           >
+
         </div>
+
 
         <!-- 8. Address -->
         <div class="field">
+
           <label>Address</label>
+
           <textarea
             id="address"
             placeholder="Enter Address"
           ></textarea>
+
         </div>
+
 
         <!-- 9. Marital Status -->
         <div class="field">
+
           <label>Marital Status</label>
+
           <select id="maritalStatus">
-            <option value="">Select...</option>
-            <option value="Single">Single</option>
-            <option value="Married">Married</option>
-            <option value="Divorced">Divorced</option>
-            <option value="Widowed">Widowed</option>
+
+            <option value="">
+              Select...
+            </option>
+
+            <option value="Single">
+              Single
+            </option>
+
+            <option value="Married">
+              Married
+            </option>
+
+            <option value="Divorced">
+              Divorced
+            </option>
+
+            <option value="Widowed">
+              Widowed
+            </option>
+
           </select>
+
         </div>
+
 
         <!-- 10. Date of Salvation -->
         <div class="field">
+
           <label>Date of Salvation</label>
-          <input
-            type="date"
-            id="dateOfSalvation"
-          >
+
+          <div class="date-inputs">
+
+            <input
+              type="text"
+              id="salvationDay"
+              placeholder="DD"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="salvationMonth"
+              placeholder="MM"
+              inputmode="numeric"
+              maxlength="2"
+            >
+
+            <input
+              type="text"
+              id="salvationYear"
+              placeholder="YYYY"
+              inputmode="numeric"
+              maxlength="4"
+            >
+
+          </div>
+
+          <div class="date-help">
+            Enter as DD / MM / YYYY
+          </div>
+
         </div>
+
 
         <!-- 11. Member Photo -->
         <div class="field">
+
           <label>Member Photo</label>
 
           <div class="photo-buttons">
 
-            <button type="button" onclick="openCamera()">
+            <button
+              type="button"
+              onclick="openCamera()"
+            >
               📷 Take Photo
             </button>
 
-            <button type="button" onclick="openGallery()">
+            <button
+              type="button"
+              onclick="openGallery()"
+            >
               🖼️ Gallery
             </button>
 
           </div>
+
 
           <input
             type="file"
@@ -293,6 +478,7 @@
             capture="environment"
           >
 
+
           <input
             type="file"
             id="galleryInput"
@@ -300,73 +486,113 @@
             accept="image/*"
           >
 
+
           <img
             id="photoPreview"
             class="photo-preview"
             alt="Member Photo Preview"
           >
+
         </div>
+
 
         <!-- 12. Additional Notes -->
         <div class="field">
+
           <label>Additional Notes</label>
+
           <textarea
             id="additionalNotes"
             placeholder="Enter additional notes..."
           ></textarea>
+
         </div>
 
-        <button type="submit" id="saveButton">
+
+        <button
+          type="submit"
+          id="saveButton"
+        >
           SAVE MEMBER
         </button>
 
       </form>
 
-      <div id="message" class="message"></div>
+
+      <div
+        id="message"
+        class="message"
+      ></div>
 
     </div>
+
   </div>
+
 
 <script>
 
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
+
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
-  const supabaseClient = supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-  );
+
+  const supabaseClient =
+    supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
 
 
   const form =
-    document.getElementById("memberForm");
+    document.getElementById(
+      "memberForm"
+    );
+
 
   const saveButton =
-    document.getElementById("saveButton");
+    document.getElementById(
+      "saveButton"
+    );
+
 
   const message =
-    document.getElementById("message");
+    document.getElementById(
+      "message"
+    );
+
 
   const cameraInput =
-    document.getElementById("cameraInput");
+    document.getElementById(
+      "cameraInput"
+    );
+
 
   const galleryInput =
-    document.getElementById("galleryInput");
+    document.getElementById(
+      "galleryInput"
+    );
+
 
   const photoPreview =
-    document.getElementById("photoPreview");
+    document.getElementById(
+      "photoPreview"
+    );
 
 
   function openCamera() {
+
     cameraInput.click();
+
   }
 
 
   function openGallery() {
+
     galleryInput.click();
+
   }
 
 
@@ -374,19 +600,25 @@
 
     if (!file) return;
 
-    const reader = new FileReader();
 
-    reader.onload = function(event) {
+    const reader =
+      new FileReader();
 
-      photoPreview.src =
-        event.target.result;
 
-      photoPreview.style.display =
-        "block";
+    reader.onload =
+      function(event) {
 
-    };
+        photoPreview.src =
+          event.target.result;
+
+        photoPreview.style.display =
+          "block";
+
+      };
+
 
     reader.readAsDataURL(file);
+
   }
 
 
@@ -394,10 +626,14 @@
     "change",
     function() {
 
-      if (this.files &&
-          this.files[0]) {
+      if (
+        this.files &&
+        this.files[0]
+      ) {
 
-        showPhoto(this.files[0]);
+        showPhoto(
+          this.files[0]
+        );
 
       }
 
@@ -409,10 +645,14 @@
     "change",
     function() {
 
-      if (this.files &&
-          this.files[0]) {
+      if (
+        this.files &&
+        this.files[0]
+      ) {
 
-        showPhoto(this.files[0]);
+        showPhoto(
+          this.files[0]
+        );
 
       }
 
@@ -420,9 +660,13 @@
   );
 
 
-  function showMessage(text, type) {
+  function showMessage(
+    text,
+    type
+  ) {
 
-    message.textContent = text;
+    message.textContent =
+      text;
 
     message.className =
       "message " + type;
@@ -435,7 +679,8 @@
 
   function clearMessage() {
 
-    message.textContent = "";
+    message.textContent =
+      "";
 
     message.style.display =
       "none";
@@ -449,9 +694,15 @@
       data,
       error
     } =
-      await supabaseClient.auth.getUser();
+      await supabaseClient
+        .auth
+        .getUser();
 
-    if (error || !data.user) {
+
+    if (
+      error ||
+      !data.user
+    ) {
 
       window.location.href =
         "index.html";
@@ -460,7 +711,170 @@
 
     }
 
+
     return data.user;
+
+  }
+
+
+  function getDateFromInputs(
+    dayId,
+    monthId,
+    yearId,
+    fieldName
+  ) {
+
+    const day =
+      document.getElementById(
+        dayId
+      ).value.trim();
+
+
+    const month =
+      document.getElementById(
+        monthId
+      ).value.trim();
+
+
+    const year =
+      document.getElementById(
+        yearId
+      ).value.trim();
+
+
+    /* All empty = NULL */
+
+    if (
+      day === "" &&
+      month === "" &&
+      year === ""
+    ) {
+
+      return null;
+
+    }
+
+
+    /* Check all fields */
+
+    if (
+      day === "" ||
+      month === "" ||
+      year === ""
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter DD, MM and YYYY."
+      );
+
+    }
+
+
+    const dayNumber =
+      Number(day);
+
+    const monthNumber =
+      Number(month);
+
+    const yearNumber =
+      Number(year);
+
+
+    if (
+      !Number.isInteger(dayNumber) ||
+      !Number.isInteger(monthNumber) ||
+      !Number.isInteger(yearNumber)
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter numbers only."
+      );
+
+    }
+
+
+    if (
+      monthNumber < 1 ||
+      monthNumber > 12
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Month must be between 01 and 12."
+      );
+
+    }
+
+
+    if (
+      dayNumber < 1 ||
+      dayNumber > 31
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Day must be between 01 and 31."
+      );
+
+    }
+
+
+    if (
+      year < 1000 ||
+      year > 9999
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Please enter a valid 4-digit year."
+      );
+
+    }
+
+
+    /*
+      Check whether the actual
+      calendar date exists.
+    */
+
+    const testDate =
+      new Date(
+        yearNumber,
+        monthNumber - 1,
+        dayNumber
+      );
+
+
+    if (
+      testDate.getFullYear() !==
+        yearNumber ||
+      testDate.getMonth() !==
+        monthNumber - 1 ||
+      testDate.getDate() !==
+        dayNumber
+    ) {
+
+      throw new Error(
+        fieldName +
+        ": Invalid date."
+      );
+
+    }
+
+
+    /* Return YYYY-MM-DD */
+
+    return (
+      year +
+      "-" +
+      String(monthNumber)
+        .padStart(2, "0") +
+      "-" +
+      String(dayNumber)
+        .padStart(2, "0")
+    );
 
   }
 
@@ -471,9 +885,13 @@
 
       event.preventDefault();
 
+
       clearMessage();
 
-      saveButton.disabled = true;
+
+      saveButton.disabled =
+        true;
+
 
       saveButton.textContent =
         "SAVING...";
@@ -484,6 +902,7 @@
         const user =
           await getCurrentUser();
 
+
         if (!user) return;
 
 
@@ -492,45 +911,60 @@
             "memberType"
           ).value;
 
+
         const fullName =
           document.getElementById(
             "fullName"
           ).value.trim();
+
 
         const nicNumber =
           document.getElementById(
             "nicNumber"
           ).value.trim();
 
+
         const dateOfBirth =
-          document.getElementById(
-            "dateOfBirth"
-          ).value || null;
+          getDateFromInputs(
+            "dobDay",
+            "dobMonth",
+            "dobYear",
+            "Date of Birth"
+          );
+
 
         const gender =
           document.getElementById(
             "gender"
           ).value;
 
+
         const phoneWhatsapp =
           document.getElementById(
             "phoneWhatsapp"
           ).value.trim();
+
 
         const address =
           document.getElementById(
             "address"
           ).value.trim();
 
+
         const maritalStatus =
           document.getElementById(
             "maritalStatus"
           ).value;
 
+
         const dateOfSalvation =
-          document.getElementById(
-            "dateOfSalvation"
-          ).value || null;
+          getDateFromInputs(
+            "salvationDay",
+            "salvationMonth",
+            "salvationYear",
+            "Date of Salvation"
+          );
+
 
         const additionalNotes =
           document.getElementById(
@@ -540,7 +974,8 @@
 
         const memberData = {
 
-          member_id: undefined,
+          member_id:
+            undefined,
 
           member_type:
             memberType,
@@ -599,7 +1034,8 @@
 
 
         showMessage(
-          "Member Registered Successfully\nMember ID: " +
+          "Member Registered Successfully\n" +
+          "Member ID: " +
           data.member_id,
           "success"
         );
@@ -607,7 +1043,10 @@
 
         form.reset();
 
-        photoPreview.src = "";
+
+        photoPreview.src =
+          "";
+
 
         photoPreview.style.display =
           "none";
@@ -626,16 +1065,19 @@
           error
         );
 
+
         showMessage(
           "Error: " +
           error.message,
           "error"
         );
 
+
       } finally {
 
         saveButton.disabled =
           false;
+
 
         saveButton.textContent =
           "SAVE MEMBER";

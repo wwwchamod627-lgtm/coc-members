@@ -39,7 +39,7 @@
     }
 
     .container {
-      max-width: 650px;
+      max-width: 700px;
       margin: 20px auto;
       padding: 15px;
     }
@@ -49,6 +49,7 @@
       border-radius: 15px;
       padding: 22px;
       box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      margin-bottom: 20px;
     }
 
     .card h2 {
@@ -62,6 +63,7 @@
       color: #666;
       font-size: 14px;
       margin-bottom: 25px;
+      line-height: 1.5;
     }
 
     .form-group {
@@ -77,7 +79,8 @@
     }
 
     input,
-    textarea {
+    textarea,
+    select {
       width: 100%;
       padding: 13px;
       border: 1px solid #ccc;
@@ -85,10 +88,12 @@
       font-size: 16px;
       font-family: Arial, sans-serif;
       outline: none;
+      background: white;
     }
 
     input:focus,
-    textarea:focus {
+    textarea:focus,
+    select:focus {
       border-color: #174d3c;
     }
 
@@ -134,6 +139,7 @@
       text-align: center;
       margin-bottom: 18px;
       display: none;
+      line-height: 1.5;
     }
 
     .success {
@@ -168,10 +174,6 @@
       margin-top: 6px;
       line-height: 1.5;
     }
-
-    /* =========================
-       LOGO SECTION
-    ========================= */
 
     .logo-box {
       border: 2px dashed #c9c1ae;
@@ -211,10 +213,6 @@
       cursor: pointer;
     }
 
-    .logo-btn:active {
-      transform: scale(0.98);
-    }
-
     .logo-file {
       display: none;
     }
@@ -239,21 +237,131 @@
       display: none;
     }
 
+    /* =========================
+       APP CONTROL CENTER
+    ========================= */
+
+    .control-card {
+      border: 1px solid #e4dfd4;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 14px;
+      background: #faf9f5;
+    }
+
+    .control-card h3 {
+      margin: 0 0 12px;
+      color: #174d3c;
+      font-size: 16px;
+    }
+
+    .control-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 10px 0;
+    }
+
+    .control-row + .control-row {
+      border-top: 1px solid #e5e0d6;
+    }
+
+    .control-name {
+      font-weight: bold;
+      color: #333;
+      font-size: 14px;
+    }
+
+    .control-key {
+      font-size: 11px;
+      color: #999;
+      margin-top: 3px;
+    }
+
+    .switch {
+      position: relative;
+      width: 52px;
+      height: 30px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      inset: 0;
+      background: #bbb;
+      border-radius: 30px;
+      transition: 0.2s;
+    }
+
+    .slider:before {
+      content: "";
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 4px;
+      top: 4px;
+      background: white;
+      border-radius: 50%;
+      transition: 0.2s;
+    }
+
+    .switch input:checked + .slider {
+      background: #174d3c;
+    }
+
+    .switch input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    .config-input {
+      margin-top: 8px;
+    }
+
+    .config-input input {
+      background: white;
+    }
+
+    .control-save-btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 9px;
+      background: #174d3c;
+      color: white;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 5px;
+    }
+
+    .control-save-btn:disabled {
+      background: #aaa;
+    }
+
+    .empty-control {
+      text-align: center;
+      color: #777;
+      padding: 20px;
+    }
+
   </style>
 </head>
 
 <body>
 
   <div class="header">
-
     <h1>COC Members</h1>
-
     <p>Church Of Christ Sri Lanka</p>
-
     <p>Admin Settings</p>
-
   </div>
-
 
   <div class="container">
 
@@ -264,7 +372,6 @@
       ← Back to Dashboard
     </button>
 
-
     <div class="card">
 
       <h2>⚙️ Admin Settings</h2>
@@ -273,25 +380,13 @@
         Only administrators can access and update these settings.
       </div>
 
+      <div id="message" class="message"></div>
 
-      <div
-        id="message"
-        class="message"
-      ></div>
-
-
-      <div
-        id="loading"
-        class="loading"
-      >
+      <div id="loading" class="loading">
         Checking administrator access...
       </div>
 
-
-      <div
-        id="settingsForm"
-        style="display:none;"
-      >
+      <div id="settingsForm" style="display:none;">
 
         <!-- =========================
              APPLICATION INFORMATION
@@ -301,74 +396,53 @@
           🏛️ Application Information
         </div>
 
-
         <div class="form-group">
-
-          <label for="appName">
-            App Name
-          </label>
+          <label for="appName">App Name</label>
 
           <input
             type="text"
             id="appName"
             placeholder="Enter App Name"
           >
-
         </div>
 
-
         <div class="form-group">
-
-          <label for="churchName">
-            Church Name
-          </label>
+          <label for="churchName">Church Name</label>
 
           <input
             type="text"
             id="churchName"
             placeholder="Enter Church Name"
           >
-
         </div>
 
-
         <div class="form-group">
-
-          <label for="subtitle">
-            Subtitle
-          </label>
+          <label for="subtitle">Subtitle</label>
 
           <input
             type="text"
             id="subtitle"
             placeholder="Enter Subtitle"
           >
-
         </div>
 
-
         <div class="form-group">
-
-          <label for="welcomeText">
-            Welcome Text
-          </label>
+          <label for="welcomeText">Welcome Text</label>
 
           <textarea
             id="welcomeText"
             placeholder="Enter Welcome Text"
           ></textarea>
-
         </div>
 
 
         <!-- =========================
-             HOME SCREEN SETTINGS
+             HOME LOGO
         ========================= -->
 
         <div class="section-title">
           🎨 Home Screen Settings
         </div>
-
 
         <div class="form-group">
 
@@ -391,7 +465,6 @@
               No logo selected
             </div>
 
-
             <button
               type="button"
               class="logo-btn"
@@ -400,7 +473,6 @@
               🖼️ Choose Logo from Gallery
             </button>
 
-
             <input
               type="file"
               id="logoFile"
@@ -408,9 +480,7 @@
               accept="image/*"
             >
 
-
             <br>
-
 
             <button
               type="button"
@@ -421,7 +491,6 @@
               🗑️ Remove Logo
             </button>
 
-
             <div
               id="uploadStatus"
               class="upload-status"
@@ -430,20 +499,19 @@
           </div>
 
           <div class="hint">
-            This logo appears on the Home Screen. Select an image from your phone Gallery.
+            This logo appears on the Home Screen.
           </div>
 
         </div>
 
 
         <!-- =========================
-             LOGIN SCREEN LOGO
+             LOGIN LOGO
         ========================= -->
 
         <div class="section-title">
           🔐 Login Screen Settings
         </div>
-
 
         <div class="form-group">
 
@@ -466,7 +534,6 @@
               No login logo selected
             </div>
 
-
             <button
               type="button"
               class="logo-btn"
@@ -475,7 +542,6 @@
               🖼️ Choose Login Logo from Gallery
             </button>
 
-
             <input
               type="file"
               id="loginLogoFile"
@@ -483,9 +549,7 @@
               accept="image/*"
             >
 
-
             <br>
-
 
             <button
               type="button"
@@ -496,7 +560,6 @@
               🗑️ Remove Login Logo
             </button>
 
-
             <div
               id="loginUploadStatus"
               class="upload-status"
@@ -505,7 +568,7 @@
           </div>
 
           <div class="hint">
-            This logo appears on the Login Screen above the Email and Password fields.
+            This logo appears on the Login Screen.
           </div>
 
         </div>
@@ -514,6 +577,10 @@
         <!-- =========================
              BUTTON TEXT
         ========================= -->
+
+        <div class="section-title">
+          🔘 Home Button Settings
+        </div>
 
         <div class="form-group">
 
@@ -529,7 +596,6 @@
 
         </div>
 
-
         <div class="form-group">
 
           <label for="membersButtonText">
@@ -543,7 +609,6 @@
           >
 
         </div>
-
 
         <div class="form-group">
 
@@ -559,6 +624,43 @@
 
         </div>
 
+
+        <!-- =========================
+             APP CONTROL CENTER
+        ========================= -->
+
+        <div class="section-title">
+          🛠️ App Control Center
+        </div>
+
+        <div class="description">
+          Control app content and visibility without editing GitHub code.
+        </div>
+
+        <div id="controlCenter">
+
+          <div class="loading">
+            Loading App Controls...
+          </div>
+
+        </div>
+
+        <button
+          type="button"
+          id="saveControlButton"
+          class="control-save-btn"
+        >
+          💾 Save App Controls
+        </button>
+
+
+        <!-- =========================
+             EXISTING SETTINGS SAVE
+        ========================= -->
+
+        <div class="section-title">
+          💾 Save Application Settings
+        </div>
 
         <button
           id="saveButton"
@@ -583,10 +685,8 @@
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
-
 
   const supabaseClient =
     supabase.createClient(
@@ -610,6 +710,13 @@
 
   const saveButton =
     document.getElementById("saveButton");
+
+  const saveControlButton =
+    document.getElementById("saveControlButton");
+
+  const controlCenter =
+    document.getElementById("controlCenter");
+
 
   const appName =
     document.getElementById("appName");
@@ -674,17 +781,19 @@
   ========================================================= */
 
   let currentLogoUrl = "";
-
   let selectedLogoFile = null;
-
   let removeLogoRequested = false;
 
-
   let currentLoginLogoUrl = "";
-
   let selectedLoginLogoFile = null;
-
   let removeLoginLogoRequested = false;
+
+
+  /* =========================================================
+     APP CONFIG
+  ========================================================= */
+
+  let appConfigs = [];
 
 
   /* =========================================================
@@ -706,19 +815,13 @@
 
 
   /* =========================================================
-     OPEN HOME LOGO GALLERY
+     HOME LOGO PICKER
   ========================================================= */
 
   function openLogoPicker() {
-
     logoFile.click();
-
   }
 
-
-  /* =========================================================
-     HOME LOGO SELECTED
-  ========================================================= */
 
   logoFile.addEventListener(
     "change",
@@ -727,11 +830,9 @@
       const file =
         event.target.files[0];
 
-
       if (!file) {
         return;
       }
-
 
       if (!file.type.startsWith("image/")) {
 
@@ -740,13 +841,10 @@
           "error"
         );
 
-        logoFile.value =
-          "";
-
+        logoFile.value = "";
         return;
 
       }
-
 
       if (file.size > 5 * 1024 * 1024) {
 
@@ -755,13 +853,10 @@
           "error"
         );
 
-        logoFile.value =
-          "";
-
+        logoFile.value = "";
         return;
 
       }
-
 
       selectedLogoFile =
         file;
@@ -769,10 +864,8 @@
       removeLogoRequested =
         false;
 
-
       const reader =
         new FileReader();
-
 
       reader.onload =
         function(e) {
@@ -797,7 +890,6 @@
 
         };
 
-
       reader.readAsDataURL(file);
 
     }
@@ -805,19 +897,13 @@
 
 
   /* =========================================================
-     OPEN LOGIN LOGO GALLERY
+     LOGIN LOGO PICKER
   ========================================================= */
 
   function openLoginLogoPicker() {
-
     loginLogoFile.click();
-
   }
 
-
-  /* =========================================================
-     LOGIN LOGO SELECTED
-  ========================================================= */
 
   loginLogoFile.addEventListener(
     "change",
@@ -826,11 +912,9 @@
       const file =
         event.target.files[0];
 
-
       if (!file) {
         return;
       }
-
 
       if (!file.type.startsWith("image/")) {
 
@@ -839,13 +923,10 @@
           "error"
         );
 
-        loginLogoFile.value =
-          "";
-
+        loginLogoFile.value = "";
         return;
 
       }
-
 
       if (file.size > 5 * 1024 * 1024) {
 
@@ -854,13 +935,10 @@
           "error"
         );
 
-        loginLogoFile.value =
-          "";
-
+        loginLogoFile.value = "";
         return;
 
       }
-
 
       selectedLoginLogoFile =
         file;
@@ -868,10 +946,8 @@
       removeLoginLogoRequested =
         false;
 
-
       const reader =
         new FileReader();
-
 
       reader.onload =
         function(e) {
@@ -896,7 +972,6 @@
 
         };
 
-
       reader.readAsDataURL(file);
 
     }
@@ -909,27 +984,16 @@
 
   function removeLogo() {
 
-    selectedLogoFile =
-      null;
+    selectedLogoFile = null;
+    removeLogoRequested = true;
+    currentLogoUrl = "";
 
-    removeLogoRequested =
-      true;
+    logoFile.value = "";
 
-    currentLogoUrl =
-      "";
+    logoPreview.src = "";
+    logoPreview.style.display = "none";
 
-    logoFile.value =
-      "";
-
-    logoPreview.src =
-      "";
-
-    logoPreview.style.display =
-      "none";
-
-    noLogo.style.display =
-      "block";
-
+    noLogo.style.display = "block";
     noLogo.textContent =
       "Logo will be removed when you save.";
 
@@ -951,27 +1015,16 @@
 
   function removeLoginLogo() {
 
-    selectedLoginLogoFile =
-      null;
+    selectedLoginLogoFile = null;
+    removeLoginLogoRequested = true;
+    currentLoginLogoUrl = "";
 
-    removeLoginLogoRequested =
-      true;
+    loginLogoFile.value = "";
 
-    currentLoginLogoUrl =
-      "";
+    loginLogoPreview.src = "";
+    loginLogoPreview.style.display = "none";
 
-    loginLogoFile.value =
-      "";
-
-    loginLogoPreview.src =
-      "";
-
-    loginLogoPreview.style.display =
-      "none";
-
-    noLoginLogo.style.display =
-      "block";
-
+    noLoginLogo.style.display = "block";
     noLoginLogo.textContent =
       "Login logo will be removed when you save.";
 
@@ -1160,7 +1213,384 @@
 
 
   /* =========================================================
-     LOAD SETTINGS
+     LOAD APP CONFIG
+  ========================================================= */
+
+  async function loadAppConfig() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_config")
+        .select(
+          "id, setting_key, setting_value, setting_type, is_active"
+        )
+        .order(
+          "id",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(
+        "App Config Error:",
+        error
+      );
+
+      controlCenter.innerHTML =
+        `
+        <div class="empty-control">
+          Failed to load App Controls.<br>
+          ${error.message}
+        </div>
+        `;
+
+      return;
+
+    }
+
+
+    appConfigs =
+      data || [];
+
+
+    renderAppConfig();
+
+  }
+
+
+  /* =========================================================
+     RENDER APP CONFIG
+  ========================================================= */
+
+  function renderAppConfig() {
+
+    if (!appConfigs.length) {
+
+      controlCenter.innerHTML =
+        `
+        <div class="empty-control">
+          No App Controls found.
+        </div>
+        `;
+
+      return;
+
+    }
+
+
+    let html = "";
+
+
+    appConfigs.forEach(
+      function(config) {
+
+        const key =
+          config.setting_key;
+
+        const value =
+          config.setting_value || "";
+
+        const type =
+          config.setting_type || "text";
+
+
+        const title =
+          formatSettingName(key);
+
+
+        if (type === "boolean") {
+
+          const checked =
+            String(value).toLowerCase() === "true"
+              ? "checked"
+              : "";
+
+
+          html +=
+            `
+            <div class="control-card">
+
+              <div class="control-row">
+
+                <div>
+
+                  <div class="control-name">
+                    ${escapeHtml(title)}
+                  </div>
+
+                  <div class="control-key">
+                    ${escapeHtml(key)}
+                  </div>
+
+                </div>
+
+                <label class="switch">
+
+                  <input
+                    type="checkbox"
+                    data-config-id="${config.id}"
+                    data-config-type="boolean"
+                    ${checked}
+                  >
+
+                  <span class="slider"></span>
+
+                </label>
+
+              </div>
+
+            </div>
+            `;
+
+        } else {
+
+          html +=
+            `
+            <div class="control-card">
+
+              <h3>
+                ${escapeHtml(title)}
+              </h3>
+
+              <div class="control-key">
+                ${escapeHtml(key)}
+              </div>
+
+              <div class="config-input">
+
+                <input
+                  type="text"
+                  value="${escapeAttribute(value)}"
+                  data-config-id="${config.id}"
+                  data-config-type="text"
+                >
+
+              </div>
+
+            </div>
+            `;
+
+        }
+
+      }
+    );
+
+
+    controlCenter.innerHTML =
+      html;
+
+  }
+
+
+  /* =========================================================
+     FORMAT SETTING NAME
+  ========================================================= */
+
+  function formatSettingName(key) {
+
+    const names = {
+
+      app_name:
+        "App Name",
+
+      church_name:
+        "Church Name",
+
+      subtitle:
+        "Subtitle",
+
+      welcome_text:
+        "Welcome Text",
+
+      register_button_text:
+        "Register Button Text",
+
+      members_button_text:
+        "Members Button Text",
+
+      search_button_text:
+        "Search Button Text",
+
+      show_register_button:
+        "Show Register Button",
+
+      show_members_button:
+        "Show Members Button",
+
+      show_search_button:
+        "Show Search Button"
+
+    };
+
+
+    if (names[key]) {
+      return names[key];
+    }
+
+
+    return key
+      .replaceAll("_", " ")
+      .replace(/\b\w/g, function(char) {
+        return char.toUpperCase();
+      });
+
+  }
+
+
+  /* =========================================================
+     ESCAPE HTML
+  ========================================================= */
+
+  function escapeHtml(value) {
+
+    return String(value)
+      .replaceAll("&", "&amp;")
+      .replaceAll("<", "&lt;")
+      .replaceAll(">", "&gt;")
+      .replaceAll('"', "&quot;")
+      .replaceAll("'", "&#039;");
+
+  }
+
+
+  function escapeAttribute(value) {
+
+    return escapeHtml(value);
+
+  }
+
+
+  /* =========================================================
+     SAVE APP CONFIG
+  ========================================================= */
+
+  async function saveAppConfig() {
+
+    saveControlButton.disabled =
+      true;
+
+    saveControlButton.textContent =
+      "⏳ Saving App Controls...";
+
+
+    try {
+
+      const user =
+        await checkAdmin();
+
+
+      if (!user) {
+        return;
+      }
+
+
+      const controls =
+        controlCenter.querySelectorAll(
+          "[data-config-id]"
+        );
+
+
+      for (
+        const control of controls
+      ) {
+
+        const id =
+          control.getAttribute(
+            "data-config-id"
+          );
+
+        const type =
+          control.getAttribute(
+            "data-config-type"
+          );
+
+
+        let value;
+
+
+        if (type === "boolean") {
+
+          value =
+            control.checked
+              ? "true"
+              : "false";
+
+        } else {
+
+          value =
+            control.value.trim();
+
+        }
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("app_config")
+            .update({
+
+              setting_value:
+                value,
+
+              updated_at:
+                new Date().toISOString()
+
+            })
+            .eq(
+              "id",
+              id
+            );
+
+
+        if (error) {
+
+          throw error;
+
+        }
+
+      }
+
+
+      showMessage(
+        "App Controls saved successfully! ✅",
+        "success"
+      );
+
+
+      await loadAppConfig();
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to save App Controls: " +
+        error.message,
+        "error"
+      );
+
+    }
+
+
+    saveControlButton.disabled =
+      false;
+
+    saveControlButton.textContent =
+      "💾 Save App Controls";
+
+  }
+
+
+  /* =========================================================
+     LOAD EXISTING APP SETTINGS
   ========================================================= */
 
   async function loadSettings() {
@@ -1229,20 +1659,19 @@
           data.search_button_text || "";
 
 
-        /* HOME LOGO */
-
         showCurrentLogo(
           data.logo_url || ""
         );
 
-
-        /* LOGIN LOGO */
 
         showCurrentLoginLogo(
           data.login_logo_url || ""
         );
 
       }
+
+
+      await loadAppConfig();
 
 
       loading.style.display =
@@ -1260,7 +1689,8 @@
         "none";
 
       showMessage(
-        "Failed to load settings.",
+        "Failed to load settings: " +
+        error.message,
         "error"
       );
 
@@ -1270,7 +1700,7 @@
 
 
   /* =========================================================
-     GET FILE EXTENSION
+     FILE EXTENSION
   ========================================================= */
 
   function getFileExtension(file) {
@@ -1477,7 +1907,7 @@
 
 
   /* =========================================================
-     SAVE SETTINGS
+     SAVE EXISTING SETTINGS
   ========================================================= */
 
   async function saveSettings() {
@@ -1495,8 +1925,6 @@
 
     try {
 
-      /* Re-check administrator */
-
       const user =
         await checkAdmin();
 
@@ -1505,8 +1933,6 @@
         return;
       }
 
-
-      /* Find existing settings row */
 
       const {
         data: existing,
@@ -1528,23 +1954,17 @@
       }
 
 
-      /* HOME LOGO */
-
       let logoUrl =
         existing?.logo_url ||
         currentLogoUrl ||
         "";
 
 
-      /* LOGIN LOGO */
-
       let loginLogoUrl =
         existing?.login_logo_url ||
         currentLoginLogoUrl ||
         "";
 
-
-      /* Upload new Home Logo */
 
       if (selectedLogoFile) {
 
@@ -1554,8 +1974,6 @@
       }
 
 
-      /* Remove Home Logo */
-
       if (removeLogoRequested) {
 
         logoUrl =
@@ -1564,8 +1982,6 @@
       }
 
 
-      /* Upload new Login Logo */
-
       if (selectedLoginLogoFile) {
 
         loginLogoUrl =
@@ -1573,8 +1989,6 @@
 
       }
 
-
-      /* Remove Login Logo */
 
       if (removeLoginLogoRequested) {
 
@@ -1654,8 +2068,6 @@
       }
 
 
-      /* Reset Home Logo State */
-
       currentLogoUrl =
         logoUrl;
 
@@ -1669,8 +2081,6 @@
         "";
 
 
-      /* Reset Login Logo State */
-
       currentLoginLogoUrl =
         loginLogoUrl;
 
@@ -1683,8 +2093,6 @@
       loginLogoFile.value =
         "";
 
-
-      /* Refresh previews */
 
       showCurrentLogo(
         logoUrl
@@ -1724,12 +2132,18 @@
 
 
   /* =========================================================
-     SAVE EVENT
+     EVENTS
   ========================================================= */
 
   saveButton.addEventListener(
     "click",
     saveSettings
+  );
+
+
+  saveControlButton.addEventListener(
+    "click",
+    saveAppConfig
   );
 
 

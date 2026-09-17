@@ -379,6 +379,61 @@
       margin-top: 8px;
     }
 
+    /* =========================================================
+       MEMBERS LIST BUILDER
+    ========================================================= */
+
+    .list-builder {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      background: #fafafa;
+    }
+
+    .list-builder-header {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr 110px 110px;
+      gap: 12px;
+      align-items: end;
+    }
+
+    .list-builder-title {
+      margin-bottom: 12px;
+    }
+
+    .list-builder-title strong {
+      font-size: 16px;
+    }
+
+    .list-builder-key {
+      color: #777;
+      font-size: 12px;
+      margin-top: 3px;
+    }
+
+    .builder-checkbox {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 42px;
+    }
+
+    .builder-checkbox input {
+      width: 18px;
+      height: 18px;
+    }
+
+    .builder-badge {
+      display: inline-block;
+      padding: 5px 9px;
+      border-radius: 20px;
+      background: #eeeeee;
+      color: #555;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
     @media (max-width: 700px) {
       .field-grid {
         grid-template-columns: 1fr;
@@ -393,6 +448,10 @@
       }
 
       .add-option-row {
+        grid-template-columns: 1fr;
+      }
+
+      .list-builder-header {
         grid-template-columns: 1fr;
       }
 
@@ -630,6 +689,38 @@
     </div>
 
 
+    <!-- MEMBERS LIST BUILDER -->
+    <div class="card">
+      <h2>👥 Members List Builder</h2>
+
+      <div class="info-box">
+        Members List එකේ columns Admin Panel එකෙන් control කරන්න.
+        <br><br>
+        <strong>Show:</strong> Members List එකේ column එක පෙන්වන්නද?
+        <br>
+        <strong>Search:</strong> Search Members function එකේ මෙම field එක භාවිතා කරන්නද?
+        <br>
+        <strong>PDF:</strong> Members List PDF එකට මෙම field එක ඇතුළත් කරන්නද?
+        <br>
+        <strong>Display Order:</strong> Column එක පෙන්වන අනුපිළිවෙළ.
+      </div>
+
+      <div id="memberListFieldsContainer">
+        <div class="loading">Loading Members List Fields...</div>
+      </div>
+
+      <div class="button-row">
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="saveMemberListFields()"
+        >
+          💾 Save Members List Settings
+        </button>
+      </div>
+    </div>
+
+
     <!-- SAVE APPLICATION SETTINGS -->
     <div class="card">
       <h2>💾 Save Application Settings</h2>
@@ -688,6 +779,8 @@
 
   let dropdownFields = [];
 
+  let memberListFields = [];
+
 
   /* =========================================================
      MESSAGE
@@ -695,7 +788,8 @@
 
   function showMessage(text, type = "success") {
 
-    const box = document.getElementById("message");
+    const box =
+      document.getElementById("message");
 
     box.textContent = text;
 
@@ -803,7 +897,8 @@
       console.error(error);
 
       showMessage(
-        "Failed to load application settings: " + error.message,
+        "Failed to load application settings: " +
+        error.message,
         "error"
       );
 
@@ -854,7 +949,8 @@
 
       logo.src = data.logo_url;
 
-      logo.style.display = "inline-block";
+      logo.style.display =
+        "inline-block";
     }
   }
 
@@ -877,11 +973,17 @@
 
   document
     .getElementById("appName")
-    .addEventListener("input", updateHeader);
+    .addEventListener(
+      "input",
+      updateHeader
+    );
 
   document
     .getElementById("churchName")
-    .addEventListener("input", updateHeader);
+    .addEventListener(
+      "input",
+      updateHeader
+    );
 
 
   /* =========================================================
@@ -934,7 +1036,10 @@
       await supabaseClient
         .from("app_settings")
         .update(updates)
-        .eq("id", appSettingsId);
+        .eq(
+          "id",
+          appSettingsId
+        );
 
 
     if (error) {
@@ -1152,7 +1257,10 @@
           updated_at:
             new Date().toISOString()
         })
-        .eq("id", appSettingsId);
+        .eq(
+          "id",
+          appSettingsId
+        );
 
 
     if (updateError) {
@@ -1220,7 +1328,10 @@
           updated_at:
             new Date().toISOString()
         })
-        .eq("id", appSettingsId);
+        .eq(
+          "id",
+          appSettingsId
+        );
 
 
     if (error) {
@@ -1243,7 +1354,8 @@
 
     document
       .getElementById("headerLogo")
-      .style.display = "none";
+      .style.display =
+      "none";
 
 
     showMessage(
@@ -1272,7 +1384,10 @@
           updated_at:
             new Date().toISOString()
         })
-        .eq("id", appSettingsId);
+        .eq(
+          "id",
+          appSettingsId
+        );
 
 
     if (error) {
@@ -1301,7 +1416,7 @@
 
 
   /* =========================================================
-     LOAD APP CONFIG
+     LOAD APP CONTROLS
   ========================================================= */
 
   async function loadAppControls() {
@@ -1313,9 +1428,12 @@
       await supabaseClient
         .from("app_config")
         .select("*")
-        .order("id", {
-          ascending: true
-        });
+        .order(
+          "id",
+          {
+            ascending: true
+          }
+        );
 
 
     if (error) {
@@ -1372,7 +1490,9 @@
 
 
         const row =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         row.className =
           "control-row";
@@ -1381,8 +1501,9 @@
         if (isBoolean) {
 
           const checked =
-            String(control.setting_value)
-              .toLowerCase() ===
+            String(
+              control.setting_value
+            ).toLowerCase() ===
             "true";
 
 
@@ -1405,12 +1526,15 @@
             </div>
 
             <label class="switch">
+
               <input
                 type="checkbox"
                 data-config-id="${control.id}"
                 ${checked ? "checked" : ""}
               >
+
               <span class="slider"></span>
+
             </label>
           `;
 
@@ -1419,6 +1543,7 @@
           row.innerHTML = `
 
             <div style="width:100%;">
+
               <div class="control-name">
                 ${escapeHtml(
                   formatSettingName(
@@ -1442,6 +1567,7 @@
                 )}"
                 style="margin-top:8px;"
               >
+
             </div>
           `;
         }
@@ -1461,7 +1587,10 @@
 
     try {
 
-      for (const control of appControls) {
+      for (
+        const control
+        of appControls
+      ) {
 
         let value;
 
@@ -1477,7 +1606,8 @@
             );
 
           value =
-            input && input.checked
+            input &&
+            input.checked
               ? "true"
               : "false";
 
@@ -1501,7 +1631,8 @@
           await supabaseClient
             .from("app_config")
             .update({
-              setting_value: value,
+              setting_value:
+                value,
               updated_at:
                 new Date().toISOString()
             })
@@ -1589,6 +1720,7 @@
       data || [];
 
     renderFormFields();
+
     renderDropdownOptions();
   }
 
@@ -1626,7 +1758,9 @@
 
 
         const div =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         div.className =
           "field-builder";
@@ -1704,6 +1838,7 @@
                   `
                   : `
                     <div class="checkbox-group">
+
                       <input
                         type="checkbox"
                         class="field-visible-input"
@@ -1714,7 +1849,11 @@
                             : ""
                         }
                       >
-                      <span>Show</span>
+
+                      <span>
+                        Show
+                      </span>
+
                     </div>
                   `
               }
@@ -1736,7 +1875,11 @@
                 </div>
               `
               : `
-                <div class="checkbox-group" style="margin-top:12px;">
+                <div
+                  class="checkbox-group"
+                  style="margin-top:12px;"
+                >
+
                   <input
                     type="checkbox"
                     class="field-required-input"
@@ -1747,7 +1890,11 @@
                         : ""
                     }
                   >
-                  <span>Required Field</span>
+
+                  <span>
+                    Required Field
+                  </span>
+
                 </div>
               `
           }
@@ -1769,7 +1916,10 @@
 
     try {
 
-      for (const field of formFields) {
+      for (
+        const field
+        of formFields
+      ) {
 
         const labelInput =
           document.querySelector(
@@ -1803,7 +1953,8 @@
               : field.field_label,
 
           is_visible:
-            field.field_type === "automatic"
+            field.field_type ===
+            "automatic"
               ? true
               : !!(
                   visibleInput &&
@@ -1811,7 +1962,8 @@
                 ),
 
           is_required:
-            field.field_type === "automatic"
+            field.field_type ===
+            "automatic"
               ? false
               : !!(
                   requiredInput &&
@@ -1823,7 +1975,8 @@
               orderInput
                 ? orderInput.value
                 : field.display_order
-            ) || field.display_order,
+            ) ||
+            field.display_order,
 
           updated_at:
             new Date().toISOString()
@@ -1863,6 +2016,7 @@
 
 
       renderFormFields();
+
       renderDropdownOptions();
 
 
@@ -1930,14 +2084,18 @@
     dropdownFields.forEach(
       field => {
 
-        let options =
-          Array.isArray(field.options)
+        const options =
+          Array.isArray(
+            field.options
+          )
             ? field.options
             : [];
 
 
         const manager =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
 
         manager.className =
           "dropdown-manager";
@@ -1985,7 +2143,9 @@
         `;
 
 
-        container.appendChild(manager);
+        container.appendChild(
+          manager
+        );
 
 
         renderOptionsForField(
@@ -1998,7 +2158,7 @@
 
 
   /* =========================================================
-     RENDER OPTIONS FOR FIELD
+     RENDER OPTIONS
   ========================================================= */
 
   function renderOptionsForField(
@@ -2088,7 +2248,8 @@
     const field =
       formFields.find(
         item =>
-          item.id === fieldId
+          item.id ===
+          fieldId
       );
 
 
@@ -2118,7 +2279,9 @@
 
 
     let options =
-      Array.isArray(field.options)
+      Array.isArray(
+        field.options
+      )
         ? [...field.options]
         : [];
 
@@ -2145,10 +2308,8 @@
 
     options.push(value);
 
-
     field.options =
       options;
-
 
     input.value = "";
 
@@ -2178,7 +2339,8 @@
     const field =
       formFields.find(
         item =>
-          item.id === fieldId
+          item.id ===
+          fieldId
       );
 
 
@@ -2186,7 +2348,9 @@
 
 
     let options =
-      Array.isArray(field.options)
+      Array.isArray(
+        field.options
+      )
         ? [...field.options]
         : [];
 
@@ -2319,6 +2483,378 @@
 
 
   /* =========================================================
+     MEMBERS LIST BUILDER
+  ========================================================= */
+
+  async function loadMemberListFields() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("member_list_fields")
+        .select(`
+          id,
+          field_key,
+          field_label,
+          is_visible,
+          is_searchable,
+          display_order,
+          show_in_pdf
+        `)
+        .order(
+          "display_order",
+          {
+            ascending: true
+          }
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to load Members List fields: " +
+        error.message,
+        "error"
+      );
+
+      return;
+    }
+
+
+    memberListFields =
+      data || [];
+
+
+    renderMemberListFields();
+  }
+
+
+  /* =========================================================
+     RENDER MEMBERS LIST BUILDER
+  ========================================================= */
+
+  function renderMemberListFields() {
+
+    const container =
+      document.getElementById(
+        "memberListFieldsContainer"
+      );
+
+
+    if (!memberListFields.length) {
+
+      container.innerHTML = `
+        <div class="empty-options">
+          No Members List fields found.
+        </div>
+      `;
+
+      return;
+    }
+
+
+    container.innerHTML = "";
+
+
+    memberListFields.forEach(
+      field => {
+
+        const div =
+          document.createElement(
+            "div"
+          );
+
+        div.className =
+          "list-builder";
+
+
+        div.innerHTML = `
+
+          <div class="list-builder-title">
+
+            <strong>
+              ${escapeHtml(
+                field.field_label
+              )}
+            </strong>
+
+            <div class="list-builder-key">
+              ${escapeHtml(
+                field.field_key
+              )}
+            </div>
+
+          </div>
+
+
+          <div class="list-builder-header">
+
+            <div>
+
+              <label>
+                Column Label
+              </label>
+
+              <input
+                type="text"
+                class="list-label-input"
+                data-list-field-id="${field.id}"
+                value="${escapeHtml(
+                  field.field_label
+                )}"
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Display Order
+              </label>
+
+              <input
+                type="number"
+                class="list-order-input"
+                data-list-field-id="${field.id}"
+                value="${field.display_order}"
+                min="1"
+              >
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Show
+              </label>
+
+              <div class="builder-checkbox">
+
+                <input
+                  type="checkbox"
+                  class="list-visible-input"
+                  data-list-field-id="${field.id}"
+                  ${
+                    field.is_visible
+                      ? "checked"
+                      : ""
+                  }
+                >
+
+                <span>
+                  Visible
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div>
+
+              <label>
+                Search
+              </label>
+
+              <div class="builder-checkbox">
+
+                <input
+                  type="checkbox"
+                  class="list-search-input"
+                  data-list-field-id="${field.id}"
+                  ${
+                    field.is_searchable
+                      ? "checked"
+                      : ""
+                  }
+                >
+
+                <span>
+                  Searchable
+                </span>
+
+              </div>
+
+            </div>
+
+          </div>
+
+
+          <div
+            class="builder-checkbox"
+            style="margin-top:12px;"
+          >
+
+            <input
+              type="checkbox"
+              class="list-pdf-input"
+              data-list-field-id="${field.id}"
+              ${
+                field.show_in_pdf
+                  ? "checked"
+                  : ""
+              }
+            >
+
+            <span>
+              📄 Show this field in PDF
+            </span>
+
+          </div>
+
+        `;
+
+
+        container.appendChild(
+          div
+        );
+      }
+    );
+  }
+
+
+  /* =========================================================
+     SAVE MEMBERS LIST BUILDER
+  ========================================================= */
+
+  async function saveMemberListFields() {
+
+    try {
+
+      for (
+        const field
+        of memberListFields
+      ) {
+
+        const labelInput =
+          document.querySelector(
+            `.list-label-input[data-list-field-id="${field.id}"]`
+          );
+
+
+        const orderInput =
+          document.querySelector(
+            `.list-order-input[data-list-field-id="${field.id}"]`
+          );
+
+
+        const visibleInput =
+          document.querySelector(
+            `.list-visible-input[data-list-field-id="${field.id}"]`
+          );
+
+
+        const searchInput =
+          document.querySelector(
+            `.list-search-input[data-list-field-id="${field.id}"]`
+          );
+
+
+        const pdfInput =
+          document.querySelector(
+            `.list-pdf-input[data-list-field-id="${field.id}"]`
+          );
+
+
+        const updates = {
+
+          field_label:
+            labelInput
+              ? labelInput.value.trim()
+              : field.field_label,
+
+          is_visible:
+            !!(
+              visibleInput &&
+              visibleInput.checked
+            ),
+
+          is_searchable:
+            !!(
+              searchInput &&
+              searchInput.checked
+            ),
+
+          display_order:
+            parseInt(
+              orderInput
+                ? orderInput.value
+                : field.display_order
+            ) ||
+            field.display_order,
+
+          show_in_pdf:
+            !!(
+              pdfInput &&
+              pdfInput.checked
+            ),
+
+          updated_at:
+            new Date().toISOString()
+        };
+
+
+        const {
+          error
+        } =
+          await supabaseClient
+            .from("member_list_fields")
+            .update(updates)
+            .eq(
+              "id",
+              field.id
+            );
+
+
+        if (error) {
+
+          throw error;
+        }
+
+
+        Object.assign(
+          field,
+          updates
+        );
+      }
+
+
+      memberListFields.sort(
+        (a, b) =>
+          a.display_order -
+          b.display_order
+      );
+
+
+      renderMemberListFields();
+
+
+      showMessage(
+        "Members List Settings saved successfully.",
+        "success"
+      );
+
+
+    } catch (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to save Members List Settings: " +
+        error.message,
+        "error"
+      );
+    }
+  }
+
+
+  /* =========================================================
      FORMAT SETTING NAME
   ========================================================= */
 
@@ -2327,9 +2863,14 @@
   ) {
 
     return key
-      .replace(/_/g, " ")
-      .replace(/\b\w/g, char =>
-        char.toUpperCase()
+      .replace(
+        /_/g,
+        " "
+      )
+      .replace(
+        /\b\w/g,
+        char =>
+          char.toUpperCase()
       );
   }
 
@@ -2386,6 +2927,8 @@
     await loadAppControls();
 
     await loadFormFields();
+
+    await loadMemberListFields();
   }
 
 

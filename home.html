@@ -3,11 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
   <title>COC Members</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
+
     * {
       box-sizing: border-box;
     }
@@ -27,17 +29,29 @@
       text-align: center;
     }
 
+    /* =========================
+       LOGO
+    ========================= */
+
     .logo {
-      font-size: 45px;
-      margin-bottom: 5px;
+      min-height: 110px;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .logo img {
-      max-width: 110px;
-      max-height: 110px;
+    #defaultLogo {
+      font-size: 45px;
+      display: block;
+    }
+
+    #logoImage {
+      width: 110px;
+      height: 110px;
       object-fit: contain;
       display: none;
-      margin: 0 auto 8px;
+      border-radius: 12px;
     }
 
     .header h1 {
@@ -116,23 +130,40 @@
       margin-top: 15px;
       color: #b00020;
     }
+
   </style>
 </head>
 
 <body>
 
+
+  <!-- ==========================================
+       HEADER
+  =========================================== -->
+
   <div class="header">
 
-    <div class="logo" id="logoArea">
+    <div class="logo">
+
       <span id="defaultLogo">✔️</span>
-      <img id="logoImage" alt="Logo">
+
+      <img
+        id="logoImage"
+        alt="App Logo"
+      >
+
     </div>
 
-    <h1 id="appName">COC Members</h1>
+
+    <h1 id="appName">
+      COC Members
+    </h1>
+
 
     <p id="churchName">
       Church Of Christ Sri Lanka
     </p>
+
 
     <p id="subtitle">
       Members Registration
@@ -140,229 +171,356 @@
 
   </div>
 
+
+  <!-- ==========================================
+       MAIN
+  =========================================== -->
+
   <div class="container">
+
 
     <div class="welcome">
 
-      <h2>Welcome</h2>
+      <h2>
+        Welcome
+      </h2>
+
 
       <p id="welcomeText">
         Welcome to Church Of Christ Sri Lanka Members Registration
       </p>
 
-      <p id="userEmail" style="margin-top:10px;">
+
+      <p
+        id="userEmail"
+        style="margin-top:10px;"
+      >
         Loading...
       </p>
 
     </div>
 
+
+    <!-- ========================================
+         MENU
+    ========================================= -->
+
     <div class="menu">
 
-      <button id="registerButton" onclick="registerMember()">
+
+      <button
+        id="registerButton"
+        onclick="registerMember()"
+      >
         ➕ Register New Member
       </button>
 
-      <button id="membersButton" onclick="membersList()">
+
+      <button
+        id="membersButton"
+        onclick="membersList()"
+      >
         👥 Members List
       </button>
 
-      <button id="searchButton" onclick="searchMembers()">
+
+      <button
+        id="searchButton"
+        onclick="searchMembers()"
+      >
         🔍 Search Members
       </button>
 
+
     </div>
 
-    <button class="logout" onclick="logout()">
+
+    <!-- ========================================
+         LOGOUT
+    ========================================= -->
+
+    <button
+      class="logout"
+      onclick="logout()"
+    >
       LOGOUT
     </button>
+
 
     <div id="message"></div>
 
   </div>
 
-  <script>
 
-    const SUPABASE_URL =
-      "https://djxpqggcpaofkpvcqgvd.supabase.co";
+<script>
 
-    const SUPABASE_PUBLISHABLE_KEY =
-      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_PUBLISHABLE_KEY
+  /* =========================================================
+     SUPABASE CONFIG
+  ========================================================= */
+
+  const SUPABASE_URL =
+    "https://djxpqggcpaofkpvcqgvd.supabase.co";
+
+
+  const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
+
+  const supabaseClient =
+    window.supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+  /* =========================================================
+     CHECK LOGIN
+  ========================================================= */
+
+  async function checkLogin() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient.auth.getSession();
+
+
+    if (error) {
+
+      console.error(
+        "Session error:",
+        error
       );
 
+      window.location.href =
+        "index.html";
 
-    // ==========================================
-    // CHECK LOGIN
-    // ==========================================
+      return;
 
-    async function checkLogin() {
-
-      const { data, error } =
-        await supabaseClient.auth.getSession();
-
-      if (error) {
-        console.error("Session error:", error);
-        window.location.href = "index.html";
-        return;
-      }
-
-      if (!data.session) {
-        window.location.href = "index.html";
-        return;
-      }
-
-      document.getElementById("userEmail").textContent =
-        data.session.user.email;
-
-      await loadSettings();
     }
 
 
-    // ==========================================
-    // LOAD ADMIN SETTINGS
-    // ==========================================
+    if (!data.session) {
 
-    async function loadSettings() {
+      window.location.href =
+        "index.html";
 
-      const { data, error } =
-        await supabaseClient
-          .from("app_settings")
-          .select(`
-            app_name,
-            church_name,
-            subtitle,
-            welcome_text,
-            logo_url,
-            register_button_text,
-            members_button_text,
-            search_button_text
-          `)
-          .limit(1)
-          .maybeSingle();
+      return;
+
+    }
 
 
-      if (error) {
+    document.getElementById(
+      "userEmail"
+    ).textContent =
+      data.session.user.email;
 
-        console.error(
-          "Failed to load settings:",
-          error
+
+    await loadSettings();
+
+  }
+
+
+  /* =========================================================
+     LOAD SETTINGS
+  ========================================================= */
+
+  async function loadSettings() {
+
+    const {
+      data,
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .select(
+          "app_name, church_name, subtitle, welcome_text, logo_url, register_button_text, members_button_text, search_button_text"
+        )
+        .limit(1)
+        .maybeSingle();
+
+
+    if (error) {
+
+      console.error(
+        "Failed to load settings:",
+        error
+      );
+
+      return;
+
+    }
+
+
+    if (!data) {
+
+      console.log(
+        "No app settings found."
+      );
+
+      return;
+
+    }
+
+
+    /* =====================================================
+       APP NAME
+    ===================================================== */
+
+    if (data.app_name) {
+
+      document.getElementById(
+        "appName"
+      ).textContent =
+        data.app_name;
+
+      document.title =
+        data.app_name;
+
+    }
+
+
+    /* =====================================================
+       CHURCH NAME
+    ===================================================== */
+
+    if (data.church_name) {
+
+      document.getElementById(
+        "churchName"
+      ).textContent =
+        data.church_name;
+
+    }
+
+
+    /* =====================================================
+       SUBTITLE
+    ===================================================== */
+
+    if (data.subtitle) {
+
+      document.getElementById(
+        "subtitle"
+      ).textContent =
+        data.subtitle;
+
+    }
+
+
+    /* =====================================================
+       WELCOME TEXT
+    ===================================================== */
+
+    if (data.welcome_text) {
+
+      document.getElementById(
+        "welcomeText"
+      ).textContent =
+        data.welcome_text;
+
+    }
+
+
+    /* =====================================================
+       REGISTER BUTTON
+    ===================================================== */
+
+    if (data.register_button_text) {
+
+      document.getElementById(
+        "registerButton"
+      ).textContent =
+        data.register_button_text;
+
+    }
+
+
+    /* =====================================================
+       MEMBERS BUTTON
+    ===================================================== */
+
+    if (data.members_button_text) {
+
+      document.getElementById(
+        "membersButton"
+      ).textContent =
+        data.members_button_text;
+
+    }
+
+
+    /* =====================================================
+       SEARCH BUTTON
+    ===================================================== */
+
+    if (data.search_button_text) {
+
+      document.getElementById(
+        "searchButton"
+      ).textContent =
+        data.search_button_text;
+
+    }
+
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
+
+    loadLogo(
+      data.logo_url
+    );
+
+  }
+
+
+  /* =========================================================
+     LOAD LOGO
+  ========================================================= */
+
+  function loadLogo(url) {
+
+    const logoImage =
+      document.getElementById(
+        "logoImage"
+      );
+
+
+    const defaultLogo =
+      document.getElementById(
+        "defaultLogo"
+      );
+
+
+    /* No URL */
+
+    if (
+      !url ||
+      url.trim() === ""
+    ) {
+
+      logoImage.style.display =
+        "none";
+
+      defaultLogo.style.display =
+        "block";
+
+      return;
+
+    }
+
+
+    /* Prepare image */
+
+    logoImage.onload =
+      function() {
+
+        console.log(
+          "Logo loaded successfully."
         );
-
-        return;
-      }
-
-
-      if (!data) {
-        console.log("No app settings found.");
-        return;
-      }
-
-
-      // ------------------------------------------
-      // APP NAME
-      // ------------------------------------------
-
-      if (data.app_name) {
-
-        document.getElementById("appName").textContent =
-          data.app_name;
-
-        document.title =
-          data.app_name;
-
-      }
-
-
-      // ------------------------------------------
-      // CHURCH NAME
-      // ------------------------------------------
-
-      if (data.church_name) {
-
-        document.getElementById("churchName").textContent =
-          data.church_name;
-
-      }
-
-
-      // ------------------------------------------
-      // SUBTITLE
-      // ------------------------------------------
-
-      if (data.subtitle) {
-
-        document.getElementById("subtitle").textContent =
-          data.subtitle;
-
-      }
-
-
-      // ------------------------------------------
-      // WELCOME TEXT
-      // ------------------------------------------
-
-      if (data.welcome_text) {
-
-        document.getElementById("welcomeText").textContent =
-          data.welcome_text;
-
-      }
-
-
-      // ------------------------------------------
-      // REGISTER BUTTON
-      // ------------------------------------------
-
-      if (data.register_button_text) {
-
-        document.getElementById("registerButton").textContent =
-          data.register_button_text;
-
-      }
-
-
-      // ------------------------------------------
-      // MEMBERS BUTTON
-      // ------------------------------------------
-
-      if (data.members_button_text) {
-
-        document.getElementById("membersButton").textContent =
-          data.members_button_text;
-
-      }
-
-
-      // ------------------------------------------
-      // SEARCH BUTTON
-      // ------------------------------------------
-
-      if (data.search_button_text) {
-
-        document.getElementById("searchButton").textContent =
-          data.search_button_text;
-
-      }
-
-
-      // ------------------------------------------
-      // LOGO
-      // ------------------------------------------
-
-      if (data.logo_url) {
-
-        const logoImage =
-          document.getElementById("logoImage");
-
-        const defaultLogo =
-          document.getElementById("defaultLogo");
-
-        logoImage.src =
-          data.logo_url;
 
         logoImage.style.display =
           "block";
@@ -370,60 +528,93 @@
         defaultLogo.style.display =
           "none";
 
-      }
-
-    }
+      };
 
 
-    // ==========================================
-    // NAVIGATION
-    // ==========================================
+    logoImage.onerror =
+      function() {
 
-    function registerMember() {
+        console.error(
+          "Logo could not be loaded:",
+          url
+        );
 
-      window.location.href =
-        "register.html";
+        logoImage.style.display =
+          "none";
 
-    }
+        defaultLogo.style.display =
+          "block";
 
-
-    function membersList() {
-
-      window.location.href =
-        "members.html";
-
-    }
+      };
 
 
-    function searchMembers() {
+    /* Add cache-busting */
 
-      window.location.href =
-        "members.html";
-
-    }
-
-
-    // ==========================================
-    // LOGOUT
-    // ==========================================
-
-    async function logout() {
-
-      await supabaseClient.auth.signOut();
-
-      window.location.href =
-        "index.html";
-
-    }
+    const separator =
+      url.includes("?")
+        ? "&"
+        : "?";
 
 
-    // ==========================================
-    // START
-    // ==========================================
+    logoImage.src =
+      url +
+      separator +
+      "v=" +
+      Date.now();
 
-    checkLogin();
+  }
 
-  </script>
+
+  /* =========================================================
+     NAVIGATION
+  ========================================================= */
+
+  function registerMember() {
+
+    window.location.href =
+      "register.html";
+
+  }
+
+
+  function membersList() {
+
+    window.location.href =
+      "members.html";
+
+  }
+
+
+  function searchMembers() {
+
+    window.location.href =
+      "members.html";
+
+  }
+
+
+  /* =========================================================
+     LOGOUT
+  ========================================================= */
+
+  async function logout() {
+
+    await supabaseClient.auth.signOut();
+
+    window.location.href =
+      "index.html";
+
+  }
+
+
+  /* =========================================================
+     START
+  ========================================================= */
+
+  checkLogin();
+
+
+</script>
 
 </body>
 </html>

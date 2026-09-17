@@ -152,6 +152,22 @@
       color: #666;
     }
 
+    .section-title {
+      margin-top: 28px;
+      margin-bottom: 15px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid #eee;
+      color: #8b6b2e;
+      font-size: 17px;
+      font-weight: bold;
+    }
+
+    .hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: 6px;
+    }
+
     @media (max-width: 600px) {
 
       .container {
@@ -195,7 +211,7 @@
       <h2>⚙️ Admin Settings</h2>
 
       <div class="description">
-        Update the application information below.
+        Only administrators can access and update these settings.
       </div>
 
 
@@ -209,7 +225,7 @@
         id="loading"
         class="loading"
       >
-        Loading settings...
+        Checking administrator access...
       </div>
 
 
@@ -217,6 +233,11 @@
         id="settingsForm"
         style="display:none;"
       >
+
+        <div class="section-title">
+          🏛️ Application Information
+        </div>
+
 
         <!-- APP NAME -->
 
@@ -281,6 +302,83 @@
             id="welcomeText"
             placeholder="Enter Welcome Text"
           ></textarea>
+
+        </div>
+
+
+        <div class="section-title">
+          🎨 Home Screen Settings
+        </div>
+
+
+        <!-- LOGO URL -->
+
+        <div class="form-group">
+
+          <label for="logoUrl">
+            Logo URL
+          </label>
+
+          <input
+            type="text"
+            id="logoUrl"
+            placeholder="Enter Logo URL"
+          >
+
+          <div class="hint">
+            Enter the public URL of your church/app logo.
+          </div>
+
+        </div>
+
+
+        <!-- REGISTER BUTTON -->
+
+        <div class="form-group">
+
+          <label for="registerButtonText">
+            Register Button Text
+          </label>
+
+          <input
+            type="text"
+            id="registerButtonText"
+            placeholder="Register New Member"
+          >
+
+        </div>
+
+
+        <!-- MEMBERS BUTTON -->
+
+        <div class="form-group">
+
+          <label for="membersButtonText">
+            Members Button Text
+          </label>
+
+          <input
+            type="text"
+            id="membersButtonText"
+            placeholder="Members List"
+          >
+
+        </div>
+
+
+        <!-- SEARCH BUTTON -->
+
+        <div class="form-group">
+
+          <label for="searchButtonText">
+            Search Button Text
+          </label>
+
+          <input
+            type="text"
+            id="searchButtonText"
+            placeholder="Search Members"
+          >
 
         </div>
 
@@ -372,6 +470,30 @@
     );
 
 
+  const logoUrl =
+    document.getElementById(
+      "logoUrl"
+    );
+
+
+  const registerButtonText =
+    document.getElementById(
+      "registerButtonText"
+    );
+
+
+  const membersButtonText =
+    document.getElementById(
+      "membersButtonText"
+    );
+
+
+  const searchButtonText =
+    document.getElementById(
+      "searchButtonText"
+    );
+
+
   /* =========================================================
      MESSAGE
   ========================================================= */
@@ -395,10 +517,10 @@
 
 
   /* =========================================================
-     CHECK USER
+     CHECK ADMIN
   ========================================================= */
 
-  async function checkUser() {
+  async function checkAdmin() {
 
     const {
       data,
@@ -420,7 +542,40 @@
     }
 
 
-    return data.user;
+    const user =
+      data.user;
+
+
+    const role =
+      user.app_metadata?.role;
+
+
+    if (role !== "admin") {
+
+      loading.style.display =
+        "none";
+
+      showMessage(
+        "Access denied. Administrator access required.",
+        "error"
+      );
+
+      setTimeout(
+        function() {
+
+          window.location.href =
+            "home.html";
+
+        },
+        2500
+      );
+
+      return null;
+
+    }
+
+
+    return user;
 
   }
 
@@ -432,7 +587,7 @@
   async function loadSettings() {
 
     const user =
-      await checkUser();
+      await checkAdmin();
 
 
     if (!user) {
@@ -485,6 +640,18 @@
         welcomeText.value =
           data.welcome_text || "";
 
+        logoUrl.value =
+          data.logo_url || "";
+
+        registerButtonText.value =
+          data.register_button_text || "";
+
+        membersButtonText.value =
+          data.members_button_text || "";
+
+        searchButtonText.value =
+          data.search_button_text || "";
+
       }
 
 
@@ -532,6 +699,17 @@
 
     try {
 
+      /* Re-check administrator */
+
+      const user =
+        await checkAdmin();
+
+
+      if (!user) {
+        return;
+      }
+
+
       const {
         data: existing,
         error: existingError
@@ -562,7 +740,22 @@
           subtitle.value.trim(),
 
         welcome_text:
-          welcomeText.value.trim()
+          welcomeText.value.trim(),
+
+        logo_url:
+          logoUrl.value.trim(),
+
+        register_button_text:
+          registerButtonText.value.trim(),
+
+        members_button_text:
+          membersButtonText.value.trim(),
+
+        search_button_text:
+          searchButtonText.value.trim(),
+
+        updated_at:
+          new Date().toISOString()
 
       };
 

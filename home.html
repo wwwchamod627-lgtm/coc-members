@@ -14,17 +14,27 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary-color: #c59b45;
+      --secondary-color: #8b6f1d;
+      --accent-color: #d4af37;
+      --background-color: #f5f3ee;
+      --card-color: #ffffff;
+      --text-color: #222222;
+      --button-text-color: #ffffff;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
-      background: #f4f1e8;
+      background: var(--background-color);
       font-family: Arial, sans-serif;
-      color: #183b2b;
+      color: var(--text-color);
     }
 
     .header {
-      background: #183b2b;
-      color: white;
+      background: var(--primary-color);
+      color: var(--button-text-color);
       padding: 25px 20px;
       text-align: center;
     }
@@ -69,7 +79,7 @@
     }
 
     .welcome {
-      background: white;
+      background: var(--card-color);
       padding: 20px;
       border-radius: 16px;
       box-shadow: 0 5px 20px rgba(0,0,0,0.08);
@@ -79,11 +89,12 @@
 
     .welcome h2 {
       margin: 0 0 8px;
+      color: var(--text-color);
     }
 
     .welcome p {
       margin: 0;
-      color: #666;
+      color: var(--secondary-color);
     }
 
     .menu {
@@ -96,16 +107,19 @@
       padding: 20px;
       border: none;
       border-radius: 14px;
-      background: white;
-      color: #183b2b;
+      background: var(--card-color);
+      color: var(--text-color);
       font-size: 18px;
       font-weight: bold;
       box-shadow: 0 5px 20px rgba(0,0,0,0.08);
       cursor: pointer;
+      transition: 0.2s ease;
     }
 
     .menu button:hover {
-      background: #eef2ec;
+      background: var(--accent-color);
+      color: var(--button-text-color);
+      transform: translateY(-1px);
     }
 
     .logout {
@@ -114,17 +128,21 @@
       padding: 14px;
       border: none;
       border-radius: 10px;
-      background: #8b2f2f;
-      color: white;
+      background: var(--secondary-color);
+      color: var(--button-text-color);
       font-size: 16px;
       font-weight: bold;
       cursor: pointer;
     }
 
+    .logout:hover {
+      background: var(--accent-color);
+    }
+
     #message {
       text-align: center;
       margin-top: 15px;
-      color: #b00020;
+      color: var(--secondary-color);
       word-break: break-word;
       font-size: 13px;
       line-height: 1.5;
@@ -135,7 +153,9 @@
 
 <body>
 
-  <!-- HEADER -->
+  <!-- =======================================================
+       HEADER
+  ======================================================== -->
 
   <div class="header">
 
@@ -165,7 +185,9 @@
   </div>
 
 
-  <!-- MAIN -->
+  <!-- =======================================================
+       MAIN
+  ======================================================== -->
 
   <div class="container">
 
@@ -189,7 +211,9 @@
     </div>
 
 
-    <!-- MENU -->
+    <!-- =====================================================
+         MENU
+    ====================================================== -->
 
     <div class="menu">
 
@@ -217,7 +241,9 @@
     </div>
 
 
-    <!-- LOGOUT -->
+    <!-- =====================================================
+         LOGOUT
+    ====================================================== -->
 
     <button
       class="logout"
@@ -291,6 +317,36 @@
 
 
   /* =========================================================
+     DEFAULT THEME
+  ========================================================= */
+
+  const DEFAULT_THEME = {
+
+    primary_color:
+      "#c59b45",
+
+    secondary_color:
+      "#8b6f1d",
+
+    accent_color:
+      "#d4af37",
+
+    background_color:
+      "#f5f3ee",
+
+    card_color:
+      "#ffffff",
+
+    text_color:
+      "#222222",
+
+    button_text_color:
+      "#ffffff"
+
+  };
+
+
+  /* =========================================================
      CHECK LOGIN
   ========================================================= */
 
@@ -357,18 +413,26 @@
 
   /* =========================================================
      LOAD SETTINGS
-     
+
      MAIN SOURCE:
      app_config
 
+     THEME SOURCE:
+     app_settings
+
      FALLBACK:
-     DEFAULT_SETTINGS
+     DEFAULT SETTINGS / DEFAULT THEME
   ========================================================= */
 
   async function loadSettings() {
 
     let finalSettings = {
       ...DEFAULT_SETTINGS
+    };
+
+
+    let finalTheme = {
+      ...DEFAULT_THEME
     };
 
 
@@ -586,9 +650,9 @@
 
     /* =====================================================
        STEP 2
-       LOAD HOME LOGO
-       
-       Logo remains in app_settings.
+       LOAD APP SETTINGS
+
+       Logo + Theme
     ===================================================== */
 
     try {
@@ -600,7 +664,16 @@
         await supabaseClient
           .from("app_settings")
           .select(
-            "logo_url"
+            `
+              logo_url,
+              primary_color,
+              secondary_color,
+              accent_color,
+              background_color,
+              card_color,
+              text_color,
+              button_text_color
+            `
           )
           .limit(1)
           .maybeSingle();
@@ -611,8 +684,92 @@
         data
       ) {
 
+        /* ===============================================
+           LOAD LOGO
+        =============================================== */
+
         loadLogo(
           data.logo_url
+        );
+
+
+        /* ===============================================
+           LOAD THEME COLORS
+        =============================================== */
+
+        if (
+          data.primary_color
+        ) {
+
+          finalTheme.primary_color =
+            data.primary_color;
+
+        }
+
+
+        if (
+          data.secondary_color
+        ) {
+
+          finalTheme.secondary_color =
+            data.secondary_color;
+
+        }
+
+
+        if (
+          data.accent_color
+        ) {
+
+          finalTheme.accent_color =
+            data.accent_color;
+
+        }
+
+
+        if (
+          data.background_color
+        ) {
+
+          finalTheme.background_color =
+            data.background_color;
+
+        }
+
+
+        if (
+          data.card_color
+        ) {
+
+          finalTheme.card_color =
+            data.card_color;
+
+        }
+
+
+        if (
+          data.text_color
+        ) {
+
+          finalTheme.text_color =
+            data.text_color;
+
+        }
+
+
+        if (
+          data.button_text_color
+        ) {
+
+          finalTheme.button_text_color =
+            data.button_text_color;
+
+        }
+
+
+        console.log(
+          "THEME LOADED:",
+          finalTheme
         );
 
       }
@@ -621,7 +778,7 @@
       if (error) {
 
         console.error(
-          "LOGO SETTINGS ERROR:",
+          "APP_SETTINGS ERROR:",
           error
         );
 
@@ -632,7 +789,7 @@
     catch (error) {
 
       console.error(
-        "LOGO LOADING EXCEPTION:",
+        "APP_SETTINGS EXCEPTION:",
         error
       );
 
@@ -641,7 +798,17 @@
 
     /* =====================================================
        STEP 3
-       APPLY SETTINGS
+       APPLY THEME
+    ===================================================== */
+
+    applyTheme(
+      finalTheme
+    );
+
+
+    /* =====================================================
+       STEP 4
+       APPLY APP SETTINGS
     ===================================================== */
 
     console.log(
@@ -652,6 +819,66 @@
 
     applySettings(
       finalSettings
+    );
+
+  }
+
+
+  /* =========================================================
+     APPLY THEME
+  ========================================================= */
+
+  function applyTheme(theme) {
+
+    const root =
+      document.documentElement;
+
+
+    root.style.setProperty(
+      "--primary-color",
+      theme.primary_color
+    );
+
+
+    root.style.setProperty(
+      "--secondary-color",
+      theme.secondary_color
+    );
+
+
+    root.style.setProperty(
+      "--accent-color",
+      theme.accent_color
+    );
+
+
+    root.style.setProperty(
+      "--background-color",
+      theme.background_color
+    );
+
+
+    root.style.setProperty(
+      "--card-color",
+      theme.card_color
+    );
+
+
+    root.style.setProperty(
+      "--text-color",
+      theme.text_color
+    );
+
+
+    root.style.setProperty(
+      "--button-text-color",
+      theme.button_text_color
+    );
+
+
+    console.log(
+      "HOME THEME APPLIED:",
+      theme
     );
 
   }
@@ -860,14 +1087,14 @@
     ) {
 
       message.style.color =
-        "#b00020";
+        "var(--secondary-color)";
 
     }
 
     else {
 
       message.style.color =
-        "#183b2b";
+        "var(--primary-color)";
 
     }
 

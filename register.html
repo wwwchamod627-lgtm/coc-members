@@ -22,69 +22,266 @@
       --card-color: #ffffff;
       --text-color: #222222;
       --button-text-color: #ffffff;
+
+      --border-color: rgba(139,111,29,0.20);
+      --muted-color: #777777;
+      --danger-color: #b42318;
+      --success-color: #176b3a;
+    }
+
+    html {
+      scroll-behavior: smooth;
     }
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
+      font-family:
+        Inter,
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
       background: var(--background-color);
       color: var(--text-color);
+      min-height: 100vh;
     }
 
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
     .header {
-      background: var(--primary-color);
+      position: relative;
+      overflow: hidden;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+
       color: var(--button-text-color);
-      padding: 20px;
+
+      padding: 32px 20px 36px;
       text-align: center;
+
+      box-shadow:
+        0 8px 25px rgba(0,0,0,0.12);
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+
+      width: 260px;
+      height: 260px;
+
+      border: 1px solid rgba(255,255,255,0.14);
+      border-radius: 50%;
+
+      top: -150px;
+      left: -80px;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+
+      width: 320px;
+      height: 320px;
+
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 50%;
+
+      bottom: -230px;
+      right: -90px;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 760px;
+      margin: auto;
+    }
+
+    .logo-wrap {
+      width: 108px;
+      height: 108px;
+
+      margin: 0 auto 15px;
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      background: rgba(255,255,255,0.12);
+
+      border: 1px solid rgba(255,255,255,0.30);
+
+      border-radius: 22px;
+
+      padding: 10px;
+
+      backdrop-filter: blur(8px);
+
+      box-shadow:
+        0 8px 25px rgba(0,0,0,0.15);
     }
 
     .header img {
-      max-width: 220px;
-      max-height: 90px;
+      max-width: 100%;
+      max-height: 100%;
+
       object-fit: contain;
-      margin-bottom: 8px;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 24px;
+
+      font-size: 28px;
+      font-weight: 800;
+
+      letter-spacing: 0.2px;
     }
 
     .header p {
       margin: 6px 0 0;
+
       font-size: 14px;
+
+      opacity: 0.94;
     }
 
-    .container {
-      max-width: 700px;
-      margin: 20px auto;
-      padding: 20px;
+    .header .subtitle {
+      margin-top: 3px;
+
+      font-size: 13px;
+
+      opacity: 0.78;
+
+      letter-spacing: 0.6px;
     }
+
+    /* =====================================================
+       MAIN CONTAINER
+    ===================================================== */
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+
+      margin: 0 auto;
+
+      padding:
+        22px 18px 45px;
+    }
+
+    /* =====================================================
+       BACK BUTTON
+    ===================================================== */
+
+    .back-btn {
+      width: auto;
+
+      display: inline-flex;
+
+      align-items: center;
+      justify-content: center;
+
+      gap: 7px;
+
+      padding: 11px 17px;
+
+      margin-bottom: 18px;
+
+      border-radius: 10px;
+
+      font-size: 14px;
+
+      background: var(--secondary-color);
+
+      color: var(--button-text-color);
+
+      box-shadow:
+        0 4px 12px rgba(0,0,0,0.10);
+    }
+
+    .back-btn:hover {
+      background: var(--accent-color);
+
+      transform: translateY(-1px);
+    }
+
+    /* =====================================================
+       CARD
+    ===================================================== */
 
     .card {
       background: var(--card-color);
-      padding: 22px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+
+      padding: 30px;
+
+      border-radius: 20px;
+
+      border: 1px solid var(--border-color);
+
+      box-shadow:
+        0 12px 35px rgba(0,0,0,0.08);
     }
 
-    .card h2 {
-      color: var(--text-color);
+    .card-heading {
+      margin-bottom: 28px;
+
+      padding-bottom: 20px;
+
+      border-bottom:
+        1px solid var(--border-color);
     }
+
+    .card-heading h2 {
+      margin: 0;
+
+      color: var(--text-color);
+
+      font-size: 24px;
+
+      font-weight: 800;
+    }
+
+    .card-heading p {
+      margin: 7px 0 0;
+
+      color: var(--muted-color);
+
+      font-size: 13px;
+    }
+
+    /* =====================================================
+       FORM
+    ===================================================== */
 
     .field {
-      margin-bottom: 16px;
+      margin-bottom: 20px;
     }
 
     label {
       display: block;
-      font-weight: bold;
-      margin-bottom: 7px;
+
+      font-weight: 700;
+
+      margin-bottom: 8px;
+
       color: var(--text-color);
+
+      font-size: 14px;
     }
 
     .required-star {
-      color: #c00000;
+      color: var(--danger-color);
+
       margin-left: 3px;
     }
 
@@ -92,68 +289,123 @@
     select,
     textarea {
       width: 100%;
-      padding: 12px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      font-size: 16px;
+
+      padding: 13px 14px;
+
+      border:
+        1px solid var(--border-color);
+
+      border-radius: 11px;
+
+      font-size: 15px;
+
+      font-family: inherit;
+
       background: var(--card-color);
+
       color: var(--text-color);
+
+      transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease,
+        transform 0.2s ease;
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #999999;
+    }
+
+    input:hover,
+    select:hover,
+    textarea:hover {
+      border-color: var(--accent-color);
     }
 
     input:focus,
     select:focus,
     textarea:focus {
       outline: none;
+
       border-color: var(--primary-color);
-      box-shadow: 0 0 0 2px rgba(197,155,69,0.15);
+
+      box-shadow:
+        0 0 0 4px rgba(197,155,69,0.13);
     }
 
     textarea {
-      min-height: 100px;
+      min-height: 110px;
+
       resize: vertical;
+
+      line-height: 1.5;
     }
 
     input[readonly] {
       background: var(--background-color);
+
       color: var(--secondary-color);
-      font-weight: bold;
+
+      font-weight: 800;
+
+      cursor: not-allowed;
     }
 
-    /* DATE INPUTS */
+    /* =====================================================
+       DATE INPUTS
+    ===================================================== */
 
     .date-inputs {
       display: grid;
-      grid-template-columns: 1fr 1fr 1.5fr;
-      gap: 8px;
+
+      grid-template-columns:
+        1fr 1fr 1.5fr;
+
+      gap: 9px;
     }
 
     .date-inputs input {
       text-align: center;
+
+      font-weight: 600;
     }
 
     .date-inputs input::placeholder {
-      color: #888;
+      color: #999999;
     }
 
     .date-help {
       font-size: 12px;
+
       color: var(--secondary-color);
-      margin-top: 6px;
+
+      margin-top: 7px;
+
+      padding-left: 2px;
     }
 
-    /* PHOTO */
+    /* =====================================================
+       PHOTO SECTION
+    ===================================================== */
 
     .photo-buttons {
       display: flex;
+
       gap: 10px;
-      margin-top: 8px;
+
+      margin-top: 9px;
     }
 
     .photo-buttons button {
       flex: 1;
+
       width: auto;
+
       margin-top: 0;
+
       background: var(--secondary-color);
+
+      color: var(--button-text-color);
     }
 
     .photo-buttons button:hover {
@@ -161,103 +413,260 @@
     }
 
     .photo-preview {
-      width: 130px;
-      height: 130px;
+      width: 150px;
+      height: 150px;
+
       object-fit: cover;
-      border-radius: 10px;
-      border: 1px solid #ccc;
+
+      border-radius: 14px;
+
+      border:
+        3px solid var(--accent-color);
+
       display: none;
-      margin-top: 12px;
-    }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 9px;
-      font-size: 17px;
-      font-weight: bold;
-      cursor: pointer;
-      background: var(--primary-color);
-      color: var(--button-text-color);
-      transition: 0.2s ease;
-    }
+      margin-top: 14px;
 
-    button:hover {
-      background: var(--accent-color);
-    }
-
-    button:disabled {
-      background: #999;
-      cursor: not-allowed;
-    }
-
-    .back-btn {
-      background: var(--secondary-color);
-      margin-bottom: 15px;
-    }
-
-    .back-btn:hover {
-      background: var(--accent-color);
-    }
-
-    .message {
-      margin-top: 15px;
-      padding: 12px;
-      border-radius: 8px;
-      display: none;
-      text-align: center;
-      font-weight: bold;
-      white-space: pre-line;
-    }
-
-    .success {
-      background: #dff3e7;
-      color: #176b3a;
-    }
-
-    .error {
-      background: #f8dddd;
-      color: #a00000;
+      box-shadow:
+        0 7px 20px rgba(0,0,0,0.12);
     }
 
     .hidden-file {
       display: none;
     }
 
+    /* =====================================================
+       SAVE BUTTON
+    ===================================================== */
+
+    #saveButton {
+      margin-top: 10px;
+
+      padding: 15px;
+
+      border-radius: 12px;
+
+      font-size: 16px;
+
+      letter-spacing: 0.3px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+
+      color: var(--button-text-color);
+
+      box-shadow:
+        0 7px 18px rgba(0,0,0,0.13);
+    }
+
+    #saveButton:hover {
+      background: var(--secondary-color);
+
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 9px 22px rgba(0,0,0,0.16);
+    }
+
+    button {
+      width: 100%;
+
+      padding: 13px 14px;
+
+      border: none;
+
+      border-radius: 10px;
+
+      font-size: 16px;
+
+      font-weight: 700;
+
+      font-family: inherit;
+
+      cursor: pointer;
+
+      background: var(--primary-color);
+
+      color: var(--button-text-color);
+
+      transition:
+        0.2s ease;
+    }
+
+    button:hover {
+      background: var(--accent-color);
+
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    button:disabled {
+      background: #999999;
+
+      cursor: not-allowed;
+
+      transform: none;
+
+      box-shadow: none;
+    }
+
+    /* =====================================================
+       MESSAGES
+    ===================================================== */
+
+    .message {
+      margin-top: 18px;
+
+      padding: 15px 16px;
+
+      border-radius: 12px;
+
+      display: none;
+
+      text-align: center;
+
+      font-weight: 700;
+
+      white-space: pre-line;
+
+      line-height: 1.5;
+
+      border: 1px solid transparent;
+    }
+
+    .success {
+      background: #e8f5ed;
+
+      color: var(--success-color);
+
+      border-color: #b8dec6;
+    }
+
+    .error {
+      background: #fceaea;
+
+      color: var(--danger-color);
+
+      border-color: #edbcbc;
+    }
+
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
     .loading {
       text-align: center;
-      padding: 25px;
+
+      padding: 35px 20px;
+
       color: var(--secondary-color);
+
+      font-size: 14px;
     }
 
     .loading-spinner {
       display: inline-block;
+
       margin-right: 7px;
     }
 
     .empty-form {
       text-align: center;
-      padding: 25px;
+
+      padding: 30px 20px;
+
       color: var(--secondary-color);
+
+      font-size: 14px;
     }
+
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
 
     @media (max-width: 600px) {
 
+      .header {
+        padding:
+          25px 15px 28px;
+      }
+
+      .logo-wrap {
+        width: 92px;
+        height: 92px;
+
+        border-radius: 18px;
+      }
+
+      .header h1 {
+        font-size: 23px;
+      }
+
+      .header p {
+        font-size: 13px;
+      }
+
       .container {
-        padding: 12px;
+        padding:
+          15px 11px 35px;
       }
 
       .card {
-        padding: 18px;
+        padding: 21px 16px;
+
+        border-radius: 16px;
+      }
+
+      .card-heading {
+        margin-bottom: 23px;
+      }
+
+      .card-heading h2 {
+        font-size: 21px;
+      }
+
+      .field {
+        margin-bottom: 18px;
+      }
+
+      input,
+      select,
+      textarea {
+        font-size: 16px;
+
+        padding: 13px;
       }
 
       .date-inputs {
-        grid-template-columns: 1fr 1fr 1.4fr;
+        grid-template-columns:
+          1fr 1fr 1.4fr;
+
+        gap: 7px;
       }
 
       .photo-buttons {
         flex-direction: column;
+      }
+
+      .photo-buttons button {
+        width: 100%;
+      }
+
+      .back-btn {
+        width: 100%;
+
+        margin-bottom: 14px;
+      }
+
+      #saveButton {
+        margin-top: 6px;
       }
 
     }
@@ -267,29 +676,48 @@
 
 <body>
 
+  <!-- =====================================================
+       HEADER
+  ===================================================== -->
+
   <div class="header">
 
-    <img
-      id="headerLogo"
-      src=""
-      alt="COC Members Logo"
-      style="display:none;"
-    >
+    <div class="header-content">
 
-    <h1 id="headerAppName">
-      COC Members
-    </h1>
+      <div class="logo-wrap">
 
-    <p id="headerChurchName">
-      Church Of Christ Sri Lanka
-    </p>
+        <img
+          id="headerLogo"
+          src=""
+          alt="COC Members Logo"
+          style="display:none;"
+        >
 
-    <p id="headerSubtitle">
-      Members Registration
-    </p>
+      </div>
+
+      <h1 id="headerAppName">
+        COC Members
+      </h1>
+
+      <p id="headerChurchName">
+        Church Of Christ Sri Lanka
+      </p>
+
+      <p
+        id="headerSubtitle"
+        class="subtitle"
+      >
+        Members Registration
+      </p>
+
+    </div>
 
   </div>
 
+
+  <!-- =====================================================
+       MAIN
+  ===================================================== -->
 
   <div class="container">
 
@@ -304,9 +732,17 @@
 
     <div class="card">
 
-      <h2 id="formTitle">
-        Register New Member
-      </h2>
+      <div class="card-heading">
+
+        <h2 id="formTitle">
+          Register New Member
+        </h2>
+
+        <p>
+          Please enter the member information below.
+        </p>
+
+      </div>
 
 
       <form
@@ -355,10 +791,8 @@
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
-
 
   const supabaseClient =
     supabase.createClient(
@@ -419,24 +853,20 @@
       "memberForm"
     );
 
-
   const saveButton =
     document.getElementById(
       "saveButton"
     );
-
 
   const message =
     document.getElementById(
       "message"
     );
 
-
   const loadingForm =
     document.getElementById(
       "loadingForm"
     );
-
 
   const dynamicFieldsContainer =
     document.getElementById(
@@ -453,48 +883,40 @@
     const root =
       document.documentElement;
 
-
     root.style.setProperty(
       "--primary-color",
       theme.primary_color
     );
-
 
     root.style.setProperty(
       "--secondary-color",
       theme.secondary_color
     );
 
-
     root.style.setProperty(
       "--accent-color",
       theme.accent_color
     );
-
 
     root.style.setProperty(
       "--background-color",
       theme.background_color
     );
 
-
     root.style.setProperty(
       "--card-color",
       theme.card_color
     );
-
 
     root.style.setProperty(
       "--text-color",
       theme.text_color
     );
 
-
     root.style.setProperty(
       "--button-text-color",
       theme.button_text_color
     );
-
 
     console.log(
       "REGISTER THEME APPLIED:",
@@ -513,7 +935,6 @@
     let finalTheme = {
       ...DEFAULT_THEME
     };
-
 
     try {
 
@@ -545,11 +966,9 @@
           error
         );
 
-
         applyTheme(
           finalTheme
         );
-
 
         return;
 
@@ -565,14 +984,12 @@
 
         }
 
-
         if (data.secondary_color) {
 
           finalTheme.secondary_color =
             data.secondary_color;
 
         }
-
 
         if (data.accent_color) {
 
@@ -581,14 +998,12 @@
 
         }
 
-
         if (data.background_color) {
 
           finalTheme.background_color =
             data.background_color;
 
         }
-
 
         if (data.card_color) {
 
@@ -597,14 +1012,12 @@
 
         }
 
-
         if (data.text_color) {
 
           finalTheme.text_color =
             data.text_color;
 
         }
-
 
         if (data.button_text_color) {
 
@@ -615,7 +1028,6 @@
 
       }
 
-
     } catch (error) {
 
       console.error(
@@ -624,7 +1036,6 @@
       );
 
     }
-
 
     applyTheme(
       finalTheme
@@ -734,7 +1145,6 @@
     currentUser =
       data.user;
 
-
     return data.user;
 
   }
@@ -753,7 +1163,12 @@
       await supabaseClient
         .from("app_settings")
         .select(
-          "app_name, church_name, subtitle, logo_url"
+          `
+            app_name,
+            church_name,
+            subtitle,
+            logo_url
+          `
         )
         .limit(1)
         .maybeSingle();
@@ -951,7 +1366,6 @@
     formFields =
       data || [];
 
-
     renderDynamicForm();
 
   }
@@ -1047,10 +1461,8 @@
         "div"
       );
 
-
     wrapper.className =
       "field";
-
 
     wrapper.dataset.fieldKey =
       field.field_key;
@@ -1072,10 +1484,6 @@
         : "";
 
 
-    /* -------------------------------------------------------
-       MEMBER ID
-    ------------------------------------------------------- */
-
     if (
       field.field_key ===
       "member_id"
@@ -1096,15 +1504,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       MEMBER TYPE
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1130,15 +1533,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       FULL NAME
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1161,15 +1559,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       NIC NUMBER
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1192,15 +1585,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       DATE OF BIRTH
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1251,15 +1639,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       GENDER
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1285,15 +1668,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       PHONE / WHATSAPP
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1316,15 +1694,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       ADDRESS
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1346,15 +1719,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       MARITAL STATUS
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1380,15 +1748,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       DATE OF SALVATION
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1439,15 +1802,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       MEMBER PHOTO
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1506,15 +1864,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       ADDITIONAL NOTES
-    ------------------------------------------------------- */
 
     if (
       field.field_key ===
@@ -1536,15 +1889,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       FALLBACK TEXTAREA
-    ------------------------------------------------------- */
 
     if (
       field.field_type ===
@@ -1565,15 +1913,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       FALLBACK SELECT
-    ------------------------------------------------------- */
 
     if (
       field.field_type ===
@@ -1599,15 +1942,10 @@
 
       `;
 
-
       return wrapper;
 
     }
 
-
-    /* -------------------------------------------------------
-       FALLBACK INPUT
-    ------------------------------------------------------- */
 
     wrapper.innerHTML = `
 
@@ -1623,7 +1961,6 @@
       >
 
     `;
-
 
     return wrapper;
 
@@ -1848,12 +2185,10 @@
         dayId
       );
 
-
     const monthElement =
       document.getElementById(
         monthId
       );
-
 
     const yearElement =
       document.getElementById(
@@ -1875,10 +2210,8 @@
     const day =
       dayElement.value.trim();
 
-
     const month =
       monthElement.value.trim();
-
 
     const year =
       yearElement.value.trim();
@@ -1898,7 +2231,6 @@
         );
 
       }
-
 
       return null;
 
@@ -1922,10 +2254,8 @@
     const dayNumber =
       Number(day);
 
-
     const monthNumber =
       Number(month);
-
 
     const yearNumber =
       Number(year);
@@ -2204,7 +2534,6 @@
     const field =
       getField(key);
 
-
     return !!(
       field &&
       field.is_required === true
@@ -2249,13 +2578,10 @@
 
       event.preventDefault();
 
-
       clearMessage();
-
 
       saveButton.disabled =
         true;
-
 
       saveButton.textContent =
         "SAVING...";
@@ -2277,10 +2603,6 @@
 
         }
 
-
-        /* -----------------------------------------------
-           GET VALUES
-        ------------------------------------------------ */
 
         const memberType =
           getInputValue(
@@ -2330,10 +2652,6 @@
           );
 
 
-        /* -----------------------------------------------
-           DATES
-        ------------------------------------------------ */
-
         const dateOfBirth =
           getDateFromInputs(
             "dobDay",
@@ -2357,10 +2675,6 @@
             )
           );
 
-
-        /* -----------------------------------------------
-           PHOTO
-        ------------------------------------------------ */
 
         const photoField =
           getField(
@@ -2402,16 +2716,7 @@
         }
 
 
-        /* -----------------------------------------------
-           MEMBER DATA
-        ------------------------------------------------ */
-
         const memberData = {
-
-          /*
-            Member ID is automatically
-            generated by the database.
-          */
 
           member_type:
             memberType || null,
@@ -2453,10 +2758,6 @@
 
         };
 
-
-        /* -----------------------------------------------
-           INSERT MEMBER
-        ------------------------------------------------ */
 
         saveButton.textContent =
           "SAVING MEMBER...";
@@ -2500,10 +2801,6 @@
         }
 
 
-        /* -----------------------------------------------
-           SUCCESS
-        ------------------------------------------------ */
-
         showMessage(
           "Member Registered Successfully\n" +
           "Member ID: " +
@@ -2513,7 +2810,6 @@
 
 
         form.reset();
-
 
         selectedPhotoFile =
           null;
@@ -2570,7 +2866,6 @@
         saveButton.disabled =
           false;
 
-
         saveButton.textContent =
           "SAVE MEMBER";
 
@@ -2588,11 +2883,6 @@
 
     try {
 
-      /*
-        Load theme first so the page
-        immediately uses saved colours.
-      */
-
       await loadThemeSettings();
 
 
@@ -2609,9 +2899,7 @@
 
       await loadAppSettings();
 
-
       await loadAppConfig();
-
 
       await loadFormFields();
 

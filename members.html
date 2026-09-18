@@ -16,184 +16,627 @@
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f1e8;
-      color: #222;
+    :root {
+      --primary-color: #c59b45;
+      --secondary-color: #8b6f1d;
+      --accent-color: #d4af37;
+      --background-color: #f5f3ee;
+      --card-color: #ffffff;
+      --text-color: #222222;
+      --button-text-color: #ffffff;
+
+      --border-color: rgba(139, 111, 29, 0.18);
+      --muted-color: #777777;
+      --danger-color: #b42318;
+      --success-color: #176b36;
     }
 
+    body {
+      margin: 0;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+      background:
+        var(--background-color);
+      color:
+        var(--text-color);
+      min-height: 100vh;
+    }
+
+    /* =========================================================
+       HEADER
+    ========================================================= */
+
     .header {
-      background: #174d3c;
-      color: white;
-      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+      color:
+        var(--button-text-color);
+      padding:
+        34px 20px 38px;
       text-align: center;
+      box-shadow:
+        0 8px 28px rgba(0, 0, 0, 0.14);
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      width: 210px;
+      height: 210px;
+      border-radius: 50%;
+      top: -125px;
+      left: -75px;
+      background:
+        rgba(255, 255, 255, 0.09);
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      bottom: -190px;
+      right: -75px;
+      background:
+        rgba(255, 255, 255, 0.08);
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 800px;
+      margin: auto;
+    }
+
+    .logo-wrap {
+      width: 94px;
+      height: 94px;
+      margin: 0 auto 15px;
+      border-radius: 24px;
+      padding: 8px;
+      background:
+        rgba(255, 255, 255, 0.15);
+      border:
+        1px solid rgba(255, 255, 255, 0.35);
+      box-shadow:
+        0 8px 25px rgba(0, 0, 0, 0.15);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(5px);
+    }
+
+    .logo-wrap img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 16px;
+      background: #ffffff;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 29px;
+      line-height: 1.2;
+      font-weight: 800;
+      letter-spacing: 0.2px;
     }
 
     .header p {
-      margin: 6px 0 0;
+      margin: 7px 0 0;
       font-size: 14px;
+      opacity: 0.94;
+      line-height: 1.4;
     }
 
-    .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
+    .header .subtitle {
+      font-size: 13px;
+      opacity: 0.84;
+      margin-top: 3px;
     }
+
+    /* =========================================================
+       CONTAINER
+    ========================================================= */
+
+    .container {
+      width: 100%;
+      max-width: 820px;
+      margin: 0 auto;
+      padding: 22px 18px 40px;
+    }
+
+    /* =========================================================
+       BACK BUTTON
+    ========================================================= */
 
     .back-btn {
       width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 9px;
-      background: #777;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 15px;
+      min-height: 48px;
+      padding: 13px 18px;
+      border:
+        1px solid var(--border-color);
+      border-radius: 13px;
+      background:
+        var(--card-color);
+      color:
+        var(--secondary-color);
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 17px;
       cursor: pointer;
+      transition:
+        0.2s ease;
+      box-shadow:
+        0 4px 14px rgba(0, 0, 0, 0.06);
     }
 
+    .back-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 7px 20px rgba(0, 0, 0, 0.09);
+    }
+
+    /* =========================================================
+       MAIN CARD
+    ========================================================= */
+
     .card {
-      background: white;
-      padding: 20px;
-      border-radius: 14px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+      background:
+        var(--card-color);
+      padding: 27px;
+      border-radius: 22px;
+      border:
+        1px solid var(--border-color);
+      box-shadow:
+        0 10px 35px rgba(0, 0, 0, 0.08);
       margin-bottom: 15px;
+    }
+
+    .card-heading {
+      margin-bottom: 20px;
+    }
+
+    .card-heading h2 {
+      margin: 0;
+      color:
+        var(--text-color);
+      font-size: 26px;
+      font-weight: 800;
+    }
+
+    .card-heading p {
+      margin: 7px 0 0;
+      color:
+        var(--muted-color);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       SEARCH
+    ========================================================= */
+
+    .search-wrap {
+      position: relative;
+      margin-bottom: 13px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      opacity: 0.65;
+      pointer-events: none;
     }
 
     .search {
       width: 100%;
-      padding: 14px;
-      border: 1px solid #ccc;
-      border-radius: 9px;
-      font-size: 16px;
-      margin-bottom: 12px;
+      min-height: 52px;
+      padding:
+        14px 16px 14px 46px;
+      border:
+        1px solid var(--border-color);
+      border-radius: 13px;
+      background:
+        var(--background-color);
+      color:
+        var(--text-color);
+      font-size: 15px;
+      outline: none;
+      transition:
+        0.2s ease;
     }
+
+    .search::placeholder {
+      color:
+        var(--muted-color);
+    }
+
+    .search:focus {
+      background:
+        var(--card-color);
+      border-color:
+        var(--primary-color);
+      box-shadow:
+        0 0 0 4px
+        color-mix(
+          in srgb,
+          var(--primary-color) 16%,
+          transparent
+        );
+    }
+
+    /* =========================================================
+       PDF BUTTON
+    ========================================================= */
 
     .pdf-all-btn {
       width: 100%;
-      padding: 14px;
+      min-height: 52px;
+      padding: 14px 18px;
       border: none;
-      border-radius: 9px;
-      background: #8b6b2e;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 13px;
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+      color:
+        var(--button-text-color);
+      font-size: 15px;
+      font-weight: 800;
       cursor: pointer;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
+      box-shadow:
+        0 7px 18px
+        color-mix(
+          in srgb,
+          var(--primary-color) 28%,
+          transparent
+        );
+      transition:
+        0.2s ease;
+    }
+
+    .pdf-all-btn:hover {
+      transform: translateY(-1px);
+      box-shadow:
+        0 10px 23px
+        color-mix(
+          in srgb,
+          var(--primary-color) 34%,
+          transparent
+        );
+    }
+
+    .pdf-all-btn:active {
+      transform: translateY(0);
     }
 
     .pdf-all-btn:disabled {
-      background: #aaa;
+      background:
+        #aaa;
+      box-shadow: none;
       cursor: not-allowed;
+      transform: none;
+    }
+
+    /* =========================================================
+       MESSAGES
+    ========================================================= */
+
+    .error {
+      background:
+        #f8dddd;
+      color:
+        var(--danger-color);
+      padding: 13px 14px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 15px;
+      border:
+        1px solid rgba(180, 35, 24, 0.15);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .success {
+      background:
+        #dff2e5;
+      color:
+        var(--success-color);
+      padding: 13px 14px;
+      border-radius: 12px;
+      text-align: center;
+      margin-bottom: 15px;
+      border:
+        1px solid rgba(23, 107, 54, 0.15);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       MEMBER LIST
+    ========================================================= */
+
+    #membersList {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
     .member-card {
+      position: relative;
       display: flex;
       align-items: flex-start;
       gap: 15px;
-      padding: 15px;
-      border: 1px solid #ddd;
-      border-radius: 12px;
-      margin-bottom: 12px;
+      padding: 16px;
+      border:
+        1px solid var(--border-color);
+      border-radius: 17px;
       cursor: pointer;
-      background: #fff;
+      background:
+        var(--card-color);
+      transition:
+        transform 0.2s ease,
+        box-shadow 0.2s ease,
+        border-color 0.2s ease;
+      overflow: hidden;
+    }
+
+    .member-card::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 12px;
+      bottom: 12px;
+      width: 4px;
+      border-radius: 0 4px 4px 0;
+      background:
+        linear-gradient(
+          180deg,
+          var(--primary-color),
+          var(--accent-color)
+        );
+      opacity: 0.85;
     }
 
     .member-card:hover {
-      background: #f8f8f8;
+      transform:
+        translateY(-2px);
+      border-color:
+        color-mix(
+          in srgb,
+          var(--primary-color) 42%,
+          transparent
+        );
+      box-shadow:
+        0 9px 25px rgba(0, 0, 0, 0.09);
     }
 
     .member-photo {
-      width: 75px;
-      height: 75px;
-      border-radius: 50%;
+      width: 78px;
+      height: 78px;
+      border-radius: 18px;
       object-fit: cover;
-      border: 2px solid #174d3c;
+      border:
+        3px solid
+        color-mix(
+          in srgb,
+          var(--accent-color) 72%,
+          white
+        );
+      background:
+        var(--background-color);
       flex-shrink: 0;
+      box-shadow:
+        0 4px 13px rgba(0, 0, 0, 0.10);
     }
 
     .member-info {
       flex: 1;
       min-width: 0;
+      padding-top: 1px;
     }
 
     .member-field {
-      margin-bottom: 4px;
-      font-size: 14px;
-      line-height: 1.4;
+      margin-bottom: 5px;
+      font-size: 13.5px;
+      line-height: 1.45;
       word-break: break-word;
     }
 
     .member-field-label {
-      font-weight: bold;
-      color: #174d3c;
+      font-weight: 700;
+      color:
+        var(--secondary-color);
     }
 
     .member-field-value {
-      color: #333;
+      color:
+        var(--text-color);
     }
 
     .member-name {
       font-size: 18px;
-      font-weight: bold;
+      font-weight: 800;
       margin-bottom: 7px;
-      color: #222;
+      color:
+        var(--text-color);
+      line-height: 1.3;
     }
+
+    /* =========================================================
+       MEMBER ID SPECIAL STYLE
+    ========================================================= */
+
+    .member-id-badge {
+      display: inline-block;
+      margin-top: 3px;
+      padding: 4px 8px;
+      border-radius: 7px;
+      background:
+        color-mix(
+          in srgb,
+          var(--primary-color) 12%,
+          transparent
+        );
+      color:
+        var(--secondary-color);
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    /* =========================================================
+       EMPTY / LOADING
+    ========================================================= */
 
     .empty {
       text-align: center;
-      padding: 30px 10px;
-      color: #666;
+      padding: 45px 15px;
+      color:
+        var(--muted-color);
+      background:
+        var(--background-color);
+      border:
+        1px dashed var(--border-color);
+      border-radius: 15px;
+      font-size: 14px;
     }
 
     .loading {
       text-align: center;
-      padding: 30px;
-      color: #555;
+      padding: 45px 15px;
+      color:
+        var(--muted-color);
+      background:
+        var(--background-color);
+      border-radius: 15px;
+      font-size: 14px;
     }
 
-    .error {
-      background: #f8dddd;
-      color: #a00000;
-      padding: 14px;
-      border-radius: 9px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
-
-    .success {
-      background: #dff2e5;
-      color: #176b36;
-      padding: 14px;
-      border-radius: 9px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
+    /* =========================================================
+       MOBILE
+    ========================================================= */
 
     @media (max-width: 600px) {
 
+      .header {
+        padding:
+          27px 15px 31px;
+      }
+
+      .logo-wrap {
+        width: 84px;
+        height: 84px;
+        border-radius: 20px;
+        padding: 7px;
+        margin-bottom: 12px;
+      }
+
+      .header h1 {
+        font-size: 23px;
+      }
+
+      .header p {
+        font-size: 13px;
+      }
+
+      .header .subtitle {
+        font-size: 12px;
+      }
+
       .container {
-        padding: 12px;
+        padding:
+          15px 12px 30px;
+      }
+
+      .back-btn {
+        min-height: 46px;
+        margin-bottom: 13px;
+      }
+
+      .card {
+        padding: 19px 15px;
+        border-radius: 17px;
+      }
+
+      .card-heading {
+        margin-bottom: 17px;
+      }
+
+      .card-heading h2 {
+        font-size: 22px;
+      }
+
+      .card-heading p {
+        font-size: 13px;
+      }
+
+      .search {
+        min-height: 49px;
+        font-size: 14px;
+      }
+
+      .pdf-all-btn {
+        min-height: 49px;
+        font-size: 14px;
       }
 
       .member-card {
         gap: 12px;
+        padding: 13px;
+        border-radius: 15px;
       }
 
       .member-photo {
-        width: 65px;
-        height: 65px;
+        width: 66px;
+        height: 66px;
+        border-radius: 15px;
       }
 
       .member-name {
         font-size: 16px;
+      }
+
+      .member-field {
+        font-size: 12.5px;
+      }
+
+    }
+
+    @media (max-width: 390px) {
+
+      .member-card {
+        gap: 10px;
+        padding: 11px;
+      }
+
+      .member-photo {
+        width: 59px;
+        height: 59px;
+      }
+
+      .member-name {
+        font-size: 15px;
+      }
+
+      .member-field {
+        font-size: 12px;
       }
 
     }
@@ -202,11 +645,48 @@
 
 <body>
 
+  <!-- =========================================================
+       HEADER
+  ========================================================= -->
+
   <div class="header">
-    <h1 id="appName">COC Members</h1>
-    <p id="churchName">Church Of Christ Sri Lanka</p>
-    <p id="subtitle">Members Registration</p>
+
+    <div class="header-content">
+
+      <div
+        class="logo-wrap"
+        id="logoWrap"
+      >
+        <img
+          id="appLogo"
+          src=""
+          alt="App Logo"
+        >
+      </div>
+
+      <h1 id="appName">
+        COC Members
+      </h1>
+
+      <p id="churchName">
+        Church Of Christ Sri Lanka
+      </p>
+
+      <p
+        id="subtitle"
+        class="subtitle"
+      >
+        Members Registration
+      </p>
+
+    </div>
+
   </div>
+
+
+  <!-- =========================================================
+       MAIN
+  ========================================================= -->
 
   <div class="container">
 
@@ -217,16 +697,42 @@
       ← Back to Dashboard
     </button>
 
+
     <div class="card">
 
-      <h2>Members</h2>
+      <div class="card-heading">
 
-      <input
-        type="text"
-        id="searchInput"
-        class="search"
-        placeholder="Search members..."
-      >
+        <h2>
+          Members
+        </h2>
+
+        <p>
+          Search and view registered church members.
+        </p>
+
+      </div>
+
+
+      <!-- SEARCH -->
+
+      <div class="search-wrap">
+
+        <span class="search-icon">
+          🔍
+        </span>
+
+        <input
+          type="text"
+          id="searchInput"
+          class="search"
+          placeholder="Search members..."
+          autocomplete="off"
+        >
+
+      </div>
+
+
+      <!-- PDF -->
 
       <button
         id="pdfAllButton"
@@ -235,12 +741,20 @@
         📚 Download All Members PDF
       </button>
 
+
+      <!-- ERROR / SUCCESS -->
+
       <div id="errorBox"></div>
 
+
+      <!-- MEMBERS -->
+
       <div id="membersList">
+
         <div class="loading">
           Loading members...
         </div>
+
       </div>
 
     </div>
@@ -272,16 +786,34 @@
   ========================================================= */
 
   const membersList =
-    document.getElementById("membersList");
+    document.getElementById(
+      "membersList"
+    );
 
   const searchInput =
-    document.getElementById("searchInput");
+    document.getElementById(
+      "searchInput"
+    );
 
   const errorBox =
-    document.getElementById("errorBox");
+    document.getElementById(
+      "errorBox"
+    );
 
   const pdfAllButton =
-    document.getElementById("pdfAllButton");
+    document.getElementById(
+      "pdfAllButton"
+    );
+
+  const logoWrap =
+    document.getElementById(
+      "logoWrap"
+    );
+
+  const appLogo =
+    document.getElementById(
+      "appLogo"
+    );
 
 
   /* =========================================================
@@ -301,29 +833,41 @@
 
   const fieldDatabaseMap = {
 
-    member_id: "member_id",
+    member_id:
+      "member_id",
 
-    member_type: "member_type",
+    member_type:
+      "member_type",
 
-    full_name: "full_name",
+    full_name:
+      "full_name",
 
-    nic_number: "nic_number",
+    nic_number:
+      "nic_number",
 
-    date_of_birth: "date_of_birth",
+    date_of_birth:
+      "date_of_birth",
 
-    gender: "gender",
+    gender:
+      "gender",
 
-    phone_whatsapp: "phone_whatsapp",
+    phone_whatsapp:
+      "phone_whatsapp",
 
-    address: "address",
+    address:
+      "address",
 
-    marital_status: "marital_status",
+    marital_status:
+      "marital_status",
 
-    date_of_salvation: "date_of_salvation",
+    date_of_salvation:
+      "date_of_salvation",
 
-    member_photo: "photo_url",
+    member_photo:
+      "photo_url",
 
-    additional_notes: "additional_notes"
+    additional_notes:
+      "additional_notes"
 
   };
 
@@ -340,6 +884,7 @@
     } =
       await supabaseClient.auth.getUser();
 
+
     if (
       error ||
       !data.user
@@ -351,6 +896,7 @@
       return null;
 
     }
+
 
     return data.user;
 
@@ -372,10 +918,19 @@
         .select(`
           app_name,
           church_name,
-          subtitle
+          subtitle,
+          logo_url,
+          primary_color,
+          secondary_color,
+          accent_color,
+          background_color,
+          card_color,
+          text_color,
+          button_text_color
         `)
         .limit(1)
         .maybeSingle();
+
 
     if (error) {
 
@@ -388,8 +943,12 @@
 
     }
 
+
     appSettings =
       data || {};
+
+
+    /* APP TEXT */
 
     document.getElementById(
       "appName"
@@ -397,17 +956,105 @@
       appSettings.app_name ||
       "COC Members";
 
+
     document.getElementById(
       "churchName"
     ).textContent =
       appSettings.church_name ||
       "Church Of Christ Sri Lanka";
 
+
     document.getElementById(
       "subtitle"
     ).textContent =
       appSettings.subtitle ||
       "Members Registration";
+
+
+    /* LOGO */
+
+    if (
+      appSettings.logo_url
+    ) {
+
+      appLogo.src =
+        appSettings.logo_url;
+
+      logoWrap.style.display =
+        "flex";
+
+    } else {
+
+      logoWrap.style.display =
+        "none";
+
+    }
+
+
+    /* COLOUR SETTINGS */
+
+    applyTheme();
+
+  }
+
+
+  /* =========================================================
+     APPLY THEME
+  ========================================================= */
+
+  function applyTheme() {
+
+    const root =
+      document.documentElement;
+
+
+    root.style.setProperty(
+      "--primary-color",
+      appSettings.primary_color ||
+      "#c59b45"
+    );
+
+
+    root.style.setProperty(
+      "--secondary-color",
+      appSettings.secondary_color ||
+      "#8b6f1d"
+    );
+
+
+    root.style.setProperty(
+      "--accent-color",
+      appSettings.accent_color ||
+      "#d4af37"
+    );
+
+
+    root.style.setProperty(
+      "--background-color",
+      appSettings.background_color ||
+      "#f5f3ee"
+    );
+
+
+    root.style.setProperty(
+      "--card-color",
+      appSettings.card_color ||
+      "#ffffff"
+    );
+
+
+    root.style.setProperty(
+      "--text-color",
+      appSettings.text_color ||
+      "#222222"
+    );
+
+
+    root.style.setProperty(
+      "--button-text-color",
+      appSettings.button_text_color ||
+      "#ffffff"
+    );
 
   }
 
@@ -440,6 +1087,7 @@
           }
         );
 
+
     if (error) {
 
       console.error(
@@ -450,6 +1098,7 @@
       throw error;
 
     }
+
 
     memberListFields =
       data || [];
@@ -467,7 +1116,9 @@
       .filter(
         function(field) {
 
-          return field.is_visible === true;
+          return (
+            field.is_visible === true
+          );
 
         }
       )
@@ -475,8 +1126,12 @@
         function(a, b) {
 
           return (
-            Number(a.display_order || 0) -
-            Number(b.display_order || 0)
+            Number(
+              a.display_order || 0
+            ) -
+            Number(
+              b.display_order || 0
+            )
           );
 
         }
@@ -495,7 +1150,9 @@
       .filter(
         function(field) {
 
-          return field.is_searchable === true;
+          return (
+            field.is_searchable === true
+          );
 
         }
       );
@@ -513,7 +1170,9 @@
       .filter(
         function(field) {
 
-          return field.show_in_pdf === true;
+          return (
+            field.show_in_pdf === true
+          );
 
         }
       )
@@ -521,8 +1180,12 @@
         function(a, b) {
 
           return (
-            Number(a.display_order || 0) -
-            Number(b.display_order || 0)
+            Number(
+              a.display_order || 0
+            ) -
+            Number(
+              b.display_order || 0
+            )
           );
 
         }
@@ -547,6 +1210,7 @@
 
     }
 
+
     return String(value);
 
   }
@@ -564,8 +1228,10 @@
 
     }
 
+
     const parts =
       String(date).split("-");
+
 
     if (
       parts.length !== 3
@@ -574,6 +1240,7 @@
       return String(date);
 
     }
+
 
     return (
       parts[2] +
@@ -598,23 +1265,29 @@
     const column =
       fieldDatabaseMap[fieldKey];
 
+
     if (!column) {
 
       return "";
 
     }
 
+
     const value =
       member[column];
 
+
     if (
-      fieldKey === "date_of_birth" ||
-      fieldKey === "date_of_salvation"
+      fieldKey ===
+        "date_of_birth" ||
+      fieldKey ===
+        "date_of_salvation"
     ) {
 
       return formatDate(value);
 
     }
+
 
     return showValue(value);
 
@@ -625,9 +1298,13 @@
      DISPLAY MEMBERS
   ========================================================= */
 
-  function displayMembers(members) {
+  function displayMembers(
+    members
+  ) {
 
-    membersList.innerHTML = "";
+    membersList.innerHTML =
+      "";
+
 
     if (
       !members ||
@@ -652,7 +1329,10 @@
       function(member) {
 
         const card =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         card.className =
           "member-card";
@@ -663,12 +1343,16 @@
 
             window.location.href =
               "member.html?id=" +
-              member.id;
+              encodeURIComponent(
+                member.id
+              );
 
           };
 
 
-        /* PHOTO */
+        /* =====================================================
+           PHOTO
+        ===================================================== */
 
         const photoField =
           memberListFields.find(
@@ -683,7 +1367,7 @@
           );
 
 
-        let showPhoto =
+        const showPhoto =
           photoField
             ? photoField.is_visible === true
             : true;
@@ -692,16 +1376,22 @@
         if (showPhoto) {
 
           const photo =
-            document.createElement("img");
+            document.createElement(
+              "img"
+            );
+
 
           photo.className =
             "member-photo";
+
 
           photo.alt =
             "Member Photo";
 
 
-          if (member.photo_url) {
+          if (
+            member.photo_url
+          ) {
 
             photo.src =
               member.photo_url;
@@ -711,18 +1401,24 @@
             photo.src =
               "data:image/svg+xml;charset=UTF-8," +
               encodeURIComponent(`
-                <svg xmlns="http://www.w3.org/2000/svg"
-                     width="100"
-                     height="100">
-                  <rect width="100%"
-                        height="100%"
-                        fill="#eeeeee"/>
-                  <text x="50%"
-                        y="50%"
-                        dominant-baseline="middle"
-                        text-anchor="middle"
-                        font-size="12"
-                        fill="#777">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="100"
+                  height="100"
+                >
+                  <rect
+                    width="100%"
+                    height="100%"
+                    fill="#eeeeee"
+                  />
+                  <text
+                    x="50%"
+                    y="50%"
+                    dominant-baseline="middle"
+                    text-anchor="middle"
+                    font-size="12"
+                    fill="#777"
+                  >
                     No Photo
                   </text>
                 </svg>
@@ -730,13 +1426,23 @@
 
           }
 
-          card.appendChild(photo);
+
+          card.appendChild(
+            photo
+          );
 
         }
 
 
+        /* =====================================================
+           MEMBER INFORMATION
+        ===================================================== */
+
         const info =
-          document.createElement("div");
+          document.createElement(
+            "div"
+          );
+
 
         info.className =
           "member-info";
@@ -763,11 +1469,16 @@
 
 
             const fieldDiv =
-              document.createElement("div");
+              document.createElement(
+                "div"
+              );
+
 
             fieldDiv.className =
               "member-field";
 
+
+            /* FULL NAME */
 
             if (
               field.field_key ===
@@ -778,16 +1489,53 @@
                 "member-name"
               );
 
+
               fieldDiv.textContent =
                 value;
 
-            } else {
+
+            }
+
+            /* MEMBER ID */
+
+            else if (
+              field.field_key ===
+              "member_id"
+            ) {
+
+              const badge =
+                document.createElement(
+                  "span"
+                );
+
+
+              badge.className =
+                "member-id-badge";
+
+
+              badge.textContent =
+                value;
+
+
+              fieldDiv.appendChild(
+                badge
+              );
+
+            }
+
+            /* OTHER FIELDS */
+
+            else {
 
               const label =
-                document.createElement("span");
+                document.createElement(
+                  "span"
+                );
+
 
               label.className =
                 "member-field-label";
+
 
               label.textContent =
                 field.field_label +
@@ -795,10 +1543,14 @@
 
 
               const valueSpan =
-                document.createElement("span");
+                document.createElement(
+                  "span"
+                );
+
 
               valueSpan.className =
                 "member-field-value";
+
 
               valueSpan.textContent =
                 value;
@@ -807,6 +1559,7 @@
               fieldDiv.appendChild(
                 label
               );
+
 
               fieldDiv.appendChild(
                 valueSpan
@@ -823,9 +1576,14 @@
         );
 
 
-        card.appendChild(info);
+        card.appendChild(
+          info
+        );
 
-        membersList.appendChild(card);
+
+        membersList.appendChild(
+          card
+        );
 
       }
     );
@@ -864,7 +1622,10 @@
 
           }
         )
-        .slice(0, 4);
+        .slice(
+          0,
+          4
+        );
 
 
     searchInput.placeholder =
@@ -915,6 +1676,7 @@
                   field.field_key
                 );
 
+
               return String(value)
                 .toLowerCase()
                 .includes(search);
@@ -941,6 +1703,7 @@
 
     const user =
       await checkUser();
+
 
     if (!user) return;
 
@@ -979,7 +1742,10 @@
 
       if (error) {
 
-        console.error(error);
+        console.error(
+          error
+        );
+
 
         errorBox.innerHTML =
           '<div class="error">' +
@@ -987,8 +1753,10 @@
           error.message +
           '</div>';
 
+
         membersList.innerHTML =
           "";
+
 
         return;
 
@@ -1001,6 +1769,7 @@
 
       updateSearchPlaceholder();
 
+
       displayMembers(
         allMembers
       );
@@ -1008,7 +1777,10 @@
 
     } catch (error) {
 
-      console.error(error);
+      console.error(
+        error
+      );
+
 
       errorBox.innerHTML =
         '<div class="error">' +
@@ -1024,7 +1796,9 @@
      IMAGE → DATA URL
   ========================================================= */
 
-  async function imageToDataURL(url) {
+  async function imageToDataURL(
+    url
+  ) {
 
     try {
 
@@ -1036,6 +1810,7 @@
           }
         );
 
+
       if (!response.ok) {
 
         throw new Error(
@@ -1044,14 +1819,20 @@
 
       }
 
+
       const blob =
         await response.blob();
 
+
       return await new Promise(
-        function(resolve, reject) {
+        function(
+          resolve,
+          reject
+        ) {
 
           const reader =
             new FileReader();
+
 
           reader.onloadend =
             function() {
@@ -1062,8 +1843,10 @@
 
             };
 
+
           reader.onerror =
             reject;
+
 
           reader.readAsDataURL(
             blob
@@ -1072,12 +1855,14 @@
         }
       );
 
+
     } catch (error) {
 
       console.error(
         "Image error:",
         error
       );
+
 
       return null;
 
@@ -1090,13 +1875,16 @@
      GET IMAGE FORMAT
   ========================================================= */
 
-  function getImageFormat(dataURL) {
+  function getImageFormat(
+    dataURL
+  ) {
 
     if (!dataURL) {
 
       return "JPEG";
 
     }
+
 
     if (
       dataURL.startsWith(
@@ -1108,6 +1896,7 @@
 
     }
 
+
     if (
       dataURL.startsWith(
         "data:image/webp"
@@ -1118,6 +1907,7 @@
 
     }
 
+
     if (
       dataURL.startsWith(
         "data:image/gif"
@@ -1127,6 +1917,7 @@
       return "GIF";
 
     }
+
 
     return "JPEG";
 
@@ -1146,10 +1937,13 @@
     const pageWidth =
       pdf.internal.pageSize.getWidth();
 
+
     const pageHeight =
       pdf.internal.pageSize.getHeight();
 
-    const margin = 18;
+
+    const margin =
+      18;
 
 
     pdf.setDrawColor(
@@ -1172,7 +1966,11 @@
       "normal"
     );
 
-    pdf.setFontSize(7.5);
+
+    pdf.setFontSize(
+      7.5
+    );
+
 
     pdf.setTextColor(
       100,
@@ -1184,6 +1982,7 @@
     const appName =
       appSettings.app_name ||
       "COC Members";
+
 
     const churchName =
       appSettings.church_name ||
@@ -1207,7 +2006,8 @@
       pageWidth - margin,
       pageHeight - 12,
       {
-        align: "right"
+        align:
+          "right"
       }
     );
 
@@ -1217,11 +2017,19 @@
 
 
     const generatedDate =
-      String(today.getDate())
-        .padStart(2, "0") +
+      String(
+        today.getDate()
+      ).padStart(
+        2,
+        "0"
+      ) +
       "/" +
-      String(today.getMonth() + 1)
-        .padStart(2, "0") +
+      String(
+        today.getMonth() + 1
+      ).padStart(
+        2,
+        "0"
+      ) +
       "/" +
       today.getFullYear();
 
@@ -1232,7 +2040,8 @@
       pageWidth / 2,
       pageHeight - 12,
       {
-        align: "center"
+        align:
+          "center"
       }
     );
 
@@ -1253,19 +2062,25 @@
     const pageWidth =
       pdf.internal.pageSize.getWidth();
 
+
     const pageHeight =
       pdf.internal.pageSize.getHeight();
 
-    const margin = 18;
+
+    const margin =
+      18;
 
 
-    /* HEADER */
+    /* =====================================================
+       PDF HEADER
+    ===================================================== */
 
     pdf.setFillColor(
-      23,
-      77,
-      60
+      197,
+      155,
+      69
     );
+
 
     pdf.rect(
       0,
@@ -1282,12 +2097,17 @@
       255
     );
 
+
     pdf.setFont(
       "helvetica",
       "bold"
     );
 
-    pdf.setFontSize(20);
+
+    pdf.setFontSize(
+      20
+    );
+
 
     pdf.text(
       String(
@@ -1297,7 +2117,8 @@
       pageWidth / 2,
       14,
       {
-        align: "center"
+        align:
+          "center"
       }
     );
 
@@ -1307,7 +2128,11 @@
       "normal"
     );
 
-    pdf.setFontSize(9.5);
+
+    pdf.setFontSize(
+      9.5
+    );
+
 
     pdf.text(
       appSettings.church_name ||
@@ -1315,9 +2140,11 @@
       pageWidth / 2,
       21,
       {
-        align: "center"
+        align:
+          "center"
       }
     );
+
 
     pdf.text(
       appSettings.subtitle ||
@@ -1325,14 +2152,18 @@
       pageWidth / 2,
       27,
       {
-        align: "center"
+        align:
+          "center"
       }
     );
 
 
-    /* PROFILE NUMBER */
+    /* =====================================================
+       PROFILE NUMBER
+    ===================================================== */
 
-    let currentY = 45;
+    let currentY =
+      45;
 
 
     pdf.setTextColor(
@@ -1341,12 +2172,17 @@
       100
     );
 
+
     pdf.setFont(
       "helvetica",
       "normal"
     );
 
-    pdf.setFontSize(8);
+
+    pdf.setFontSize(
+      8
+    );
+
 
     pdf.text(
       "Member Profile " +
@@ -1354,7 +2190,8 @@
       pageWidth - margin,
       currentY,
       {
-        align: "right"
+        align:
+          "right"
       }
     );
 
@@ -1362,7 +2199,9 @@
     currentY += 7;
 
 
-    /* PHOTO */
+    /* =====================================================
+       PHOTO
+    ===================================================== */
 
     const photoField =
       memberListFields.find(
@@ -1416,6 +2255,7 @@
 
           currentY += 53;
 
+
         } catch (error) {
 
           console.error(
@@ -1430,7 +2270,9 @@
     }
 
 
-    /* NAME */
+    /* =====================================================
+       NAME
+    ===================================================== */
 
     const nameField =
       memberListFields.find(
@@ -1459,23 +2301,28 @@
 
 
     pdf.setTextColor(
-      23,
-      77,
-      60
+      139,
+      111,
+      29
     );
+
 
     pdf.setFont(
       "helvetica",
       "bold"
     );
 
-    pdf.setFontSize(17);
+
+    pdf.setFontSize(
+      17
+    );
 
 
     const nameLines =
       pdf.splitTextToSize(
         memberName,
-        pageWidth - margin * 2
+        pageWidth -
+        margin * 2
       );
 
 
@@ -1484,17 +2331,20 @@
       pageWidth / 2,
       currentY,
       {
-        align: "center"
+        align:
+          "center"
       }
     );
 
 
     currentY +=
-      nameLines.length * 6 + 2;
+      nameLines.length *
+      6 +
+      2;
 
 
     /* =====================================================
-       MEMBER DETAILS
+       MEMBER DETAILS HEADER
     ===================================================== */
 
     const pdfFields =
@@ -1502,15 +2352,17 @@
 
 
     pdf.setFillColor(
-      23,
-      77,
-      60
+      197,
+      155,
+      69
     );
+
 
     pdf.roundedRect(
       margin,
       currentY,
-      pageWidth - margin * 2,
+      pageWidth -
+        margin * 2,
       9,
       2,
       2,
@@ -1524,12 +2376,17 @@
       255
     );
 
+
     pdf.setFont(
       "helvetica",
       "bold"
     );
 
-    pdf.setFontSize(10);
+
+    pdf.setFontSize(
+      10
+    );
+
 
     pdf.text(
       "MEMBER INFORMATION",
@@ -1541,10 +2398,12 @@
     currentY += 13;
 
 
+    /* =====================================================
+       PDF FIELDS
+    ===================================================== */
+
     pdfFields.forEach(
       function(field) {
-
-        /* Full Name is already displayed */
 
         if (
           field.field_key ===
@@ -1555,8 +2414,6 @@
 
         }
 
-
-        /* Photo is already displayed */
 
         if (
           field.field_key ===
@@ -1583,8 +2440,10 @@
         const labelX =
           margin + 5;
 
+
         const valueX =
           margin + 53;
+
 
         const maxWidth =
           pageWidth -
@@ -1603,11 +2462,13 @@
         const rowHeight =
           Math.max(
             11,
-            lines.length * 4.8 + 6
+            lines.length *
+              4.8 +
+              6
           );
 
 
-        /* Row background */
+        /* ROW */
 
         pdf.setFillColor(
           248,
@@ -1619,7 +2480,8 @@
         pdf.roundedRect(
           margin,
           currentY,
-          pageWidth - margin * 2,
+          pageWidth -
+            margin * 2,
           rowHeight,
           2,
           2,
@@ -1627,19 +2489,23 @@
         );
 
 
-        /* Label */
+        /* LABEL */
 
         pdf.setFont(
           "helvetica",
           "bold"
         );
 
-        pdf.setFontSize(8.5);
+
+        pdf.setFontSize(
+          8.5
+        );
+
 
         pdf.setTextColor(
-          23,
-          77,
-          60
+          139,
+          111,
+          29
         );
 
 
@@ -1650,12 +2516,13 @@
         );
 
 
-        /* Value */
+        /* VALUE */
 
         pdf.setFont(
           "helvetica",
           "normal"
         );
+
 
         pdf.setTextColor(
           34,
@@ -1672,7 +2539,8 @@
 
 
         currentY +=
-          rowHeight + 3;
+          rowHeight +
+          3;
 
       }
     );
@@ -1704,15 +2572,17 @@
 
 
       pdf.setFillColor(
-        23,
-        77,
-        60
+        197,
+        155,
+        69
       );
+
 
       pdf.roundedRect(
         margin,
         currentY,
-        pageWidth - margin * 2,
+        pageWidth -
+          margin * 2,
         9,
         2,
         2,
@@ -1726,12 +2596,17 @@
         255
       );
 
+
       pdf.setFont(
         "helvetica",
         "bold"
       );
 
-      pdf.setFontSize(10);
+
+      pdf.setFontSize(
+        10
+      );
+
 
       pdf.text(
         notesField.field_label ||
@@ -1755,15 +2630,17 @@
         pdf.splitTextToSize(
           notes,
           pageWidth -
-          margin * 2 -
-          10
+            margin * 2 -
+            10
         );
 
 
       const noteHeight =
         Math.max(
           16,
-          noteLines.length * 4.8 + 10
+          noteLines.length *
+            4.8 +
+            10
         );
 
 
@@ -1793,7 +2670,8 @@
       pdf.roundedRect(
         margin,
         currentY,
-        pageWidth - margin * 2,
+        pageWidth -
+          margin * 2,
         finalNoteHeight,
         2,
         2,
@@ -1806,7 +2684,11 @@
         "normal"
       );
 
-      pdf.setFontSize(9);
+
+      pdf.setFontSize(
+        9
+      );
+
 
       pdf.setTextColor(
         34,
@@ -1842,7 +2724,8 @@
 
 
         if (
-          visibleNoteLines.length > 0
+          visibleNoteLines.length >
+          0
         ) {
 
           let lastLine =
@@ -1887,7 +2770,9 @@
     }
 
 
-    /* FOOTER */
+    /* =====================================================
+       FOOTER
+    ===================================================== */
 
     addFooter(
       pdf,
@@ -1921,6 +2806,7 @@
     pdfAllButton.disabled =
       true;
 
+
     pdfAllButton.textContent =
       "⏳ Creating PDF...";
 
@@ -1950,9 +2836,12 @@
 
       const pdf =
         new jsPDF({
-          orientation: "portrait",
-          unit: "mm",
-          format: "a4"
+          orientation:
+            "portrait",
+          unit:
+            "mm",
+          format:
+            "a4"
         });
 
 
@@ -2024,6 +2913,7 @@
     pdfAllButton.disabled =
       false;
 
+
     pdfAllButton.textContent =
       "📚 Download All Members PDF";
 
@@ -2047,6 +2937,21 @@
 
 
   /* =========================================================
+     LOGO ERROR HANDLING
+  ========================================================= */
+
+  appLogo.addEventListener(
+    "error",
+    function() {
+
+      logoWrap.style.display =
+        "none";
+
+    }
+  );
+
+
+  /* =========================================================
      START
   ========================================================= */
 
@@ -2057,6 +2962,7 @@
       const user =
         await checkUser();
 
+
       if (!user) return;
 
 
@@ -2065,6 +2971,7 @@
       await loadMemberListFields();
 
       await loadMembers();
+
 
     } catch (error) {
 

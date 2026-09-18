@@ -122,6 +122,24 @@
       transform: translateY(-1px);
     }
 
+    /* =====================================================
+       ADMIN PANEL BUTTON
+    ====================================================== */
+
+    #adminPanelButton {
+      display: none;
+    }
+
+    .admin-panel-button {
+      border: 2px solid var(--primary-color) !important;
+      color: var(--secondary-color) !important;
+    }
+
+    .admin-panel-button:hover {
+      background: var(--primary-color) !important;
+      color: var(--button-text-color) !important;
+    }
+
     .logout {
       margin-top: 25px;
       width: 100%;
@@ -236,6 +254,19 @@
         onclick="searchMembers()"
       >
         🔍 Search Members
+      </button>
+
+      <!-- =================================================
+           ADMIN PANEL
+           ADMIN ONLY
+      ================================================== -->
+
+      <button
+        id="adminPanelButton"
+        class="admin-panel-button"
+        onclick="adminPanel()"
+      >
+        ⚙️ Admin Panel
       </button>
 
     </div>
@@ -386,10 +417,55 @@
       }
 
 
+      const user =
+        data.session.user;
+
+
+      /* ================================================
+         SHOW LOGGED-IN USER EMAIL
+      ================================================= */
+
       document.getElementById(
         "userEmail"
       ).textContent =
-        data.session.user.email;
+        user.email;
+
+
+      /* ================================================
+         ADMIN PANEL VISIBILITY
+
+         Only users with:
+
+         app_metadata.role = "admin"
+
+         can see the Admin Panel button.
+      ================================================= */
+
+      const adminPanelButton =
+        document.getElementById(
+          "adminPanelButton"
+        );
+
+
+      const userRole =
+        user.app_metadata?.role;
+
+
+      if (
+        userRole === "admin"
+      ) {
+
+        adminPanelButton.style.display =
+          "block";
+
+      }
+
+      else {
+
+        adminPanelButton.style.display =
+          "none";
+
+      }
 
 
       await loadSettings();
@@ -1125,6 +1201,18 @@
 
     window.location.href =
       "members.html";
+
+  }
+
+
+  /* =========================================================
+     ADMIN PANEL NAVIGATION
+  ========================================================= */
+
+  function adminPanel() {
+
+    window.location.href =
+      "admin.html";
 
   }
 

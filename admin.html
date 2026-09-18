@@ -12,15 +12,25 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary-color: #c59b45;
+      --secondary-color: #8b6f1d;
+      --accent-color: #d4af37;
+      --background-color: #f5f3ee;
+      --card-color: #ffffff;
+      --text-color: #222222;
+      --button-text-color: #ffffff;
+    }
+
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background: #f5f3ee;
-      color: #222;
+      background: var(--background-color);
+      color: var(--text-color);
     }
 
     .header {
-      background: #ffffff;
+      background: var(--card-color);
       border-bottom: 1px solid #ddd;
       padding: 18px 20px;
       text-align: center;
@@ -38,6 +48,7 @@
     .header h1 {
       margin: 10px 0 3px;
       font-size: 24px;
+      color: var(--text-color);
     }
 
     .header p {
@@ -53,7 +64,7 @@
     }
 
     .card {
-      background: #fff;
+      background: var(--card-color);
       border-radius: 14px;
       padding: 22px;
       margin-bottom: 20px;
@@ -64,6 +75,7 @@
       margin-top: 0;
       margin-bottom: 18px;
       font-size: 21px;
+      color: var(--text-color);
     }
 
     .section-title {
@@ -95,6 +107,7 @@
       border-radius: 8px;
       font-size: 15px;
       background: #fff;
+      color: #222;
     }
 
     textarea {
@@ -119,8 +132,8 @@
     }
 
     .btn-primary {
-      background: #c59b45;
-      color: #fff;
+      background: var(--primary-color);
+      color: var(--button-text-color);
     }
 
     .btn-secondary {
@@ -246,7 +259,7 @@
     }
 
     .switch input:checked + .slider {
-      background: #c59b45;
+      background: var(--primary-color);
     }
 
     .switch input:checked + .slider:before {
@@ -380,6 +393,152 @@
     }
 
     /* =========================================================
+       THEME SETTINGS
+    ========================================================= */
+
+    .theme-presets {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 10px;
+      margin-bottom: 22px;
+    }
+
+    .theme-preset {
+      border: 2px solid #ddd;
+      background: #fff;
+      border-radius: 12px;
+      padding: 10px;
+      cursor: pointer;
+      text-align: center;
+      transition: 0.2s;
+    }
+
+    .theme-preset:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.10);
+    }
+
+    .theme-preset.active {
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(197,155,69,0.18);
+    }
+
+    .theme-colors {
+      display: flex;
+      justify-content: center;
+      gap: 4px;
+      margin-bottom: 8px;
+    }
+
+    .theme-color-dot {
+      width: 25px;
+      height: 25px;
+      border-radius: 50%;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+
+    .theme-preset-name {
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .color-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 15px;
+    }
+
+    .color-control {
+      border: 1px solid #ddd;
+      border-radius: 12px;
+      padding: 14px;
+      background: #fafafa;
+    }
+
+    .color-control label {
+      margin-bottom: 9px;
+    }
+
+    .color-input-row {
+      display: grid;
+      grid-template-columns: 55px 1fr;
+      gap: 10px;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      width: 55px;
+      height: 42px;
+      padding: 2px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #fff;
+    }
+
+    .color-hex {
+      font-family: monospace;
+      text-transform: uppercase;
+    }
+
+    .theme-preview {
+      margin-top: 20px;
+      border: 1px solid #ddd;
+      border-radius: 14px;
+      overflow: hidden;
+      background: var(--background-color);
+    }
+
+    .theme-preview-header {
+      padding: 16px;
+      text-align: center;
+      color: var(--button-text-color);
+      background: var(--primary-color);
+    }
+
+    .theme-preview-header strong {
+      display: block;
+      font-size: 18px;
+    }
+
+    .theme-preview-header span {
+      font-size: 13px;
+      opacity: 0.9;
+    }
+
+    .theme-preview-body {
+      padding: 20px;
+    }
+
+    .theme-preview-card {
+      background: var(--card-color);
+      border-radius: 10px;
+      padding: 15px;
+      border: 1px solid #ddd;
+    }
+
+    .theme-preview-button {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 10px 15px;
+      border-radius: 8px;
+      background: var(--secondary-color);
+      color: var(--button-text-color);
+      font-weight: bold;
+    }
+
+    .accent-preview {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 5px 9px;
+      border-radius: 15px;
+      background: var(--accent-color);
+      color: var(--button-text-color);
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    /* =========================================================
        MEMBERS LIST BUILDER
     ========================================================= */
 
@@ -434,7 +593,19 @@
       font-weight: bold;
     }
 
+    @media (max-width: 850px) {
+
+      .theme-presets {
+        grid-template-columns: repeat(3, 1fr);
+      }
+
+      .color-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
     @media (max-width: 700px) {
+
       .field-grid {
         grid-template-columns: 1fr;
       }
@@ -455,8 +626,19 @@
         grid-template-columns: 1fr;
       }
 
+      .theme-presets {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
       .card {
         padding: 17px;
+      }
+    }
+
+    @media (max-width: 420px) {
+
+      .theme-presets {
+        grid-template-columns: 1fr 1fr;
       }
     }
   </style>
@@ -465,48 +647,631 @@
 <body>
 
   <div class="header">
-    <img id="headerLogo" src="" alt="COC Members Logo" style="display:none;">
-    <h1 id="headerAppName">COC Members</h1>
-    <p id="headerChurchName">Church Of Christ Sri Lanka</p>
-    <div class="admin-email" id="adminEmail"></div>
+
+    <img
+      id="headerLogo"
+      src=""
+      alt="COC Members Logo"
+      style="display:none;"
+    >
+
+    <h1 id="headerAppName">
+      COC Members
+    </h1>
+
+    <p id="headerChurchName">
+      Church Of Christ Sri Lanka
+    </p>
+
+    <div
+      class="admin-email"
+      id="adminEmail"
+    ></div>
+
   </div>
+
 
   <div class="container">
 
-    <div id="message" class="message"></div>
+    <div
+      id="message"
+      class="message"
+    ></div>
 
-    <!-- APPLICATION INFORMATION -->
+
+    <!-- =====================================================
+         APPLICATION INFORMATION
+    ====================================================== -->
+
     <div class="card">
-      <h2>⚙️ Application Information</h2>
+
+      <h2>
+        ⚙️ Application Information
+      </h2>
 
       <div class="form-group">
-        <label for="appName">App Name</label>
-        <input type="text" id="appName" placeholder="Enter App Name">
+
+        <label for="appName">
+          App Name
+        </label>
+
+        <input
+          type="text"
+          id="appName"
+          placeholder="Enter App Name"
+        >
+
       </div>
 
-      <div class="form-group">
-        <label for="churchName">Church Name</label>
-        <input type="text" id="churchName" placeholder="Enter Church Name">
-      </div>
 
       <div class="form-group">
-        <label for="subtitle">Subtitle</label>
-        <input type="text" id="subtitle" placeholder="Enter Subtitle">
+
+        <label for="churchName">
+          Church Name
+        </label>
+
+        <input
+          type="text"
+          id="churchName"
+          placeholder="Enter Church Name"
+        >
+
       </div>
 
+
       <div class="form-group">
-        <label for="welcomeText">Welcome Text</label>
-        <textarea id="welcomeText" placeholder="Enter Welcome Text"></textarea>
+
+        <label for="subtitle">
+          Subtitle
+        </label>
+
+        <input
+          type="text"
+          id="subtitle"
+          placeholder="Enter Subtitle"
+        >
+
       </div>
+
+
+      <div class="form-group">
+
+        <label for="welcomeText">
+          Welcome Text
+        </label>
+
+        <textarea
+          id="welcomeText"
+          placeholder="Enter Welcome Text"
+        ></textarea>
+
+      </div>
+
     </div>
 
 
-    <!-- HOME SCREEN SETTINGS -->
+    <!-- =====================================================
+         APP APPEARANCE / THEME SETTINGS
+    ====================================================== -->
+
     <div class="card">
-      <h2>🏠 Home Screen Settings</h2>
+
+      <h2>
+        🎨 App Appearance / Theme Settings
+      </h2>
+
+      <div class="info-box">
+
+        මෙතැනින් COC Members App එකේ colour theme එක වෙනස් කරන්න පුළුවන්.
+        Preset Theme එකක් තෝරන්න, නැත්නම් Custom Colours භාවිතා කරන්න.
+        <br><br>
+        <strong>Note:</strong>
+        Save Theme කළ පසු මේ colour settings app එකේ අනෙක් pages වලටත් භාවිතා කළ හැක.
+
+      </div>
+
+
+      <div class="section-title">
+        🎨 Theme Presets
+      </div>
+
+
+      <div class="theme-presets">
+
+
+        <!-- CLASSIC GOLD -->
+
+        <button
+          type="button"
+          class="theme-preset"
+          data-theme="classic-gold"
+          onclick="applyPreset('classic-gold')"
+        >
+
+          <div class="theme-colors">
+
+            <span
+              class="theme-color-dot"
+              style="background:#c59b45;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#8b6f1d;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#f5f3ee;"
+            ></span>
+
+          </div>
+
+          <div class="theme-preset-name">
+            Classic Gold
+          </div>
+
+        </button>
+
+
+        <!-- EMERALD GREEN -->
+
+        <button
+          type="button"
+          class="theme-preset"
+          data-theme="emerald-green"
+          onclick="applyPreset('emerald-green')"
+        >
+
+          <div class="theme-colors">
+
+            <span
+              class="theme-color-dot"
+              style="background:#174d3c;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#0f3b2e;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#f3f7f4;"
+            ></span>
+
+          </div>
+
+          <div class="theme-preset-name">
+            Emerald Green
+          </div>
+
+        </button>
+
+
+        <!-- ROYAL BLUE -->
+
+        <button
+          type="button"
+          class="theme-preset"
+          data-theme="royal-blue"
+          onclick="applyPreset('royal-blue')"
+        >
+
+          <div class="theme-colors">
+
+            <span
+              class="theme-color-dot"
+              style="background:#2457a6;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#173b73;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#f2f6fb;"
+            ></span>
+
+          </div>
+
+          <div class="theme-preset-name">
+            Royal Blue
+          </div>
+
+        </button>
+
+
+        <!-- ROYAL PURPLE -->
+
+        <button
+          type="button"
+          class="theme-preset"
+          data-theme="royal-purple"
+          onclick="applyPreset('royal-purple')"
+        >
+
+          <div class="theme-colors">
+
+            <span
+              class="theme-color-dot"
+              style="background:#68439b;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#492d70;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#f6f2fa;"
+            ></span>
+
+          </div>
+
+          <div class="theme-preset-name">
+            Royal Purple
+          </div>
+
+        </button>
+
+
+        <!-- BLACK GOLD -->
+
+        <button
+          type="button"
+          class="theme-preset"
+          data-theme="black-gold"
+          onclick="applyPreset('black-gold')"
+        >
+
+          <div class="theme-colors">
+
+            <span
+              class="theme-color-dot"
+              style="background:#151515;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#c59b45;"
+            ></span>
+
+            <span
+              class="theme-color-dot"
+              style="background:#f3f0e8;"
+            ></span>
+
+          </div>
+
+          <div class="theme-preset-name">
+            Black & Gold
+          </div>
+
+        </button>
+
+      </div>
+
+
+      <div class="section-title">
+        🖌️ Custom Colours
+      </div>
+
+
+      <div class="color-grid">
+
+
+        <!-- PRIMARY -->
+
+        <div class="color-control">
+
+          <label>
+            Primary Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="primaryColor"
+              value="#C59B45"
+              onchange="syncColorInput('primary')"
+            >
+
+            <input
+              type="text"
+              id="primaryColorHex"
+              class="color-hex"
+              value="#C59B45"
+              maxlength="7"
+              oninput="syncHexInput('primary')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- SECONDARY -->
+
+        <div class="color-control">
+
+          <label>
+            Secondary Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="secondaryColor"
+              value="#8B6F1D"
+              onchange="syncColorInput('secondary')"
+            >
+
+            <input
+              type="text"
+              id="secondaryColorHex"
+              class="color-hex"
+              value="#8B6F1D"
+              maxlength="7"
+              oninput="syncHexInput('secondary')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- ACCENT -->
+
+        <div class="color-control">
+
+          <label>
+            Accent Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="accentColor"
+              value="#D4AF37"
+              onchange="syncColorInput('accent')"
+            >
+
+            <input
+              type="text"
+              id="accentColorHex"
+              class="color-hex"
+              value="#D4AF37"
+              maxlength="7"
+              oninput="syncHexInput('accent')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- BACKGROUND -->
+
+        <div class="color-control">
+
+          <label>
+            Background Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="backgroundColor"
+              value="#F5F3EE"
+              onchange="syncColorInput('background')"
+            >
+
+            <input
+              type="text"
+              id="backgroundColorHex"
+              class="color-hex"
+              value="#F5F3EE"
+              maxlength="7"
+              oninput="syncHexInput('background')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- CARD -->
+
+        <div class="color-control">
+
+          <label>
+            Card Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="cardColor"
+              value="#FFFFFF"
+              onchange="syncColorInput('card')"
+            >
+
+            <input
+              type="text"
+              id="cardColorHex"
+              class="color-hex"
+              value="#FFFFFF"
+              maxlength="7"
+              oninput="syncHexInput('card')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- TEXT -->
+
+        <div class="color-control">
+
+          <label>
+            Text Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="textColor"
+              value="#222222"
+              onchange="syncColorInput('text')"
+            >
+
+            <input
+              type="text"
+              id="textColorHex"
+              class="color-hex"
+              value="#222222"
+              maxlength="7"
+              oninput="syncHexInput('text')"
+            >
+
+          </div>
+
+        </div>
+
+
+        <!-- BUTTON TEXT -->
+
+        <div class="color-control">
+
+          <label>
+            Button Text Colour
+          </label>
+
+          <div class="color-input-row">
+
+            <input
+              type="color"
+              id="buttonTextColor"
+              value="#FFFFFF"
+              onchange="syncColorInput('buttonText')"
+            >
+
+            <input
+              type="text"
+              id="buttonTextColorHex"
+              class="color-hex"
+              value="#FFFFFF"
+              maxlength="7"
+              oninput="syncHexInput('buttonText')"
+            >
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- LIVE PREVIEW -->
+
+      <div class="section-title">
+        👁️ Live Preview
+      </div>
+
+
+      <div class="theme-preview">
+
+        <div class="theme-preview-header">
+
+          <strong>
+            COC Members
+          </strong>
+
+          <span>
+            Church Of Christ Sri Lanka
+          </span>
+
+        </div>
+
+
+        <div class="theme-preview-body">
+
+          <div class="theme-preview-card">
+
+            <strong>
+              Members Registration
+            </strong>
+
+            <span class="accent-preview">
+              Accent
+            </span>
+
+            <br>
+
+            <span>
+              This is a preview of your selected app theme.
+            </span>
+
+            <div class="theme-preview-button">
+              Register New Member
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="button-row">
+
+        <button
+          type="button"
+          class="btn-primary"
+          onclick="saveThemeSettings()"
+        >
+          💾 Save Theme
+        </button>
+
+        <button
+          type="button"
+          class="btn-secondary"
+          onclick="resetThemeToGold()"
+        >
+          🔄 Reset to Gold
+        </button>
+
+      </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         HOME SCREEN SETTINGS
+    ====================================================== -->
+
+    <div class="card">
+
+      <h2>
+        🏠 Home Screen Settings
+      </h2>
 
       <div class="form-group">
-        <label>Home Logo</label>
+
+        <label>
+          Home Logo
+        </label>
 
         <input
           type="file"
@@ -516,6 +1281,7 @@
         >
 
         <div class="button-row">
+
           <button
             type="button"
             class="btn-primary"
@@ -531,21 +1297,38 @@
           >
             🗑️ Remove Logo
           </button>
+
         </div>
 
-        <div class="logo-preview" id="homeLogoPreview">
-          <span>No home logo selected</span>
+        <div
+          class="logo-preview"
+          id="homeLogoPreview"
+        >
+          <span>
+            No home logo selected
+          </span>
         </div>
+
       </div>
+
     </div>
 
 
-    <!-- LOGIN SCREEN SETTINGS -->
+    <!-- =====================================================
+         LOGIN SCREEN SETTINGS
+    ====================================================== -->
+
     <div class="card">
-      <h2>🔐 Login Screen Settings</h2>
+
+      <h2>
+        🔐 Login Screen Settings
+      </h2>
 
       <div class="form-group">
-        <label>Login Logo</label>
+
+        <label>
+          Login Logo
+        </label>
 
         <input
           type="file"
@@ -555,6 +1338,7 @@
         >
 
         <div class="button-row">
+
           <button
             type="button"
             class="btn-primary"
@@ -570,61 +1354,106 @@
           >
             🗑️ Remove Login Logo
           </button>
+
         </div>
 
-        <div class="logo-preview" id="loginLogoPreview">
-          <span>No login logo selected</span>
+        <div
+          class="logo-preview"
+          id="loginLogoPreview"
+        >
+          <span>
+            No login logo selected
+          </span>
         </div>
+
       </div>
+
     </div>
 
 
-    <!-- HOME BUTTON SETTINGS -->
+    <!-- =====================================================
+         HOME BUTTON SETTINGS
+    ====================================================== -->
+
     <div class="card">
-      <h2>🔘 Home Button Settings</h2>
+
+      <h2>
+        🔘 Home Button Settings
+      </h2>
 
       <div class="form-group">
-        <label for="registerButtonText">Register Button Text</label>
+
+        <label for="registerButtonText">
+          Register Button Text
+        </label>
+
         <input
           type="text"
           id="registerButtonText"
           placeholder="Register New Member"
         >
+
       </div>
 
+
       <div class="form-group">
-        <label for="membersButtonText">Members List Button Text</label>
+
+        <label for="membersButtonText">
+          Members List Button Text
+        </label>
+
         <input
           type="text"
           id="membersButtonText"
           placeholder="Members List"
         >
+
       </div>
 
+
       <div class="form-group">
-        <label for="searchButtonText">Search Button Text</label>
+
+        <label for="searchButtonText">
+          Search Button Text
+        </label>
+
         <input
           type="text"
           id="searchButtonText"
           placeholder="Search Members"
         >
+
       </div>
+
     </div>
 
 
-    <!-- APP CONTROL CENTER -->
+    <!-- =====================================================
+         APP CONTROL CENTER
+    ====================================================== -->
+
     <div class="card">
-      <h2>🎛️ App Control Center</h2>
+
+      <h2>
+        🎛️ App Control Center
+      </h2>
 
       <div class="info-box">
+
         මෙතැනින් Home Screen එකේ text සහ buttons Admin Panel එකෙන් control කරන්න පුළුවන්.
+
       </div>
 
       <div id="appControlsContainer">
-        <div class="loading">Loading App Controls...</div>
+
+        <div class="loading">
+          Loading App Controls...
+        </div>
+
       </div>
 
       <div class="button-row">
+
         <button
           type="button"
           class="btn-primary"
@@ -632,25 +1461,46 @@
         >
           💾 Save App Controls
         </button>
+
       </div>
+
     </div>
 
 
-    <!-- REGISTRATION FORM BUILDER -->
+    <!-- =====================================================
+         REGISTRATION FORM BUILDER
+    ====================================================== -->
+
     <div class="card">
-      <h2>📝 Registration Form Builder</h2>
+
+      <h2>
+        📝 Registration Form Builder
+      </h2>
 
       <div class="info-box">
+
         Registration Form එකේ field label, field visibility, required status සහ display order මෙතැනින් වෙනස් කරන්න.
+
         <br><br>
-        <strong>Note:</strong> Member ID automatic වන නිසා එය වෙනස් කළ නොහැක.
+
+        <strong>
+          Note:
+        </strong>
+
+        Member ID automatic වන නිසා එය වෙනස් කළ නොහැක.
+
       </div>
 
       <div id="formFieldsContainer">
-        <div class="loading">Loading Registration Form Fields...</div>
+
+        <div class="loading">
+          Loading Registration Form Fields...
+        </div>
+
       </div>
 
       <div class="button-row">
+
         <button
           type="button"
           class="btn-primary"
@@ -658,26 +1508,46 @@
         >
           💾 Save Registration Form Settings
         </button>
+
       </div>
+
     </div>
 
 
-    <!-- DROPDOWN OPTIONS MANAGER -->
+    <!-- =====================================================
+         DROPDOWN OPTIONS MANAGER
+    ====================================================== -->
+
     <div class="card">
-      <h2>🔽 Dropdown Options Manager</h2>
+
+      <h2>
+        🔽 Dropdown Options Manager
+      </h2>
 
       <div class="info-box">
+
         Registration Form එකේ dropdown fields සඳහා options මෙතැනින් add, edit සහ delete කරන්න.
+
         <br><br>
-        <strong>Current dropdown fields:</strong>
+
+        <strong>
+          Current dropdown fields:
+        </strong>
+
         Member Type, Gender, Marital Status
+
       </div>
 
       <div id="dropdownOptionsContainer">
-        <div class="loading">Loading Dropdown Options...</div>
+
+        <div class="loading">
+          Loading Dropdown Options...
+        </div>
+
       </div>
 
       <div class="button-row">
+
         <button
           type="button"
           class="btn-primary"
@@ -685,31 +1555,66 @@
         >
           💾 Save All Dropdown Options
         </button>
+
       </div>
+
     </div>
 
 
-    <!-- MEMBERS LIST BUILDER -->
+    <!-- =====================================================
+         MEMBERS LIST BUILDER
+    ====================================================== -->
+
     <div class="card">
-      <h2>👥 Members List Builder</h2>
+
+      <h2>
+        👥 Members List Builder
+      </h2>
 
       <div class="info-box">
+
         Members List එකේ columns Admin Panel එකෙන් control කරන්න.
+
         <br><br>
-        <strong>Show:</strong> Members List එකේ column එක පෙන්වන්නද?
+
+        <strong>
+          Show:
+        </strong>
+        Members List එකේ column එක පෙන්වන්නද?
+
         <br>
-        <strong>Search:</strong> Search Members function එකේ මෙම field එක භාවිතා කරන්නද?
+
+        <strong>
+          Search:
+        </strong>
+        Search Members function එකේ මෙම field එක භාවිතා කරන්නද?
+
         <br>
-        <strong>PDF:</strong> Members List PDF එකට මෙම field එක ඇතුළත් කරන්නද?
+
+        <strong>
+          PDF:
+        </strong>
+        Members List PDF එකට මෙම field එක ඇතුළත් කරන්නද?
+
         <br>
-        <strong>Display Order:</strong> Column එක පෙන්වන අනුපිළිවෙළ.
+
+        <strong>
+          Display Order:
+        </strong>
+        Column එක පෙන්වන අනුපිළිවෙළ.
+
       </div>
 
       <div id="memberListFieldsContainer">
-        <div class="loading">Loading Members List Fields...</div>
+
+        <div class="loading">
+          Loading Members List Fields...
+        </div>
+
       </div>
 
       <div class="button-row">
+
         <button
           type="button"
           class="btn-primary"
@@ -717,15 +1622,24 @@
         >
           💾 Save Members List Settings
         </button>
+
       </div>
+
     </div>
 
 
-    <!-- SAVE APPLICATION SETTINGS -->
+    <!-- =====================================================
+         SAVE APPLICATION SETTINGS
+    ====================================================== -->
+
     <div class="card">
-      <h2>💾 Save Application Settings</h2>
+
+      <h2>
+        💾 Save Application Settings
+      </h2>
 
       <div class="button-row">
+
         <button
           type="button"
           class="btn-primary"
@@ -741,7 +1655,9 @@
         >
           🏠 Back to Home
         </button>
+
       </div>
+
     </div>
 
   </div>
@@ -771,6 +1687,7 @@
   ========================================================= */
 
   let currentUser = null;
+
   let appSettingsId = null;
 
   let appControls = [];
@@ -783,29 +1700,179 @@
 
 
   /* =========================================================
+     THEME PRESETS
+  ========================================================= */
+
+  const themePresets = {
+
+    "classic-gold": {
+
+      primary:
+        "#C59B45",
+
+      secondary:
+        "#8B6F1D",
+
+      accent:
+        "#D4AF37",
+
+      background:
+        "#F5F3EE",
+
+      card:
+        "#FFFFFF",
+
+      text:
+        "#222222",
+
+      buttonText:
+        "#FFFFFF"
+
+    },
+
+
+    "emerald-green": {
+
+      primary:
+        "#174D3C",
+
+      secondary:
+        "#0F3B2E",
+
+      accent:
+        "#C9A227",
+
+      background:
+        "#F3F7F4",
+
+      card:
+        "#FFFFFF",
+
+      text:
+        "#222222",
+
+      buttonText:
+        "#FFFFFF"
+
+    },
+
+
+    "royal-blue": {
+
+      primary:
+        "#2457A6",
+
+      secondary:
+        "#173B73",
+
+      accent:
+        "#D4AF37",
+
+      background:
+        "#F2F6FB",
+
+      card:
+        "#FFFFFF",
+
+      text:
+        "#20252B",
+
+      buttonText:
+        "#FFFFFF"
+
+    },
+
+
+    "royal-purple": {
+
+      primary:
+        "#68439B",
+
+      secondary:
+        "#492D70",
+
+      accent:
+        "#D4AF37",
+
+      background:
+        "#F6F2FA",
+
+      card:
+        "#FFFFFF",
+
+      text:
+        "#27212D",
+
+      buttonText:
+        "#FFFFFF"
+
+    },
+
+
+    "black-gold": {
+
+      primary:
+        "#151515",
+
+      secondary:
+        "#C59B45",
+
+      accent:
+        "#D4AF37",
+
+      background:
+        "#F3F0E8",
+
+      card:
+        "#FFFFFF",
+
+      text:
+        "#222222",
+
+      buttonText:
+        "#FFFFFF"
+
+    }
+
+  };
+
+
+  /* =========================================================
      MESSAGE
   ========================================================= */
 
-  function showMessage(text, type = "success") {
+  function showMessage(
+    text,
+    type = "success"
+  ) {
 
     const box =
-      document.getElementById("message");
+      document.getElementById(
+        "message"
+      );
 
-    box.textContent = text;
+    box.textContent =
+      text;
 
     box.className =
-      "message " + type;
+      "message " +
+      type;
 
     window.scrollTo({
       top: 0,
       behavior: "smooth"
     });
 
-    setTimeout(() => {
+    setTimeout(
+      function() {
 
-      box.className = "message";
+        box.className =
+          "message";
 
-    }, 5000);
+      },
+      5000
+    );
+
   }
 
 
@@ -821,26 +1888,49 @@
       },
       error
     } =
-      await supabaseClient.auth.getUser();
+      await supabaseClient
+        .auth
+        .getUser();
 
-    if (error || !user) {
 
-      window.location.href = "index.html";
+    if (
+      error ||
+      !user
+    ) {
+
+      window.location.href =
+        "index.html";
 
       return false;
+
     }
 
-    currentUser = user;
 
-    document.getElementById("adminEmail").textContent =
-      "Logged in as: " + (user.email || "");
+    currentUser =
+      user;
+
+
+    document.getElementById(
+      "adminEmail"
+    ).textContent =
+      "Logged in as: " +
+      (
+        user.email ||
+        ""
+      );
+
 
     const role =
       user.app_metadata?.role;
 
-    if (role !== "admin") {
+
+    if (
+      role !==
+      "admin"
+    ) {
 
       document.body.innerHTML = `
+
         <div style="
           min-height:100vh;
           display:flex;
@@ -850,9 +1940,17 @@
           text-align:center;
           font-family:Arial;
         ">
+
           <div>
-            <h2>Access Denied</h2>
-            <p>Administrator access is required.</p>
+
+            <h2>
+              Access Denied
+            </h2>
+
+            <p>
+              Administrator access is required.
+            </p>
+
             <button
               onclick="window.location.href='home.html'"
               style="
@@ -865,14 +1963,20 @@
             >
               Back to Home
             </button>
+
           </div>
+
         </div>
+
       `;
 
       return false;
+
     }
 
+
     return true;
+
   }
 
 
@@ -892,6 +1996,7 @@
         .limit(1)
         .maybeSingle();
 
+
     if (error) {
 
       console.error(error);
@@ -903,55 +2008,711 @@
       );
 
       return;
+
     }
+
 
     if (!data) return;
 
-    appSettingsId = data.id;
 
-    document.getElementById("appName").value =
-      data.app_name || "";
+    appSettingsId =
+      data.id;
 
-    document.getElementById("churchName").value =
-      data.church_name || "";
 
-    document.getElementById("subtitle").value =
-      data.subtitle || "";
+    document.getElementById(
+      "appName"
+    ).value =
+      data.app_name ||
+      "";
 
-    document.getElementById("welcomeText").value =
-      data.welcome_text || "";
 
-    document.getElementById("registerButtonText").value =
-      data.register_button_text || "";
+    document.getElementById(
+      "churchName"
+    ).value =
+      data.church_name ||
+      "";
 
-    document.getElementById("membersButtonText").value =
-      data.members_button_text || "";
 
-    document.getElementById("searchButtonText").value =
-      data.search_button_text || "";
+    document.getElementById(
+      "subtitle"
+    ).value =
+      data.subtitle ||
+      "";
+
+
+    document.getElementById(
+      "welcomeText"
+    ).value =
+      data.welcome_text ||
+      "";
+
+
+    document.getElementById(
+      "registerButtonText"
+    ).value =
+      data.register_button_text ||
+      "";
+
+
+    document.getElementById(
+      "membersButtonText"
+    ).value =
+      data.members_button_text ||
+      "";
+
+
+    document.getElementById(
+      "searchButtonText"
+    ).value =
+      data.search_button_text ||
+      "";
+
+
+    /* =====================================================
+       LOAD THEME SETTINGS
+    ====================================================== */
+
+    setColorField(
+      "primary",
+      data.primary_color ||
+      "#C59B45"
+    );
+
+
+    setColorField(
+      "secondary",
+      data.secondary_color ||
+      "#8B6F1D"
+    );
+
+
+    setColorField(
+      "accent",
+      data.accent_color ||
+      "#D4AF37"
+    );
+
+
+    setColorField(
+      "background",
+      data.background_color ||
+      "#F5F3EE"
+    );
+
+
+    setColorField(
+      "card",
+      data.card_color ||
+      "#FFFFFF"
+    );
+
+
+    setColorField(
+      "text",
+      data.text_color ||
+      "#222222"
+    );
+
+
+    setColorField(
+      "buttonText",
+      data.button_text_color ||
+      "#FFFFFF"
+    );
+
+
+    applyCurrentTheme();
+
 
     updateHeader();
+
 
     renderLogoPreview(
       "homeLogoPreview",
       data.logo_url
     );
 
+
     renderLogoPreview(
       "loginLogoPreview",
       data.login_logo_url
     );
 
+
     if (data.logo_url) {
 
       const logo =
-        document.getElementById("headerLogo");
+        document.getElementById(
+          "headerLogo"
+        );
 
-      logo.src = data.logo_url;
+      logo.src =
+        data.logo_url;
 
       logo.style.display =
         "inline-block";
+
     }
+
+  }
+
+
+  /* =========================================================
+     SET COLOR FIELD
+  ========================================================= */
+
+  function setColorField(
+    name,
+    value
+  ) {
+
+    const colorInput =
+      document.getElementById(
+        name +
+        "Color"
+      );
+
+
+    const hexInput =
+      document.getElementById(
+        name +
+        "ColorHex"
+      );
+
+
+    if (!colorInput ||
+        !hexInput) {
+      return;
+    }
+
+
+    let normalized =
+      String(
+        value ||
+        ""
+      ).trim();
+
+
+    if (
+      !/^#[0-9A-Fa-f]{6}$/.test(
+        normalized
+      )
+    ) {
+
+      normalized =
+        "#000000";
+
+    }
+
+
+    normalized =
+      normalized.toUpperCase();
+
+
+    colorInput.value =
+      normalized;
+
+
+    hexInput.value =
+      normalized;
+
+  }
+
+
+  /* =========================================================
+     GET COLOR
+  ========================================================= */
+
+  function getColorValue(
+    name
+  ) {
+
+    const input =
+      document.getElementById(
+        name +
+        "Color"
+      );
+
+
+    return input
+      ? input.value.toUpperCase()
+      : "#000000";
+
+  }
+
+
+  /* =========================================================
+     APPLY CURRENT THEME
+  ========================================================= */
+
+  function applyCurrentTheme() {
+
+    const root =
+      document.documentElement;
+
+
+    const primary =
+      getColorValue(
+        "primary"
+      );
+
+    const secondary =
+      getColorValue(
+        "secondary"
+      );
+
+    const accent =
+      getColorValue(
+        "accent"
+      );
+
+    const background =
+      getColorValue(
+        "background"
+      );
+
+    const card =
+      getColorValue(
+        "card"
+      );
+
+    const text =
+      getColorValue(
+        "text"
+      );
+
+    const buttonText =
+      getColorValue(
+        "buttonText"
+      );
+
+
+    root.style.setProperty(
+      "--primary-color",
+      primary
+    );
+
+
+    root.style.setProperty(
+      "--secondary-color",
+      secondary
+    );
+
+
+    root.style.setProperty(
+      "--accent-color",
+      accent
+    );
+
+
+    root.style.setProperty(
+      "--background-color",
+      background
+    );
+
+
+    root.style.setProperty(
+      "--card-color",
+      card
+    );
+
+
+    root.style.setProperty(
+      "--text-color",
+      text
+    );
+
+
+    root.style.setProperty(
+      "--button-text-color",
+      buttonText
+    );
+
+
+    updateActivePreset();
+
+  }
+
+
+  /* =========================================================
+     SYNC COLOR PICKER
+  ========================================================= */
+
+  function syncColorInput(
+    name
+  ) {
+
+    const colorInput =
+      document.getElementById(
+        name +
+        "Color"
+      );
+
+
+    const hexInput =
+      document.getElementById(
+        name +
+        "ColorHex"
+      );
+
+
+    if (!colorInput ||
+        !hexInput) {
+      return;
+    }
+
+
+    hexInput.value =
+      colorInput.value.toUpperCase();
+
+
+    applyCurrentTheme();
+
+  }
+
+
+  /* =========================================================
+     SYNC HEX INPUT
+  ========================================================= */
+
+  function syncHexInput(
+    name
+  ) {
+
+    const colorInput =
+      document.getElementById(
+        name +
+        "Color"
+      );
+
+
+    const hexInput =
+      document.getElementById(
+        name +
+        "ColorHex"
+      );
+
+
+    if (!colorInput ||
+        !hexInput) {
+      return;
+    }
+
+
+    let value =
+      hexInput.value.trim();
+
+
+    if (
+      !value.startsWith("#")
+    ) {
+
+      value =
+        "#" +
+        value;
+
+    }
+
+
+    if (
+      /^#[0-9A-Fa-f]{6}$/.test(
+        value
+      )
+    ) {
+
+      value =
+        value.toUpperCase();
+
+
+      colorInput.value =
+        value;
+
+
+      hexInput.value =
+        value;
+
+
+      applyCurrentTheme();
+
+    }
+
+  }
+
+
+  /* =========================================================
+     APPLY PRESET
+  ========================================================= */
+
+  function applyPreset(
+    presetName
+  ) {
+
+    const preset =
+      themePresets[
+        presetName
+      ];
+
+
+    if (!preset) return;
+
+
+    setColorField(
+      "primary",
+      preset.primary
+    );
+
+
+    setColorField(
+      "secondary",
+      preset.secondary
+    );
+
+
+    setColorField(
+      "accent",
+      preset.accent
+    );
+
+
+    setColorField(
+      "background",
+      preset.background
+    );
+
+
+    setColorField(
+      "card",
+      preset.card
+    );
+
+
+    setColorField(
+      "text",
+      preset.text
+    );
+
+
+    setColorField(
+      "buttonText",
+      preset.buttonText
+    );
+
+
+    applyCurrentTheme();
+
+
+    showMessage(
+      presetName
+        .replace(
+          /-/g,
+          " "
+        )
+        .replace(
+          /\b\w/g,
+          c => c.toUpperCase()
+        ) +
+      " theme selected. Click Save Theme to save it.",
+      "success"
+    );
+
+  }
+
+
+  /* =========================================================
+     UPDATE ACTIVE PRESET
+    ========================================================= */
+
+  function updateActivePreset() {
+
+    const current = {
+
+      primary:
+        getColorValue(
+          "primary"
+        ),
+
+      secondary:
+        getColorValue(
+          "secondary"
+        ),
+
+      accent:
+        getColorValue(
+          "accent"
+        ),
+
+      background:
+        getColorValue(
+          "background"
+        ),
+
+      card:
+        getColorValue(
+          "card"
+        ),
+
+      text:
+        getColorValue(
+          "text"
+        ),
+
+      buttonText:
+        getColorValue(
+          "buttonText"
+        )
+
+    };
+
+
+    document
+      .querySelectorAll(
+        ".theme-preset"
+      )
+      .forEach(
+        button => {
+
+          const presetName =
+            button.dataset.theme;
+
+
+          const preset =
+            themePresets[
+              presetName
+            ];
+
+
+          if (!preset) return;
+
+
+          const same =
+            preset.primary.toUpperCase() === current.primary &&
+            preset.secondary.toUpperCase() === current.secondary &&
+            preset.accent.toUpperCase() === current.accent &&
+            preset.background.toUpperCase() === current.background &&
+            preset.card.toUpperCase() === current.card &&
+            preset.text.toUpperCase() === current.text &&
+            preset.buttonText.toUpperCase() === current.buttonText;
+
+
+          button.classList.toggle(
+            "active",
+            same
+          );
+
+        }
+      );
+
+  }
+
+
+  /* =========================================================
+     RESET TO GOLD
+  ========================================================= */
+
+  function resetThemeToGold() {
+
+    applyPreset(
+      "classic-gold"
+    );
+
+  }
+
+
+  /* =========================================================
+     SAVE THEME SETTINGS
+  ========================================================= */
+
+  async function saveThemeSettings() {
+
+    if (!appSettingsId) {
+
+      showMessage(
+        "Application settings are not loaded yet.",
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    const updates = {
+
+      primary_color:
+        getColorValue(
+          "primary"
+        ),
+
+      secondary_color:
+        getColorValue(
+          "secondary"
+        ),
+
+      accent_color:
+        getColorValue(
+          "accent"
+        ),
+
+      background_color:
+        getColorValue(
+          "background"
+        ),
+
+      card_color:
+        getColorValue(
+          "card"
+        ),
+
+      text_color:
+        getColorValue(
+          "text"
+        ),
+
+      button_text_color:
+        getColorValue(
+          "buttonText"
+        ),
+
+      updated_at:
+        new Date().toISOString()
+
+    };
+
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .from("app_settings")
+        .update(
+          updates
+        )
+        .eq(
+          "id",
+          appSettingsId
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      showMessage(
+        "Failed to save Theme Settings: " +
+        error.message,
+        "error"
+      );
+
+      return;
+
+    }
+
+
+    showMessage(
+      "🎨 Theme Settings saved successfully.",
+      "success"
+    );
+
   }
 
 
@@ -961,25 +2722,40 @@
 
   function updateHeader() {
 
-    document.getElementById("headerAppName").textContent =
-      document.getElementById("appName").value ||
+    document.getElementById(
+      "headerAppName"
+    ).textContent =
+      document.getElementById(
+        "appName"
+      ).value ||
       "COC Members";
 
-    document.getElementById("headerChurchName").textContent =
-      document.getElementById("churchName").value ||
+
+    document.getElementById(
+      "headerChurchName"
+    ).textContent =
+      document.getElementById(
+        "churchName"
+      ).value ||
       "Church Of Christ Sri Lanka";
+
   }
 
 
   document
-    .getElementById("appName")
+    .getElementById(
+      "appName"
+    )
     .addEventListener(
       "input",
       updateHeader
     );
 
+
   document
-    .getElementById("churchName")
+    .getElementById(
+      "churchName"
+    )
     .addEventListener(
       "input",
       updateHeader
@@ -1000,33 +2776,50 @@
       );
 
       return;
+
     }
+
 
     const updates = {
 
       app_name:
-        document.getElementById("appName").value.trim(),
+        document.getElementById(
+          "appName"
+        ).value.trim(),
 
       church_name:
-        document.getElementById("churchName").value.trim(),
+        document.getElementById(
+          "churchName"
+        ).value.trim(),
 
       subtitle:
-        document.getElementById("subtitle").value.trim(),
+        document.getElementById(
+          "subtitle"
+        ).value.trim(),
 
       welcome_text:
-        document.getElementById("welcomeText").value.trim(),
+        document.getElementById(
+          "welcomeText"
+        ).value.trim(),
 
       register_button_text:
-        document.getElementById("registerButtonText").value.trim(),
+        document.getElementById(
+          "registerButtonText"
+        ).value.trim(),
 
       members_button_text:
-        document.getElementById("membersButtonText").value.trim(),
+        document.getElementById(
+          "membersButtonText"
+        ).value.trim(),
 
       search_button_text:
-        document.getElementById("searchButtonText").value.trim(),
+        document.getElementById(
+          "searchButtonText"
+        ).value.trim(),
 
       updated_at:
         new Date().toISOString()
+
     };
 
 
@@ -1035,7 +2828,9 @@
     } =
       await supabaseClient
         .from("app_settings")
-        .update(updates)
+        .update(
+          updates
+        )
         .eq(
           "id",
           appSettingsId
@@ -1053,15 +2848,18 @@
       );
 
       return;
+
     }
 
 
     updateHeader();
 
+
     showMessage(
       "Application settings saved successfully.",
       "success"
     );
+
   }
 
 
@@ -1075,7 +2873,10 @@
   ) {
 
     const box =
-      document.getElementById(elementId);
+      document.getElementById(
+        elementId
+      );
+
 
     if (!url) {
 
@@ -1083,14 +2884,19 @@
         "<span>No logo uploaded</span>";
 
       return;
+
     }
 
+
     box.innerHTML = `
+
       <img
         src="${escapeHtml(url)}"
         alt="Logo"
       >
+
     `;
+
   }
 
 
@@ -1099,22 +2905,29 @@
   ========================================================= */
 
   document
-    .getElementById("homeLogoInput")
+    .getElementById(
+      "homeLogoInput"
+    )
     .addEventListener(
       "change",
-      async function () {
+      async function() {
 
         const file =
           this.files[0];
 
+
         if (!file) return;
+
 
         await uploadLogo(
           file,
           "home"
         );
 
-        this.value = "";
+
+        this.value =
+          "";
+
       }
     );
 
@@ -1124,22 +2937,29 @@
   ========================================================= */
 
   document
-    .getElementById("loginLogoInput")
+    .getElementById(
+      "loginLogoInput"
+    )
     .addEventListener(
       "change",
-      async function () {
+      async function() {
 
         const file =
           this.files[0];
 
+
         if (!file) return;
+
 
         await uploadLogo(
           file,
           "login"
         );
 
-        this.value = "";
+
+        this.value =
+          "";
+
       }
     );
 
@@ -1161,10 +2981,15 @@
       );
 
       return;
+
     }
 
 
-    if (!file.type.startsWith("image/")) {
+    if (
+      !file.type.startsWith(
+        "image/"
+      )
+    ) {
 
       showMessage(
         "Please select an image file.",
@@ -1172,10 +2997,14 @@
       );
 
       return;
+
     }
 
 
-    if (file.size > 5 * 1024 * 1024) {
+    if (
+      file.size >
+      5 * 1024 * 1024
+    ) {
 
       showMessage(
         "Image must be smaller than 5MB.",
@@ -1183,11 +3012,14 @@
       );
 
       return;
+
     }
 
 
     const extension =
-      file.name.split(".").pop();
+      file.name
+        .split(".")
+        .pop();
 
 
     const path =
@@ -1208,15 +3040,21 @@
           path,
           file,
           {
-            upsert: false,
-            contentType: file.type
+            upsert:
+              false,
+
+            contentType:
+              file.type
+
           }
         );
 
 
     if (uploadError) {
 
-      console.error(uploadError);
+      console.error(
+        uploadError
+      );
 
       showMessage(
         "Logo upload failed: " +
@@ -1225,6 +3063,7 @@
       );
 
       return;
+
     }
 
 
@@ -1234,7 +3073,9 @@
       supabaseClient
         .storage
         .from("app-assets")
-        .getPublicUrl(path);
+        .getPublicUrl(
+          path
+        );
 
 
     const publicUrl =
@@ -1253,9 +3094,13 @@
       await supabaseClient
         .from("app_settings")
         .update({
-          [column]: publicUrl,
+
+          [column]:
+            publicUrl,
+
           updated_at:
             new Date().toISOString()
+
         })
         .eq(
           "id",
@@ -1265,7 +3110,9 @@
 
     if (updateError) {
 
-      console.error(updateError);
+      console.error(
+        updateError
+      );
 
       showMessage(
         "Failed to save logo URL: " +
@@ -1274,6 +3121,7 @@
       );
 
       return;
+
     }
 
 
@@ -1285,15 +3133,24 @@
     );
 
 
-    if (type === "home") {
+    if (
+      type ===
+      "home"
+    ) {
 
       const logo =
-        document.getElementById("headerLogo");
+        document.getElementById(
+          "headerLogo"
+        );
 
-      logo.src = publicUrl;
+
+      logo.src =
+        publicUrl;
+
 
       logo.style.display =
         "inline-block";
+
     }
 
 
@@ -1306,6 +3163,7 @@
       " logo uploaded successfully.",
       "success"
     );
+
   }
 
 
@@ -1315,7 +3173,8 @@
 
   async function removeHomeLogo() {
 
-    if (!appSettingsId) return;
+    if (!appSettingsId)
+      return;
 
 
     const {
@@ -1324,9 +3183,13 @@
       await supabaseClient
         .from("app_settings")
         .update({
-          logo_url: null,
+
+          logo_url:
+            null,
+
           updated_at:
             new Date().toISOString()
+
         })
         .eq(
           "id",
@@ -1343,6 +3206,7 @@
       );
 
       return;
+
     }
 
 
@@ -1353,7 +3217,9 @@
 
 
     document
-      .getElementById("headerLogo")
+      .getElementById(
+        "headerLogo"
+      )
       .style.display =
       "none";
 
@@ -1362,6 +3228,7 @@
       "Home logo removed.",
       "success"
     );
+
   }
 
 
@@ -1371,7 +3238,8 @@
 
   async function removeLoginLogo() {
 
-    if (!appSettingsId) return;
+    if (!appSettingsId)
+      return;
 
 
     const {
@@ -1380,9 +3248,13 @@
       await supabaseClient
         .from("app_settings")
         .update({
-          login_logo_url: null,
+
+          login_logo_url:
+            null,
+
           updated_at:
             new Date().toISOString()
+
         })
         .eq(
           "id",
@@ -1399,6 +3271,7 @@
       );
 
       return;
+
     }
 
 
@@ -1412,6 +3285,7 @@
       "Login logo removed.",
       "success"
     );
+
   }
 
 
@@ -1431,7 +3305,8 @@
         .order(
           "id",
           {
-            ascending: true
+            ascending:
+              true
           }
         );
 
@@ -1447,13 +3322,16 @@
       );
 
       return;
+
     }
 
 
     appControls =
       data || [];
 
+
     renderAppControls();
+
   }
 
 
@@ -1475,10 +3353,12 @@
         '<div class="empty-options">No app controls found.</div>';
 
       return;
+
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+      "";
 
 
     appControls.forEach(
@@ -1493,6 +3373,7 @@
           document.createElement(
             "div"
           );
+
 
         row.className =
           "control-row";
@@ -1510,6 +3391,7 @@
           row.innerHTML = `
 
             <div>
+
               <div class="control-name">
                 ${escapeHtml(
                   formatSettingName(
@@ -1523,6 +3405,7 @@
                   control.setting_key
                 )}
               </div>
+
             </div>
 
             <label class="switch">
@@ -1536,6 +3419,7 @@
               <span class="slider"></span>
 
             </label>
+
           `;
 
         } else {
@@ -1569,13 +3453,19 @@
               >
 
             </div>
+
           `;
+
         }
 
 
-        container.appendChild(row);
+        container.appendChild(
+          row
+        );
+
       }
     );
+
   }
 
 
@@ -1605,6 +3495,7 @@
               `[data-config-id="${control.id}"]`
             );
 
+
           value =
             input &&
             input.checked
@@ -1618,10 +3509,12 @@
               `.app-config-input[data-config-id="${control.id}"]`
             );
 
+
           value =
             input
               ? input.value.trim()
               : control.setting_value;
+
         }
 
 
@@ -1631,10 +3524,13 @@
           await supabaseClient
             .from("app_config")
             .update({
+
               setting_value:
                 value,
+
               updated_at:
                 new Date().toISOString()
+
             })
             .eq(
               "id",
@@ -1645,11 +3541,13 @@
         if (error) {
 
           throw error;
+
         }
 
 
         control.setting_value =
           value;
+
       }
 
 
@@ -1668,7 +3566,9 @@
         error.message,
         "error"
       );
+
     }
+
   }
 
 
@@ -1697,7 +3597,8 @@
         .order(
           "display_order",
           {
-            ascending: true
+            ascending:
+              true
           }
         );
 
@@ -1713,15 +3614,18 @@
       );
 
       return;
+
     }
 
 
     formFields =
       data || [];
 
+
     renderFormFields();
 
     renderDropdownOptions();
+
   }
 
 
@@ -1743,10 +3647,12 @@
         '<div class="empty-options">No form fields found.</div>';
 
       return;
+
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+      "";
 
 
     formFields.forEach(
@@ -1761,6 +3667,7 @@
           document.createElement(
             "div"
           );
+
 
         div.className =
           "field-builder";
@@ -1777,13 +3684,17 @@
             </strong>
 
             <div class="field-key">
+
               ${escapeHtml(
                 field.field_key
               )}
+
               •
+
               ${escapeHtml(
                 field.field_type
               )}
+
             </div>
 
           </div>
@@ -1902,9 +3813,13 @@
         `;
 
 
-        container.appendChild(div);
+        container.appendChild(
+          div
+        );
+
       }
     );
+
   }
 
 
@@ -1980,6 +3895,7 @@
 
           updated_at:
             new Date().toISOString()
+
         };
 
 
@@ -1988,7 +3904,9 @@
         } =
           await supabaseClient
             .from("form_fields")
-            .update(updates)
+            .update(
+              updates
+            )
             .eq(
               "id",
               field.id
@@ -1998,6 +3916,7 @@
         if (error) {
 
           throw error;
+
         }
 
 
@@ -2005,6 +3924,7 @@
           field,
           updates
         );
+
       }
 
 
@@ -2035,7 +3955,9 @@
         error.message,
         "error"
       );
+
     }
+
   }
 
 
@@ -2066,19 +3988,25 @@
       );
 
 
-    if (!dropdownFields.length) {
+    if (
+      !dropdownFields.length
+    ) {
 
       container.innerHTML = `
+
         <div class="empty-options">
           No dropdown fields found.
         </div>
+
       `;
 
       return;
+
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+      "";
 
 
     dropdownFields.forEach(
@@ -2097,6 +4025,7 @@
             "div"
           );
 
+
         manager.className =
           "dropdown-manager";
 
@@ -2110,10 +4039,12 @@
           </h3>
 
           <div class="dropdown-key">
+
             Field Key:
             ${escapeHtml(
               field.field_key
             )}
+
           </div>
 
           <div
@@ -2152,8 +4083,10 @@
           field.id,
           options
         );
+
       }
     );
+
   }
 
 
@@ -2176,28 +4109,36 @@
     if (!list) return;
 
 
-    list.innerHTML = "";
+    list.innerHTML =
+      "";
 
 
     if (!options.length) {
 
       list.innerHTML = `
+
         <div class="empty-options">
           No options added yet.
         </div>
+
       `;
 
       return;
+
     }
 
 
     options.forEach(
-      (option, index) => {
+      (
+        option,
+        index
+      ) => {
 
         const item =
           document.createElement(
             "div"
           );
+
 
         item.className =
           "option-item";
@@ -2231,9 +4172,13 @@
         `;
 
 
-        list.appendChild(item);
+        list.appendChild(
+          item
+        );
+
       }
     );
+
   }
 
 
@@ -2275,6 +4220,7 @@
       );
 
       return;
+
     }
 
 
@@ -2282,7 +4228,9 @@
       Array.isArray(
         field.options
       )
-        ? [...field.options]
+        ? [
+            ...field.options
+          ]
         : [];
 
 
@@ -2303,15 +4251,21 @@
       );
 
       return;
+
     }
 
 
-    options.push(value);
+    options.push(
+      value
+    );
+
 
     field.options =
       options;
 
-    input.value = "";
+
+    input.value =
+      "";
 
 
     renderOptionsForField(
@@ -2324,6 +4278,7 @@
       "Option added. Click Save All Dropdown Options to save it.",
       "success"
     );
+
   }
 
 
@@ -2351,7 +4306,9 @@
       Array.isArray(
         field.options
       )
-        ? [...field.options]
+        ? [
+            ...field.options
+          ]
         : [];
 
 
@@ -2359,7 +4316,9 @@
       index < 0 ||
       index >= options.length
     ) {
+
       return;
+
     }
 
 
@@ -2383,6 +4342,7 @@
       "Option removed. Click Save All Dropdown Options to save the change.",
       "success"
     );
+
   }
 
 
@@ -2405,7 +4365,8 @@
           );
 
 
-        const options = [];
+        const options =
+          [];
 
 
         inputs.forEach(
@@ -2427,7 +4388,9 @@
               options.push(
                 value
               );
+
             }
+
           }
         );
 
@@ -2438,10 +4401,13 @@
           await supabaseClient
             .from("form_fields")
             .update({
+
               options:
                 options,
+
               updated_at:
                 new Date().toISOString()
+
             })
             .eq(
               "id",
@@ -2452,11 +4418,13 @@
         if (error) {
 
           throw error;
+
         }
 
 
         field.options =
           options;
+
       }
 
 
@@ -2478,7 +4446,9 @@
         error.message,
         "error"
       );
+
     }
+
   }
 
 
@@ -2506,7 +4476,8 @@
         .order(
           "display_order",
           {
-            ascending: true
+            ascending:
+              true
           }
         );
 
@@ -2522,6 +4493,7 @@
       );
 
       return;
+
     }
 
 
@@ -2530,6 +4502,7 @@
 
 
     renderMemberListFields();
+
   }
 
 
@@ -2545,19 +4518,25 @@
       );
 
 
-    if (!memberListFields.length) {
+    if (
+      !memberListFields.length
+    ) {
 
       container.innerHTML = `
+
         <div class="empty-options">
           No Members List fields found.
         </div>
+
       `;
 
       return;
+
     }
 
 
-    container.innerHTML = "";
+    container.innerHTML =
+      "";
 
 
     memberListFields.forEach(
@@ -2567,6 +4546,7 @@
           document.createElement(
             "div"
           );
+
 
         div.className =
           "list-builder";
@@ -2714,8 +4694,10 @@
         container.appendChild(
           div
         );
+
       }
     );
+
   }
 
 
@@ -2797,6 +4779,7 @@
 
           updated_at:
             new Date().toISOString()
+
         };
 
 
@@ -2805,7 +4788,9 @@
         } =
           await supabaseClient
             .from("member_list_fields")
-            .update(updates)
+            .update(
+              updates
+            )
             .eq(
               "id",
               field.id
@@ -2815,6 +4800,7 @@
         if (error) {
 
           throw error;
+
         }
 
 
@@ -2822,6 +4808,7 @@
           field,
           updates
         );
+
       }
 
 
@@ -2850,7 +4837,9 @@
         error.message,
         "error"
       );
+
     }
+
   }
 
 
@@ -2872,6 +4861,7 @@
         char =>
           char.toUpperCase()
       );
+
   }
 
 
@@ -2906,6 +4896,7 @@
         /'/g,
         "&#039;"
       );
+
   }
 
 
@@ -2929,6 +4920,7 @@
     await loadFormFields();
 
     await loadMemberListFields();
+
   }
 
 

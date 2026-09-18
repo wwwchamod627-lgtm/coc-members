@@ -15,240 +15,764 @@
       box-sizing: border-box;
     }
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f5f1e8;
-      color: #222;
+    :root {
+      --primary-color: #b08d3b;
+      --secondary-color: #8c6f2d;
+      --accent-color: #d4af37;
+      --background-color: #f6f2e8;
+      --card-color: #ffffff;
+      --text-color: #222222;
+      --button-text-color: #ffffff;
+
+      --muted-color: #6f6f6f;
+      --border-color: #e9e1cf;
+      --soft-gold: #f8f1df;
+      --danger-color: #b3261e;
+      --success-color: #176b36;
     }
 
+    body {
+      margin: 0;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+      background:
+        radial-gradient(
+          circle at top left,
+          rgba(212, 175, 55, 0.10),
+          transparent 35%
+        ),
+        linear-gradient(
+          180deg,
+          #fbfaf6 0%,
+          var(--background-color) 100%
+        );
+      color: var(--text-color);
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    /* =====================================================
+       HEADER
+    ===================================================== */
+
     .header {
-      background: #174d3c;
-      color: white;
-      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      padding: 30px 20px 34px;
       text-align: center;
+      color: white;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+
+      box-shadow:
+        0 10px 30px rgba(0, 0, 0, 0.12);
+    }
+
+    .header::before {
+      content: "";
+      position: absolute;
+      width: 220px;
+      height: 220px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      top: -130px;
+      left: -60px;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      width: 260px;
+      height: 260px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.06);
+      right: -100px;
+      bottom: -170px;
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 2;
+      max-width: 900px;
+      margin: auto;
+    }
+
+    .logo-wrapper {
+      display: none;
+      width: 78px;
+      height: 78px;
+      margin: 0 auto 12px;
+      padding: 7px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.18);
+    }
+
+    .logo-wrapper img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 14px;
     }
 
     .header h1 {
       margin: 0;
-      font-size: 24px;
+      font-size: 27px;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+      text-shadow:
+        0 2px 8px rgba(0, 0, 0, 0.18);
     }
 
-    .header p {
-      margin: 6px 0 0;
-      font-size: 14px;
+    .header .church-name {
+      margin: 8px 0 0;
+      font-size: 15px;
+      font-weight: 600;
+      opacity: 0.98;
     }
+
+    .header .subtitle {
+      margin: 4px 0 0;
+      font-size: 13px;
+      opacity: 0.88;
+    }
+
+    /* =====================================================
+       MAIN CONTAINER
+    ===================================================== */
 
     .container {
-      max-width: 800px;
-      margin: 20px auto;
-      padding: 20px;
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 22px 18px 40px;
     }
+
+    /* =====================================================
+       BACK BUTTON
+    ===================================================== */
 
     .back-btn {
       width: 100%;
-      padding: 13px;
-      border: none;
-      border-radius: 9px;
-      background: #777;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
-      margin-bottom: 15px;
+      min-height: 50px;
+      padding: 13px 18px;
+
+      border: 1px solid var(--border-color);
+      border-radius: 15px;
+
+      background: var(--card-color);
+      color: var(--text-color);
+
+      font-size: 15px;
+      font-weight: 700;
+
       cursor: pointer;
+
+      box-shadow:
+        0 5px 18px rgba(0, 0, 0, 0.06);
+
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        background 0.18s ease;
     }
 
-    .profile-card {
-      background: white;
-      padding: 25px;
-      border-radius: 16px;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    .back-btn:hover {
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 8px 22px rgba(0, 0, 0, 0.09);
     }
+
+    /* =====================================================
+       MESSAGE BOX
+    ===================================================== */
+
+    #messageBox {
+      margin-top: 15px;
+    }
+
+    .success,
+    .error {
+      padding: 14px 16px;
+      border-radius: 13px;
+      text-align: center;
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .success {
+      background: #e4f5e9;
+      color: var(--success-color);
+      border: 1px solid #c8e8d1;
+    }
+
+    .error {
+      background: #fde8e7;
+      color: #a00000;
+      border: 1px solid #f3c8c5;
+    }
+
+    /* =====================================================
+       PROFILE CARD
+    ===================================================== */
+
+    .profile-card {
+      position: relative;
+      overflow: hidden;
+
+      margin-top: 18px;
+      padding: 28px;
+
+      background: var(--card-color);
+
+      border:
+        1px solid var(--border-color);
+
+      border-radius: 24px;
+
+      box-shadow:
+        0 14px 45px rgba(65, 49, 20, 0.09);
+    }
+
+    .profile-card::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+
+      background:
+        linear-gradient(
+          90deg,
+          var(--primary-color),
+          var(--accent-color),
+          var(--primary-color)
+        );
+    }
+
+    /* =====================================================
+       PROFILE HEADER
+    ===================================================== */
 
     .profile-header {
       text-align: center;
-      padding-bottom: 20px;
-      border-bottom: 1px solid #ddd;
-      margin-bottom: 20px;
+      padding: 12px 5px 27px;
+
+      border-bottom:
+        1px solid var(--border-color);
+
+      margin-bottom: 24px;
+    }
+
+    .photo-frame {
+      width: 166px;
+      height: 166px;
+
+      margin: 0 auto 16px;
+      padding: 5px;
+
+      border-radius: 50%;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--accent-color),
+          var(--secondary-color)
+        );
+
+      box-shadow:
+        0 12px 30px rgba(0, 0, 0, 0.14);
     }
 
     .profile-photo {
-      width: 140px;
-      height: 140px;
+      display: block;
+
+      width: 100%;
+      height: 100%;
+
       border-radius: 50%;
+
       object-fit: cover;
-      border: 4px solid #174d3c;
-      margin-bottom: 12px;
+
+      background: #f2f2f2;
+
+      border:
+        4px solid white;
     }
 
     .member-id {
-      color: #174d3c;
-      font-size: 16px;
-      font-weight: bold;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      margin-top: 2px;
+      padding: 7px 15px;
+
+      border-radius: 999px;
+
+      background: var(--soft-gold);
+      color: var(--secondary-color);
+
+      border:
+        1px solid var(--border-color);
+
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
     }
 
     .member-name {
-      font-size: 25px;
-      font-weight: bold;
-      margin: 7px 0;
-    }
+      margin: 11px 0 9px;
 
-    .member-type {
-      display: inline-block;
-      background: #e7f0eb;
-      color: #174d3c;
-      padding: 6px 14px;
-      border-radius: 20px;
-      font-weight: bold;
-      font-size: 14px;
-    }
+      color: var(--text-color);
 
-    .details {
-      display: grid;
-      gap: 12px;
-    }
+      font-size: 29px;
+      line-height: 1.2;
+      font-weight: 800;
 
-    .detail-row {
-      display: flex;
-      padding: 13px;
-      border-radius: 9px;
-      background: #f8f7f3;
-      border: 1px solid #eee;
-    }
-
-    .detail-label {
-      width: 42%;
-      font-weight: bold;
-      color: #174d3c;
-    }
-
-    .detail-value {
-      width: 58%;
       word-break: break-word;
     }
 
+    .member-type {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      padding: 8px 18px;
+
+      border-radius: 999px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+
+      color: var(--button-text-color);
+
+      font-size: 13px;
+      font-weight: 700;
+
+      box-shadow:
+        0 5px 14px rgba(0, 0, 0, 0.12);
+    }
+
+    /* =====================================================
+       SECTION TITLE
+    ===================================================== */
+
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      margin: 0 0 14px;
+
+      color: var(--secondary-color);
+
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .section-title::before {
+      content: "";
+      display: block;
+
+      width: 5px;
+      height: 22px;
+
+      border-radius: 10px;
+
+      background:
+        linear-gradient(
+          180deg,
+          var(--accent-color),
+          var(--primary-color)
+        );
+    }
+
+    /* =====================================================
+       DETAILS
+    ===================================================== */
+
+    .details {
+      display: grid;
+      gap: 11px;
+    }
+
+    .detail-row {
+      display: grid;
+      grid-template-columns: 36% 64%;
+
+      padding: 15px 16px;
+
+      border-radius: 14px;
+
+      background:
+        linear-gradient(
+          135deg,
+          #ffffff,
+          #fbf9f3
+        );
+
+      border:
+        1px solid var(--border-color);
+
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease;
+    }
+
+    .detail-row:hover {
+      transform: translateY(-1px);
+
+      box-shadow:
+        0 6px 18px rgba(0, 0, 0, 0.05);
+    }
+
+    .detail-label {
+      padding-right: 12px;
+
+      color: var(--secondary-color);
+
+      font-size: 13px;
+      font-weight: 800;
+
+      line-height: 1.5;
+    }
+
+    .detail-value {
+      color: var(--text-color);
+
+      font-size: 14px;
+      line-height: 1.55;
+
+      word-break: break-word;
+    }
+
+    /* =====================================================
+       NOTES
+    ===================================================== */
+
     .notes {
-      margin-top: 15px;
-      padding: 15px;
-      background: #f8f7f3;
-      border: 1px solid #eee;
-      border-radius: 9px;
+      margin-top: 22px;
+      padding: 17px;
+
+      background:
+        linear-gradient(
+          135deg,
+          var(--soft-gold),
+          #fffdf8
+        );
+
+      border:
+        1px solid var(--border-color);
+
+      border-radius: 16px;
     }
 
     .notes-title {
-      font-weight: bold;
-      color: #174d3c;
-      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+
+      margin-bottom: 9px;
+
+      color: var(--secondary-color);
+
+      font-size: 14px;
+      font-weight: 800;
+    }
+
+    .notes-title::before {
+      content: "📝";
+      font-size: 15px;
+    }
+
+    .notes-text {
+      color: var(--text-color);
+
+      font-size: 14px;
+      line-height: 1.65;
+
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    /* =====================================================
+       ACTION AREA
+    ===================================================== */
+
+    .action-section {
+      margin-top: 27px;
+      padding-top: 22px;
+
+      border-top:
+        1px solid var(--border-color);
     }
 
     .buttons {
       display: grid;
-      gap: 10px;
-      margin-top: 20px;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 11px;
     }
 
     .edit-btn,
     .pdf-btn,
     .delete-btn {
-      width: 100%;
-      padding: 14px;
+      min-height: 52px;
+
+      padding: 13px 12px;
+
       border: none;
-      border-radius: 9px;
-      color: white;
-      font-size: 16px;
-      font-weight: bold;
+      border-radius: 14px;
+
+      color: var(--button-text-color);
+
+      font-size: 14px;
+      font-weight: 800;
+
       cursor: pointer;
+
+      transition:
+        transform 0.18s ease,
+        box-shadow 0.18s ease,
+        opacity 0.18s ease;
+    }
+
+    .edit-btn:hover,
+    .pdf-btn:hover,
+    .delete-btn:hover {
+      transform: translateY(-2px);
+      opacity: 0.96;
     }
 
     .edit-btn {
-      background: #174d3c;
+      background:
+        linear-gradient(
+          135deg,
+          var(--primary-color),
+          var(--secondary-color)
+        );
+
+      box-shadow:
+        0 7px 18px rgba(0, 0, 0, 0.12);
     }
 
     .pdf-btn {
-      background: #8b6b2e;
+      background:
+        linear-gradient(
+          135deg,
+          #d4af37,
+          #a98227
+        );
+
+      box-shadow:
+        0 7px 18px rgba(168, 132, 39, 0.20);
     }
 
     .delete-btn {
-      background: #b3261e;
+      background:
+        linear-gradient(
+          135deg,
+          #c93b32,
+          #a51f19
+        );
+
+      box-shadow:
+        0 7px 18px rgba(179, 38, 30, 0.16);
     }
 
-    .loading {
+    /* =====================================================
+       LOADING
+    ===================================================== */
+
+    .loading-card {
       text-align: center;
-      padding: 40px;
-      color: #555;
+      padding: 65px 20px;
     }
 
-    .error {
-      background: #f8dddd;
-      color: #a00000;
-      padding: 14px;
-      border-radius: 9px;
+    .loading-spinner {
+      width: 44px;
+      height: 44px;
+
+      margin: 0 auto 16px;
+
+      border-radius: 50%;
+
+      border:
+        4px solid var(--border-color);
+
+      border-top-color:
+        var(--primary-color);
+
+      animation:
+        spin 0.8s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .loading-text {
+      color: var(--muted-color);
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    /* =====================================================
+       ERROR CARD
+    ===================================================== */
+
+    .error-card {
+      padding: 25px;
       text-align: center;
     }
 
-    .success {
-      background: #dff2e5;
-      color: #176b36;
-      padding: 14px;
-      border-radius: 9px;
-      text-align: center;
-      margin-bottom: 15px;
-    }
+    /* =====================================================
+       RESPONSIVE
+    ===================================================== */
 
-    @media (max-width: 600px) {
+    @media (max-width: 700px) {
+
+      .header {
+        padding: 25px 16px 28px;
+      }
+
+      .header h1 {
+        font-size: 23px;
+      }
+
+      .header .church-name {
+        font-size: 14px;
+      }
 
       .container {
-        padding: 12px;
+        padding: 16px 12px 30px;
       }
 
       .profile-card {
-        padding: 18px;
+        padding: 20px 16px;
+        border-radius: 20px;
       }
 
       .profile-photo {
-        width: 120px;
-        height: 120px;
+        width: 100%;
+        height: 100%;
+      }
+
+      .photo-frame {
+        width: 145px;
+        height: 145px;
+      }
+
+      .member-name {
+        font-size: 23px;
+      }
+
+      .detail-row {
+        grid-template-columns: 1fr;
+        gap: 5px;
+      }
+
+      .detail-label {
+        padding-right: 0;
+      }
+
+      .buttons {
+        grid-template-columns: 1fr;
+      }
+
+      .edit-btn,
+      .pdf-btn,
+      .delete-btn {
+        min-height: 50px;
+      }
+    }
+
+    @media (max-width: 380px) {
+
+      .profile-card {
+        padding: 18px 13px;
       }
 
       .member-name {
         font-size: 21px;
       }
 
-      .detail-row {
-        display: block;
+      .photo-frame {
+        width: 132px;
+        height: 132px;
       }
-
-      .detail-label,
-      .detail-value {
-        width: 100%;
-      }
-
-      .detail-label {
-        margin-bottom: 5px;
-      }
-
     }
   </style>
 </head>
 
 <body>
 
+  <!-- =====================================================
+       HEADER
+  ===================================================== -->
+
   <div class="header">
 
-    <h1 id="appName">
-      COC Members
-    </h1>
+    <div class="header-content">
 
-    <p id="churchName">
-      Church Of Christ Sri Lanka
-    </p>
+      <div
+        class="logo-wrapper"
+        id="logoWrapper"
+      >
+        <img
+          id="appLogo"
+          src=""
+          alt="App Logo"
+        >
+      </div>
 
-    <p id="subtitle">
-      Members Registration
-    </p>
+      <h1 id="appName">
+        COC Members
+      </h1>
+
+      <p
+        class="church-name"
+        id="churchName"
+      >
+        Church Of Christ Sri Lanka
+      </p>
+
+      <p
+        class="subtitle"
+        id="subtitle"
+      >
+        Members Registration
+      </p>
+
+    </div>
 
   </div>
 
+
+  <!-- =====================================================
+       MAIN
+  ===================================================== -->
 
   <div class="container">
 
@@ -267,8 +791,14 @@
 
       <div class="profile-card">
 
-        <div class="loading">
-          Loading member profile...
+        <div class="loading-card">
+
+          <div class="loading-spinner"></div>
+
+          <div class="loading-text">
+            Loading member profile...
+          </div>
+
         </div>
 
       </div>
@@ -353,6 +883,88 @@
 
 
   /* =========================================================
+     APPLY THEME
+  ========================================================= */
+
+  function applyTheme() {
+
+    const root =
+      document.documentElement;
+
+
+    if (appSettings.primary_color) {
+
+      root.style.setProperty(
+        "--primary-color",
+        appSettings.primary_color
+      );
+
+    }
+
+
+    if (appSettings.secondary_color) {
+
+      root.style.setProperty(
+        "--secondary-color",
+        appSettings.secondary_color
+      );
+
+    }
+
+
+    if (appSettings.accent_color) {
+
+      root.style.setProperty(
+        "--accent-color",
+        appSettings.accent_color
+      );
+
+    }
+
+
+    if (appSettings.background_color) {
+
+      root.style.setProperty(
+        "--background-color",
+        appSettings.background_color
+      );
+
+    }
+
+
+    if (appSettings.card_color) {
+
+      root.style.setProperty(
+        "--card-color",
+        appSettings.card_color
+      );
+
+    }
+
+
+    if (appSettings.text_color) {
+
+      root.style.setProperty(
+        "--text-color",
+        appSettings.text_color
+      );
+
+    }
+
+
+    if (appSettings.button_text_color) {
+
+      root.style.setProperty(
+        "--button-text-color",
+        appSettings.button_text_color
+      );
+
+    }
+
+  }
+
+
+  /* =========================================================
      CHECK LOGIN
   ========================================================= */
 
@@ -398,7 +1010,15 @@
         .select(`
           app_name,
           church_name,
-          subtitle
+          subtitle,
+          logo_url,
+          primary_color,
+          secondary_color,
+          accent_color,
+          background_color,
+          card_color,
+          text_color,
+          button_text_color
         `)
         .limit(1)
         .maybeSingle();
@@ -420,6 +1040,9 @@
       data || {};
 
 
+    applyTheme();
+
+
     document.getElementById(
       "appName"
     ).textContent =
@@ -439,6 +1062,47 @@
     ).textContent =
       appSettings.subtitle ||
       "Members Registration";
+
+
+    /* =====================================================
+       LOGO
+    ===================================================== */
+
+    if (appSettings.logo_url) {
+
+      const logoWrapper =
+        document.getElementById(
+          "logoWrapper"
+        );
+
+      const logo =
+        document.getElementById(
+          "appLogo"
+        );
+
+
+      logo.src =
+        appSettings.logo_url;
+
+
+      logo.onload =
+        function() {
+
+          logoWrapper.style.display =
+            "block";
+
+        };
+
+
+      logo.onerror =
+        function() {
+
+          logoWrapper.style.display =
+            "none";
+
+        };
+
+    }
 
   }
 
@@ -715,6 +1379,28 @@
 
 
   /* =========================================================
+     CREATE SECTION TITLE
+  ========================================================= */
+
+  function createSectionTitle(
+    text
+  ) {
+
+    const title =
+      document.createElement("div");
+
+    title.className =
+      "section-title";
+
+    title.textContent =
+      text;
+
+    return title;
+
+  }
+
+
+  /* =========================================================
      DISPLAY MEMBER
   ========================================================= */
 
@@ -749,7 +1435,9 @@
     /* PHOTO */
 
     const photoField =
-      getField("member_photo");
+      getField(
+        "member_photo"
+      );
 
 
     const showPhoto =
@@ -759,6 +1447,13 @@
 
 
     if (showPhoto) {
+
+      const photoFrame =
+        document.createElement("div");
+
+      photoFrame.className =
+        "photo-frame";
+
 
       const photo =
         document.createElement("img");
@@ -785,14 +1480,23 @@
                  height="200">
               <rect width="100%"
                     height="100%"
-                    fill="#eeeeee"/>
+                    fill="#f2eee3"/>
+              <circle cx="100"
+                      cy="78"
+                      r="35"
+                      fill="#c9b98f"/>
+              <path d="M35 180
+                       C42 135
+                       158 135
+                       165 180"
+                    fill="#c9b98f"/>
               <text x="50%"
-                    y="50%"
+                    y="195"
                     dominant-baseline="middle"
                     text-anchor="middle"
-                    font-size="18"
-                    fill="#777">
-                No Photo
+                    font-size="12"
+                    fill="#8c6f2d">
+                NO PHOTO
               </text>
             </svg>
           `);
@@ -800,8 +1504,12 @@
       }
 
 
-      header.appendChild(
+      photoFrame.appendChild(
         photo
+      );
+
+      header.appendChild(
+        photoFrame
       );
 
     }
@@ -810,7 +1518,9 @@
     /* MEMBER ID */
 
     const idField =
-      getField("member_id");
+      getField(
+        "member_id"
+      );
 
 
     if (
@@ -825,12 +1535,15 @@
         "member-id";
 
       id.textContent =
+        "ID  •  " +
         getFieldValue(
           member,
           "member_id"
         );
 
-      header.appendChild(id);
+      header.appendChild(
+        id
+      );
 
     }
 
@@ -838,7 +1551,9 @@
     /* FULL NAME */
 
     const nameField =
-      getField("full_name");
+      getField(
+        "full_name"
+      );
 
 
     if (
@@ -858,7 +1573,9 @@
           "full_name"
         );
 
-      header.appendChild(name);
+      header.appendChild(
+        name
+      );
 
     }
 
@@ -866,7 +1583,9 @@
     /* MEMBER TYPE */
 
     const typeField =
-      getField("member_type");
+      getField(
+        "member_type"
+      );
 
 
     if (
@@ -886,7 +1605,9 @@
           "member_type"
         );
 
-      header.appendChild(type);
+      header.appendChild(
+        type
+      );
 
     }
 
@@ -900,87 +1621,65 @@
        DETAILS
     ===================================================== */
 
-    const details =
-      document.createElement("div");
-
-    details.className =
-      "details";
-
-
     const visibleFields =
       getVisibleFields();
 
 
-    visibleFields.forEach(
-      function(field) {
+    const detailFields =
+      visibleFields.filter(
+        function(field) {
 
-        /*
-         * These are already shown
-         * in the profile header.
-         */
-
-        if (
-          field.field_key ===
-          "member_photo"
-        ) {
-
-          return;
-
-        }
-
-
-        if (
-          field.field_key ===
-          "member_id"
-        ) {
-
-          return;
-
-        }
-
-
-        if (
-          field.field_key ===
-          "full_name"
-        ) {
-
-          return;
-
-        }
-
-
-        if (
-          field.field_key ===
-          "member_type"
-        ) {
-
-          return;
-
-        }
-
-
-        const value =
-          getFieldValue(
-            member,
-            field.field_key
+          return (
+            field.field_key !== "member_photo" &&
+            field.field_key !== "member_id" &&
+            field.field_key !== "full_name" &&
+            field.field_key !== "member_type" &&
+            field.field_key !== "additional_notes"
           );
 
-
-        details.appendChild(
-          createDetail(
-            field.field_label ||
-            field.field_key,
-            value
-          )
-        );
-
-      }
-    );
+        }
+      );
 
 
     if (
-      details.children.length > 0
+      detailFields.length > 0
     ) {
+
+      card.appendChild(
+        createSectionTitle(
+          "Member Information"
+        )
+      );
+
+
+      const details =
+        document.createElement("div");
+
+      details.className =
+        "details";
+
+
+      detailFields.forEach(
+        function(field) {
+
+          const value =
+            getFieldValue(
+              member,
+              field.field_key
+            );
+
+
+          details.appendChild(
+            createDetail(
+              field.field_label ||
+              field.field_key,
+              value
+            )
+          );
+
+        }
+      );
+
 
       card.appendChild(
         details
@@ -1025,6 +1724,9 @@
       const notesText =
         document.createElement("div");
 
+      notesText.className =
+        "notes-text";
+
       notesText.textContent =
         getFieldValue(
           member,
@@ -1049,8 +1751,22 @@
 
 
     /* =====================================================
-       BUTTONS
+       ACTION SECTION
     ===================================================== */
+
+    const actionSection =
+      document.createElement("div");
+
+    actionSection.className =
+      "action-section";
+
+
+    actionSection.appendChild(
+      createSectionTitle(
+        "Member Actions"
+      )
+    );
+
 
     const buttons =
       document.createElement("div");
@@ -1068,7 +1784,7 @@
       "edit-btn";
 
     editButton.textContent =
-      "✏️ Edit Member";
+      "✏️  Edit Member";
 
 
     editButton.onclick =
@@ -1076,7 +1792,9 @@
 
         window.location.href =
           "edit-member.html?id=" +
-          member.id;
+          encodeURIComponent(
+            member.id
+          );
 
       };
 
@@ -1090,7 +1808,7 @@
       "pdf-btn";
 
     pdfButton.textContent =
-      "📄 Download PDF";
+      "📄  Download PDF";
 
 
     pdfButton.onclick =
@@ -1110,7 +1828,7 @@
       "delete-btn";
 
     deleteButton.textContent =
-      "🗑️ Delete Member";
+      "🗑️  Delete Member";
 
 
     deleteButton.onclick =
@@ -1136,8 +1854,13 @@
     );
 
 
-    card.appendChild(
+    actionSection.appendChild(
       buttons
+    );
+
+
+    card.appendChild(
+      actionSection
     );
 
 
@@ -1179,8 +1902,10 @@
 
       profileArea.innerHTML =
         '<div class="profile-card">' +
+        '<div class="error-card">' +
         '<div class="error">' +
         'Member ID not found.' +
+        '</div>' +
         '</div>' +
         '</div>';
 
@@ -1233,9 +1958,29 @@
 
         profileArea.innerHTML =
           '<div class="profile-card">' +
+          '<div class="error-card">' +
           '<div class="error">' +
           'Error loading member: ' +
-          error.message +
+          escapeHtml(
+            error.message
+          ) +
+          '</div>' +
+          '</div>' +
+          '</div>';
+
+        return;
+
+      }
+
+
+      if (!data) {
+
+        profileArea.innerHTML =
+          '<div class="profile-card">' +
+          '<div class="error-card">' +
+          '<div class="error">' +
+          'Member not found.' +
+          '</div>' +
           '</div>' +
           '</div>';
 
@@ -1259,9 +2004,13 @@
 
       profileArea.innerHTML =
         '<div class="profile-card">' +
+        '<div class="error-card">' +
         '<div class="error">' +
         'Failed to load Member Profile settings: ' +
-        error.message +
+        escapeHtml(
+          error.message
+        ) +
+        '</div>' +
         '</div>' +
         '</div>';
 
@@ -1271,10 +2020,34 @@
 
 
   /* =========================================================
+     ESCAPE HTML
+  ========================================================= */
+
+  function escapeHtml(
+    value
+  ) {
+
+    const div =
+      document.createElement("div");
+
+    div.textContent =
+      value === undefined ||
+      value === null
+        ? ""
+        : String(value);
+
+    return div.innerHTML;
+
+  }
+
+
+  /* =========================================================
      IMAGE → DATA URL
   ========================================================= */
 
-  async function imageToDataURL(url) {
+  async function imageToDataURL(
+    url
+  ) {
 
     try {
 
@@ -1346,7 +2119,9 @@
      GET IMAGE FORMAT
   ========================================================= */
 
-  function getImageFormat(dataURL) {
+  function getImageFormat(
+    dataURL
+  ) {
 
     if (!dataURL) {
 
@@ -1411,9 +2186,9 @@
 
 
     pdf.setDrawColor(
-      210,
-      210,
-      210
+      215,
+      198,
+      155
     );
 
 
@@ -1527,13 +2302,13 @@
 
 
       /* =====================================================
-         HEADER
+         PDF HEADER
       ===================================================== */
 
       pdf.setFillColor(
-        23,
-        77,
-        60
+        176,
+        141,
+        59
       );
 
 
@@ -1691,9 +2466,9 @@
 
 
         pdf.setTextColor(
-          23,
-          77,
-          60
+          140,
+          111,
+          45
         );
 
         pdf.setFont(
@@ -1748,6 +2523,12 @@
         );
 
         pdf.setFontSize(11);
+
+        pdf.setTextColor(
+          90,
+          90,
+          90
+        );
 
 
         pdf.text(
@@ -1817,9 +2598,9 @@
       ===================================================== */
 
       pdf.setFillColor(
-        23,
-        77,
-        60
+        176,
+        141,
+        59
       );
 
 
@@ -1869,10 +2650,6 @@
       for (
         const field of pdfFields
       ) {
-
-        /*
-         * Already shown above
-         */
 
         if (
           field.field_key ===
@@ -1961,12 +2738,24 @@
           );
 
 
-        /* Row background */
+        if (
+          currentY + rowHeight >
+          pageHeight - 30
+        ) {
+
+          pdf.addPage();
+
+          currentY = 25;
+
+        }
+
+
+        /* Row */
 
         pdf.setFillColor(
-          248,
+          249,
           247,
-          243
+          241
         );
 
 
@@ -1991,9 +2780,9 @@
         pdf.setFontSize(8.5);
 
         pdf.setTextColor(
-          23,
-          77,
-          60
+          140,
+          111,
+          45
         );
 
 
@@ -2027,23 +2816,6 @@
 
         currentY +=
           rowHeight + 3;
-
-
-        /*
-         * Prevent content from going
-         * underneath footer.
-         */
-
-        if (
-          currentY >
-          pageHeight - 35
-        ) {
-
-          pdf.addPage();
-
-          currentY = 25;
-
-        }
 
       }
 
@@ -2079,9 +2851,9 @@
 
 
         pdf.setFillColor(
-          23,
-          77,
-          60
+          176,
+          141,
+          59
         );
 
 
@@ -2159,6 +2931,18 @@
           );
 
 
+        if (
+          currentY + noteHeight >
+          pageHeight - 30
+        ) {
+
+          pdf.addPage();
+
+          currentY = 25;
+
+        }
+
+
         pdf.setFillColor(
           250,
           249,
@@ -2187,7 +2971,7 @@
 
 
       /* =====================================================
-         FOOTER
+         FOOTERS
       ===================================================== */
 
       const totalPages =
@@ -2258,7 +3042,9 @@
       messageBox.innerHTML =
         '<div class="error">' +
         'PDF creation failed: ' +
-        error.message +
+        escapeHtml(
+          error.message
+        ) +
         '</div>';
 
     }
@@ -2270,7 +3056,9 @@
      DELETE MEMBER
   ========================================================= */
 
-  async function deleteMember(id) {
+  async function deleteMember(
+    id
+  ) {
 
     const confirmed =
       confirm(
@@ -2314,7 +3102,9 @@
       messageBox.innerHTML =
         '<div class="error">' +
         'Delete failed: ' +
-        error.message +
+        escapeHtml(
+          error.message
+        ) +
         '</div>';
 
       return;

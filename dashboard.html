@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dashboard - COC Members</title>
+
+  <title>COC Members - Dashboard</title>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -20,10 +21,10 @@
     }
 
     .header {
-      background: linear-gradient(135deg, #b8860b, #d4af37);
+      background: #c9a227;
       color: white;
-      padding: 24px 20px;
       text-align: center;
+      padding: 25px 15px;
     }
 
     .header h1 {
@@ -32,9 +33,8 @@
     }
 
     .header p {
-      margin: 7px 0 0;
+      margin: 8px 0 0;
       font-size: 15px;
-      opacity: 0.95;
     }
 
     .container {
@@ -45,19 +45,12 @@
 
     .status {
       background: white;
+      padding: 16px;
       border-radius: 12px;
-      padding: 14px 16px;
-      margin-bottom: 18px;
+      margin-bottom: 20px;
       box-shadow: 0 2px 8px #0001;
+      text-align: center;
       font-size: 14px;
-    }
-
-    .status.success {
-      color: #237a3b;
-    }
-
-    .status.error {
-      color: #b42318;
     }
 
     .cards {
@@ -68,51 +61,54 @@
 
     .card {
       background: white;
-      padding: 22px;
+      padding: 25px 20px;
       border-radius: 14px;
-      box-shadow: 0 2px 10px #0001;
       text-align: center;
+      box-shadow: 0 2px 10px #0001;
     }
 
     .card h3 {
-      margin: 0 0 12px;
-      font-size: 17px;
+      margin: 0 0 15px;
       color: #555;
     }
 
     .number {
-      font-size: 38px;
+      font-size: 40px;
       font-weight: bold;
       color: #c9a227;
     }
 
-    .refresh-btn {
+    button {
       display: block;
-      margin: 22px auto 0;
+      margin: 25px auto 0;
+      padding: 12px 25px;
       border: none;
+      border-radius: 8px;
       background: #c9a227;
       color: white;
-      padding: 12px 24px;
-      border-radius: 8px;
       font-size: 15px;
       cursor: pointer;
     }
 
-    .refresh-btn:hover {
-      background: #a98416;
+    button:active {
+      transform: scale(0.98);
     }
 
-    .loading {
-      opacity: 0.6;
+    .success {
+      color: #18753c;
+    }
+
+    .error {
+      color: #b42318;
+    }
+
+    .info {
+      color: #555;
     }
 
     @media (max-width: 600px) {
       .cards {
         grid-template-columns: 1fr;
-      }
-
-      .header h1 {
-        font-size: 24px;
       }
     }
   </style>
@@ -127,7 +123,7 @@
 
   <div class="container">
 
-    <div id="status" class="status">
+    <div id="status" class="status info">
       Connecting to COC Members database...
     </div>
 
@@ -135,178 +131,237 @@
 
       <div class="card">
         <h3>Total Members</h3>
-        <div id="totalMembers" class="number loading">—</div>
+        <div id="totalMembers" class="number">—</div>
       </div>
 
       <div class="card">
         <h3>Registered Today</h3>
-        <div id="todayMembers" class="number loading">—</div>
+        <div id="todayMembers" class="number">—</div>
       </div>
 
     </div>
 
-    <button class="refresh-btn" onclick="loadDashboard()">
-      Refresh Dashboard
+    <button onclick="testConnection()">
+      Test Connection
     </button>
 
   </div>
 
+
   <script>
 
-    // =====================================================
-    // COC MEMBERS - SUPABASE CONNECTION
-    // =====================================================
+    // ============================================
+    // COC MEMBERS SUPABASE
+    // ============================================
 
     const SUPABASE_URL =
       "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
-    const SUPABASE_PUBLISHABLE_KEY =
+    const SUPABASE_KEY =
       "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
 
-    const supabase = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_PUBLISHABLE_KEY
-    );
+    let client = null;
 
 
-    // =====================================================
-    // LOAD DASHBOARD
-    // =====================================================
+    // ============================================
+    // START
+    // ============================================
 
-    async function loadDashboard() {
+    window.addEventListener("load", function () {
 
       const status = document.getElementById("status");
-      const totalElement = document.getElementById("totalMembers");
-      const todayElement = document.getElementById("todayMembers");
 
-      status.className = "status";
-      status.textContent = "Loading dashboard...";
+      try {
+
+        if (!window.supabase) {
+          throw new Error(
+            "Supabase library did not load."
+          );
+        }
+
+        client = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_KEY
+        );
+
+        status.className = "status success";
+
+        status.textContent =
+          "✓ Supabase connection initialized.";
+
+      } catch (error) {
+
+        status.className = "status error";
+
+        status.textContent =
+          "Connection Error: " +
+          error.message;
+
+        console.error(error);
+      }
+
+    });
+
+
+    // ============================================
+    // TEST CONNECTION
+    // ============================================
+
+    async function testConnection() {
+
+      const status =
+        document.getElementById("status");
+
+      const totalElement =
+        document.getElementById("totalMembers");
+
+      const todayElement =
+        document.getElementById("todayMembers");
+
+
+      if (!client) {
+
+        status.className = "status error";
+
+        status.textContent =
+          "Supabase client is not initialized.";
+
+        return;
+      }
+
+
+      status.className = "status info";
+
+      status.textContent =
+        "Testing connection to COC Members database...";
+
 
       totalElement.textContent = "—";
       todayElement.textContent = "—";
 
-      totalElement.classList.add("loading");
-      todayElement.classList.add("loading");
 
       try {
 
-        // -----------------------------------------------
-        // CHECK CURRENT LOGIN SESSION
-        // -----------------------------------------------
+        // ========================================
+        // TEST MEMBERS TABLE
+        // ========================================
 
-        const {
-          data: sessionData,
-          error: sessionError
-        } = await supabase.auth.getSession();
-
-        if (sessionError) {
-          throw sessionError;
-        }
-
-        const session = sessionData.session;
-
-
-        // -----------------------------------------------
-        // TOTAL MEMBERS
-        // -----------------------------------------------
-
-        const {
-          count: totalCount,
-          error: totalError
-        } = await supabase
+        const result = await client
           .from("members")
-          .select("*", {
+          .select("id", {
             count: "exact",
             head: true
           });
 
-        if (totalError) {
-          throw totalError;
+
+        console.log(
+          "Supabase result:",
+          result
+        );
+
+
+        if (result.error) {
+
+          throw result.error;
+
         }
 
 
-        // -----------------------------------------------
-        // TODAY'S DATE
-        // -----------------------------------------------
+        // ========================================
+        // TOTAL MEMBERS
+        // ========================================
 
-        const today = new Date();
+        totalElement.textContent =
+          result.count ?? 0;
 
-        const year = today.getFullYear();
-        const month = String(today.getMonth() + 1).padStart(2, "0");
-        const day = String(today.getDate()).padStart(2, "0");
+
+        // ========================================
+        // TODAY
+        // ========================================
+
+        const now = new Date();
+
+        const year =
+          now.getFullYear();
+
+        const month =
+          String(
+            now.getMonth() + 1
+          ).padStart(2, "0");
+
+        const day =
+          String(
+            now.getDate()
+          ).padStart(2, "0");
+
 
         const todayStart =
           `${year}-${month}-${day}T00:00:00`;
 
 
-        // -----------------------------------------------
-        // REGISTERED TODAY
-        // -----------------------------------------------
-
-        const {
-          count: todayCount,
-          error: todayError
-        } = await supabase
+        const todayResult = await client
           .from("members")
-          .select("*", {
+          .select("id", {
             count: "exact",
             head: true
           })
-          .gte("created_at", todayStart);
+          .gte(
+            "created_at",
+            todayStart
+          );
 
-        if (todayError) {
-          throw todayError;
+
+        console.log(
+          "Today's result:",
+          todayResult
+        );
+
+
+        if (todayResult.error) {
+
+          throw todayResult.error;
+
         }
 
-
-        // -----------------------------------------------
-        // DISPLAY RESULTS
-        // -----------------------------------------------
-
-        totalElement.textContent =
-          totalCount ?? 0;
 
         todayElement.textContent =
-          todayCount ?? 0;
+          todayResult.count ?? 0;
 
-        totalElement.classList.remove("loading");
-        todayElement.classList.remove("loading");
 
-        status.className = "status success";
+        status.className =
+          "status success";
 
-        if (session) {
-          status.textContent =
-            "✓ Connected — Dashboard data loaded successfully.";
-        } else {
-          status.textContent =
-            "✓ Database connected.";
-        }
+        status.textContent =
+          "✓ COC Members database connected successfully.";
+
 
       } catch (error) {
 
-        console.error("Dashboard Error:", error);
+        console.error(
+          "COC Members Dashboard Error:",
+          error
+        );
 
-        totalElement.textContent = "0";
-        todayElement.textContent = "0";
 
-        totalElement.classList.remove("loading");
-        todayElement.classList.remove("loading");
+        status.className =
+          "status error";
 
-        status.className = "status error";
 
         status.textContent =
-          "Database error: " +
-          (error.message || "Unable to load dashboard data.");
+          "ERROR: " +
+          (error.message ||
+           "Unknown database error");
+
+
+        totalElement.textContent =
+          "ERROR";
+
+        todayElement.textContent =
+          "ERROR";
 
       }
+
     }
-
-
-    // =====================================================
-    // START DASHBOARD
-    // =====================================================
-
-    loadDashboard();
 
   </script>
 

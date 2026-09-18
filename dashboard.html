@@ -5,6 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dashboard - COC Members</title>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
   <style>
     body {
       margin: 0;
@@ -50,15 +52,42 @@
 
     <div class="card">
       <h3>Total Members</h3>
-      <div class="number">0</div>
+      <div class="number" id="totalMembers">0</div>
     </div>
 
     <div class="card">
       <h3>Registered Today</h3>
-      <div class="number">0</div>
+      <div class="number" id="todayMembers">0</div>
     </div>
 
   </div>
+
+  <script>
+    const supabase = window.supabase.createClient(
+      "https://inyoabmtntxtvnkntxad.supabase.co",
+      "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c"
+    );
+
+    async function loadDashboard() {
+
+      const { count: total } = await supabase
+        .from("members")
+        .select("*", { count: "exact", head: true });
+
+      document.getElementById("totalMembers").textContent = total || 0;
+
+      const today = new Date().toISOString().split("T")[0];
+
+      const { count: todayCount } = await supabase
+        .from("members")
+        .select("*", { count: "exact", head: true })
+        .gte("created_at", today + "T00:00:00");
+
+      document.getElementById("todayMembers").textContent = todayCount || 0;
+    }
+
+    loadDashboard();
+  </script>
 
 </body>
 </html>

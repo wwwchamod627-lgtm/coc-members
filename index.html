@@ -14,21 +14,32 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --primary-color: #c59b45;
+      --secondary-color: #8b6f1d;
+      --accent-color: #d4af37;
+      --background-color: #f5f3ee;
+      --card-color: #ffffff;
+      --text-color: #222222;
+      --button-text-color: #ffffff;
+    }
+
     body {
       margin: 0;
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #f4f1e8;
+      background: var(--background-color);
       font-family: Arial, sans-serif;
       padding: 20px;
+      color: var(--text-color);
     }
 
     .login-box {
       width: 100%;
       max-width: 400px;
-      background: white;
+      background: var(--card-color);
       padding: 35px 25px;
       border-radius: 20px;
       text-align: center;
@@ -62,13 +73,13 @@
 
     h1 {
       margin: 0;
-      color: #183b2b;
+      color: var(--primary-color);
       font-size: 30px;
     }
 
     .subtitle {
       margin: 10px 0 30px;
-      color: #555;
+      color: var(--secondary-color);
       line-height: 1.5;
       font-size: 15px;
     }
@@ -78,7 +89,7 @@
       text-align: left;
       font-weight: bold;
       margin: 15px 0 7px;
-      color: #333;
+      color: var(--text-color);
     }
 
     input {
@@ -88,10 +99,13 @@
       border-radius: 10px;
       font-size: 16px;
       outline: none;
+      background: var(--card-color);
+      color: var(--text-color);
     }
 
     input:focus {
-      border-color: #183b2b;
+      border-color: var(--primary-color);
+      box-shadow: 0 0 0 2px rgba(197,155,69,0.15);
     }
 
     button {
@@ -100,15 +114,21 @@
       padding: 15px;
       border: 0;
       border-radius: 10px;
-      background: #183b2b;
-      color: white;
+      background: var(--primary-color);
+      color: var(--button-text-color);
       font-size: 17px;
       font-weight: bold;
       cursor: pointer;
+      transition: 0.2s ease;
+    }
+
+    button:hover {
+      background: var(--accent-color);
     }
 
     button:disabled {
       opacity: 0.6;
+      cursor: not-allowed;
     }
 
     #message {
@@ -216,6 +236,36 @@
 
 
   /* =========================================================
+     DEFAULT THEME
+  ========================================================= */
+
+  const DEFAULT_THEME = {
+
+    primary_color:
+      "#c59b45",
+
+    secondary_color:
+      "#8b6f1d",
+
+    accent_color:
+      "#d4af37",
+
+    background_color:
+      "#f5f3ee",
+
+    card_color:
+      "#ffffff",
+
+    text_color:
+      "#222222",
+
+    button_text_color:
+      "#ffffff"
+
+  };
+
+
+  /* =========================================================
      ELEMENTS
   ========================================================= */
 
@@ -233,10 +283,75 @@
 
 
   /* =========================================================
+     APPLY THEME
+  ========================================================= */
+
+  function applyTheme(theme) {
+
+    const root =
+      document.documentElement;
+
+
+    root.style.setProperty(
+      "--primary-color",
+      theme.primary_color
+    );
+
+
+    root.style.setProperty(
+      "--secondary-color",
+      theme.secondary_color
+    );
+
+
+    root.style.setProperty(
+      "--accent-color",
+      theme.accent_color
+    );
+
+
+    root.style.setProperty(
+      "--background-color",
+      theme.background_color
+    );
+
+
+    root.style.setProperty(
+      "--card-color",
+      theme.card_color
+    );
+
+
+    root.style.setProperty(
+      "--text-color",
+      theme.text_color
+    );
+
+
+    root.style.setProperty(
+      "--button-text-color",
+      theme.button_text_color
+    );
+
+
+    console.log(
+      "LOGIN THEME APPLIED:",
+      theme
+    );
+
+  }
+
+
+  /* =========================================================
      LOAD LOGIN SETTINGS
   ========================================================= */
 
   async function loadLoginSettings() {
+
+    let finalTheme = {
+      ...DEFAULT_THEME
+    };
+
 
     try {
 
@@ -247,7 +362,19 @@
       await supabaseClient
         .from("app_settings")
         .select(
-          "app_name, church_name, subtitle, login_logo_url"
+          `
+            app_name,
+            church_name,
+            subtitle,
+            login_logo_url,
+            primary_color,
+            secondary_color,
+            accent_color,
+            background_color,
+            card_color,
+            text_color,
+            button_text_color
+          `
         )
         .limit(1)
         .maybeSingle();
@@ -260,17 +387,31 @@
           error
         );
 
+        /* Apply default theme even if database fails */
+
+        applyTheme(
+          finalTheme
+        );
+
         return;
 
       }
 
 
       if (!data) {
+
+        applyTheme(
+          finalTheme
+        );
+
         return;
+
       }
 
 
-      /* APP NAME */
+      /* =====================================================
+         APP NAME
+      ===================================================== */
 
       if (data.app_name) {
 
@@ -285,7 +426,9 @@
       }
 
 
-      /* CHURCH NAME */
+      /* =====================================================
+         CHURCH NAME
+      ===================================================== */
 
       if (data.church_name) {
 
@@ -297,7 +440,9 @@
       }
 
 
-      /* SUBTITLE */
+      /* =====================================================
+         SUBTITLE
+      ===================================================== */
 
       if (data.subtitle) {
 
@@ -309,17 +454,95 @@
       }
 
 
-      /* LOGIN LOGO */
+      /* =====================================================
+         LOGIN LOGO
+      ===================================================== */
 
       loadLoginLogo(
         data.login_logo_url
       );
+
+
+      /* =====================================================
+         LOAD COLOUR SETTINGS
+      ===================================================== */
+
+      if (data.primary_color) {
+
+        finalTheme.primary_color =
+          data.primary_color;
+
+      }
+
+
+      if (data.secondary_color) {
+
+        finalTheme.secondary_color =
+          data.secondary_color;
+
+      }
+
+
+      if (data.accent_color) {
+
+        finalTheme.accent_color =
+          data.accent_color;
+
+      }
+
+
+      if (data.background_color) {
+
+        finalTheme.background_color =
+          data.background_color;
+
+      }
+
+
+      if (data.card_color) {
+
+        finalTheme.card_color =
+          data.card_color;
+
+      }
+
+
+      if (data.text_color) {
+
+        finalTheme.text_color =
+          data.text_color;
+
+      }
+
+
+      if (data.button_text_color) {
+
+        finalTheme.button_text_color =
+          data.button_text_color;
+
+      }
+
+
+      /* =====================================================
+         APPLY COLOUR SETTINGS
+      ===================================================== */
+
+      applyTheme(
+        finalTheme
+      );
+
 
     } catch (error) {
 
       console.error(
         "Login settings error:",
         error
+      );
+
+      /* Always keep the page usable */
+
+      applyTheme(
+        finalTheme
       );
 
     }
@@ -335,7 +558,7 @@
 
     if (
       !url ||
-      url.trim() === ""
+      String(url).trim() === ""
     ) {
 
       loginLogoImage.style.display =
@@ -431,7 +654,7 @@
           "Please enter your email and password.";
 
         message.style.color =
-          "#b00020";
+          "var(--secondary-color)";
 
         return;
 
@@ -467,7 +690,7 @@
           error.message;
 
         message.style.color =
-          "#b00020";
+          "var(--secondary-color)";
 
         loginBtn.disabled =
           false;
@@ -484,7 +707,7 @@
         "Login successful!";
 
       message.style.color =
-        "#183b2b";
+        "var(--primary-color)";
 
 
       setTimeout(

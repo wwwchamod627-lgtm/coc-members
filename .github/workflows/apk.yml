@@ -57,60 +57,51 @@ jobs:
 
       - name: Find existing logo
         run: |
-          echo "Searching for logo files..."
-          find www -type f \( \
-            -iname "*.png" -o \
-            -iname "*.jpg" -o \
-            -iname "*.jpeg" -o \
-            -iname "*.webp" \
-          \) | head -50
+          echo "Searching repository for logo..."
 
-      - name: Prepare Android app icon
-        run: |
-          mkdir -p android/app/src/main/res/drawable
-          mkdir -p android/app/src/main/res/mipmap-hdpi
-          mkdir -p android/app/src/main/res/mipmap-mdpi
-          mkdir -p android/app/src/main/res/mipmap-xhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxhdpi
-          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
-
-          LOGO=$(find www -type f \( \
-            -iname "*.png" -o \
-            -iname "*.jpg" -o \
-            -iname "*.jpeg" -o \
-            -iname "*.webp" \
-          \) | grep -Ei 'logo|coc|check' | head -1)
+          LOGO=$(find . \
+            -type f \
+            \( -iname "*logo*.png" -o \
+               -iname "*logo*.jpg" -o \
+               -iname "*logo*.jpeg" -o \
+               -iname "*logo*.webp" \
+            \) \
+            ! -path "./.git/*" \
+            ! -path "./android/*" \
+            ! -path "./www/*" \
+            | head -1)
 
           if [ -z "$LOGO" ]; then
-            LOGO=$(find www -type f \( \
-              -iname "*.png" -o \
-              -iname "*.jpg" -o \
-              -iname "*.jpeg" -o \
-              -iname "*.webp" \
-            \) | head -1)
+            LOGO=$(find . \
+              -type f \
+              \( -iname "*.png" -o \
+                 -iname "*.jpg" -o \
+                 -iname "*.jpeg" -o \
+                 -iname "*.webp" \
+              \) \
+              ! -path "./.git/*" \
+              ! -path "./android/*" \
+              ! -path "./www/*" \
+              | head -1)
           fi
 
-          if [ -n "$LOGO" ]; then
-            echo "Using logo: $LOGO"
-
-            cp "$LOGO" android/app/src/main/res/drawable/coc_members_icon.png
-
-            cp "$LOGO" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
-            cp "$LOGO" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-
-            cp "$LOGO" android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
-            cp "$LOGO" android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
-            cp "$LOGO" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-
-            echo "App icon prepared successfully."
-          else
-            echo "No logo image found. Using default icon."
+          if [ -z "$LOGO" ]; then
+            echo "ERROR: No suitable logo image found."
+            exit 1
           fi
+
+          echo "Logo found: $LOGO"
+
+          echo "LOGO=$LOGO" >> "$GITHUB_ENV"
+
+      - name: Prepare Android icon
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+
+          cp "$LOGO" \
+            android/app/src/main/res/drawable/coc_members_icon.png
+
+          echo "Android icon created successfully."
 
       - name: Configure Android launcher icon
         run: |
@@ -132,6 +123,8 @@ jobs:
           )
 
           manifest.write_text(text)
+
+          print("Android launcher icon configured.")
           PY
 
       - name: Build APK

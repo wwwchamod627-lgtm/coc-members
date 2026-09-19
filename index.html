@@ -59,16 +59,11 @@
       justify-content: center;
     }
 
-    #defaultLogo {
-      font-size: 55px;
-      display: block;
-    }
-
     #loginLogoImage {
       width: 120px;
       height: 120px;
       object-fit: contain;
-      display: none;
+      display: block;
     }
 
     h1 {
@@ -144,17 +139,17 @@
 
   <div class="login-box">
 
-    <!-- LOGIN LOGO -->
+    <!-- =====================================================
+         LOGIN LOGO
+         LOCAL GITHUB LOGO = PERMANENT FALLBACK
+    ====================================================== -->
 
     <div class="logo">
 
-      <span id="defaultLogo">
-        ✔️
-      </span>
-
       <img
         id="loginLogoImage"
-        alt="Login Logo"
+        src="coc_members_icon.png"
+        alt="COC Members Logo"
       >
 
     </div>
@@ -278,9 +273,6 @@
   const loginLogoImage =
     document.getElementById("loginLogoImage");
 
-  const defaultLogo =
-    document.getElementById("defaultLogo");
-
 
   /* =========================================================
      APPLY THEME
@@ -291,55 +283,65 @@
     const root =
       document.documentElement;
 
-
     root.style.setProperty(
       "--primary-color",
       theme.primary_color
     );
-
 
     root.style.setProperty(
       "--secondary-color",
       theme.secondary_color
     );
 
-
     root.style.setProperty(
       "--accent-color",
       theme.accent_color
     );
-
 
     root.style.setProperty(
       "--background-color",
       theme.background_color
     );
 
-
     root.style.setProperty(
       "--card-color",
       theme.card_color
     );
-
 
     root.style.setProperty(
       "--text-color",
       theme.text_color
     );
 
-
     root.style.setProperty(
       "--button-text-color",
       theme.button_text_color
     );
 
-
-    console.log(
-      "LOGIN THEME APPLIED:",
-      theme
-    );
-
   }
+
+
+  /* =========================================================
+     LOGO ERROR PROTECTION
+     
+     If any code later tries to replace the logo with a
+     Supabase URL and that URL fails, automatically return
+     to the local GitHub logo.
+  ========================================================= */
+
+  loginLogoImage.onerror =
+    function() {
+
+      console.warn(
+        "Remote login logo failed. Using local COC Members logo."
+      );
+
+      loginLogoImage.onerror = null;
+
+      loginLogoImage.src =
+        "coc_members_icon.png";
+
+    };
 
 
   /* =========================================================
@@ -366,7 +368,6 @@
             app_name,
             church_name,
             subtitle,
-            login_logo_url,
             primary_color,
             secondary_color,
             accent_color,
@@ -380,14 +381,18 @@
         .maybeSingle();
 
 
+      /* =====================================================
+         DATABASE ERROR
+         
+         The local logo remains visible.
+      ===================================================== */
+
       if (error) {
 
         console.error(
           "Failed to load login settings:",
           error
         );
-
-        /* Apply default theme even if database fails */
 
         applyTheme(
           finalTheme
@@ -455,16 +460,7 @@
 
 
       /* =====================================================
-         LOGIN LOGO
-      ===================================================== */
-
-      loadLoginLogo(
-        data.login_logo_url
-      );
-
-
-      /* =====================================================
-         LOAD COLOUR SETTINGS
+         COLOUR SETTINGS
       ===================================================== */
 
       if (data.primary_color) {
@@ -474,14 +470,12 @@
 
       }
 
-
       if (data.secondary_color) {
 
         finalTheme.secondary_color =
           data.secondary_color;
 
       }
-
 
       if (data.accent_color) {
 
@@ -490,14 +484,12 @@
 
       }
 
-
       if (data.background_color) {
 
         finalTheme.background_color =
           data.background_color;
 
       }
-
 
       if (data.card_color) {
 
@@ -506,14 +498,12 @@
 
       }
 
-
       if (data.text_color) {
 
         finalTheme.text_color =
           data.text_color;
 
       }
-
 
       if (data.button_text_color) {
 
@@ -523,99 +513,24 @@
       }
 
 
-      /* =====================================================
-         APPLY COLOUR SETTINGS
-      ===================================================== */
-
       applyTheme(
         finalTheme
       );
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
       console.error(
         "Login settings error:",
         error
       );
 
-      /* Always keep the page usable */
-
       applyTheme(
         finalTheme
       );
 
     }
-
-  }
-
-
-  /* =========================================================
-     LOAD LOGIN LOGO
-  ========================================================= */
-
-  function loadLoginLogo(url) {
-
-    if (
-      !url ||
-      String(url).trim() === ""
-    ) {
-
-      loginLogoImage.style.display =
-        "none";
-
-      defaultLogo.style.display =
-        "block";
-
-      return;
-
-    }
-
-
-    loginLogoImage.onload =
-      function() {
-
-        console.log(
-          "Login logo loaded successfully."
-        );
-
-        loginLogoImage.style.display =
-          "block";
-
-        defaultLogo.style.display =
-          "none";
-
-      };
-
-
-    loginLogoImage.onerror =
-      function() {
-
-        console.error(
-          "Login logo could not be loaded:",
-          url
-        );
-
-        loginLogoImage.style.display =
-          "none";
-
-        defaultLogo.style.display =
-          "block";
-
-      };
-
-
-    const separator =
-      url.includes("?")
-        ? "&"
-        : "?";
-
-
-    loginLogoImage.src =
-      url +
-      separator +
-      "v=" +
-      Date.now();
 
   }
 

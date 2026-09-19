@@ -17,7 +17,7 @@ jobs:
           node-version: 22
 
       - name: Setup Java 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 21
@@ -54,6 +54,85 @@ jobs:
 
       - name: Sync Android
         run: npx cap sync android
+
+      - name: Find existing logo
+        run: |
+          echo "Searching for logo files..."
+          find www -type f \( \
+            -iname "*.png" -o \
+            -iname "*.jpg" -o \
+            -iname "*.jpeg" -o \
+            -iname "*.webp" \
+          \) | head -50
+
+      - name: Prepare Android app icon
+        run: |
+          mkdir -p android/app/src/main/res/drawable
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+
+          LOGO=$(find www -type f \( \
+            -iname "*.png" -o \
+            -iname "*.jpg" -o \
+            -iname "*.jpeg" -o \
+            -iname "*.webp" \
+          \) | grep -Ei 'logo|coc|check' | head -1)
+
+          if [ -z "$LOGO" ]; then
+            LOGO=$(find www -type f \( \
+              -iname "*.png" -o \
+              -iname "*.jpg" -o \
+              -iname "*.jpeg" -o \
+              -iname "*.webp" \
+            \) | head -1)
+          fi
+
+          if [ -n "$LOGO" ]; then
+            echo "Using logo: $LOGO"
+
+            cp "$LOGO" android/app/src/main/res/drawable/coc_members_icon.png
+
+            cp "$LOGO" android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+            cp "$LOGO" android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+            cp "$LOGO" android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+            cp "$LOGO" android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+            cp "$LOGO" android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+
+            echo "App icon prepared successfully."
+          else
+            echo "No logo image found. Using default icon."
+          fi
+
+      - name: Configure Android launcher icon
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          manifest = Path("android/app/src/main/AndroidManifest.xml")
+
+          text = manifest.read_text()
+
+          text = text.replace(
+              'android:icon="@mipmap/ic_launcher"',
+              'android:icon="@drawable/coc_members_icon"'
+          )
+
+          text = text.replace(
+              'android:roundIcon="@mipmap/ic_launcher_round"',
+              'android:roundIcon="@drawable/coc_members_icon"'
+          )
+
+          manifest.write_text(text)
+          PY
 
       - name: Build APK
         run: |

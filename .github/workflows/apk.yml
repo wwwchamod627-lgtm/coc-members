@@ -23,10 +23,18 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      # ==================================================
+      # INSTALL CAPACITOR + FILESYSTEM + SHARE
+      # ==================================================
+
       - name: Install Capacitor
         run: |
           npm init -y
-          npm install @capacitor/core @capacitor/cli @capacitor/android
+          npm install @capacitor/core @capacitor/cli @capacitor/android @capacitor/filesystem @capacitor/share
+
+      # ==================================================
+      # PREPARE WEB FILES
+      # ==================================================
 
       - name: Prepare web files
         run: |
@@ -37,6 +45,10 @@ jobs:
           rm -rf www/.github
           rm -rf www/node_modules
           rm -rf www/www
+
+      # ==================================================
+      # CREATE CAPACITOR CONFIGURATION
+      # ==================================================
 
       - name: Create Capacitor configuration
         run: |
@@ -51,8 +63,16 @@ jobs:
           }
           EOF
 
+      # ==================================================
+      # ADD ANDROID PLATFORM
+      # ==================================================
+
       - name: Add Android platform
         run: npx cap add android
+
+      # ==================================================
+      # SYNC ANDROID
+      # ==================================================
 
       - name: Sync Android
         run: npx cap sync android

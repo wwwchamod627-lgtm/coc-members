@@ -1882,102 +1882,102 @@
 
   async function checkAdmin() {
 
-    const {
-      data: {
-        user
-      },
-      error
-    } =
-      await supabaseClient
-        .auth
-        .getUser();
+  const {
+    data: {
+      user
+    },
+    error
+  } = await supabaseClient.auth.getUser();
 
+  if (error || !user) {
 
-    if (
-      error ||
-      !user
-    ) {
+    window.location.href = "index.html";
 
-      window.location.href =
-        "index.html";
+    return false;
 
-      return false;
+  }
 
-    }
+  currentUser = user;
 
+  document.getElementById("adminEmail").textContent =
+    "Logged in as: " + (user.email || "");
 
-    currentUser =
-      user;
+  // Check Main Admin access from dashboard_access table
+  const {
+    data: access,
+    error: accessError
+  } = await supabaseClient
+    .from("dashboard_access")
+    .select("role, is_active")
+    .eq("user_id", user.id)
+    .maybeSingle();
 
+  // Admin Panel = Main Admin ONLY
+  if (
+    accessError ||
+    !access ||
+    access.role !== "main_admin" ||
+    access.is_active !== true
+  ) {
 
-    document.getElementById(
-      "adminEmail"
-    ).textContent =
-      "Logged in as: " +
-      (
-        user.email ||
-        ""
-      );
+    document.body.innerHTML = `
 
-
-    const role =
-      user.app_metadata?.role;
-
-
-    if (
-      role !==
-      "admin"
-    ) {
-
-      document.body.innerHTML = `
+      <div style="
+        min-height:100vh;
+        display:flex;
+        align-items:center;
+        justify-content:center;
+        padding:20px;
+        text-align:center;
+        font-family:Arial;
+        background:#f5f3ee;
+      ">
 
         <div style="
-          min-height:100vh;
-          display:flex;
-          align-items:center;
-          justify-content:center;
-          padding:20px;
-          text-align:center;
-          font-family:Arial;
+          background:white;
+          padding:30px;
+          border-radius:14px;
+          box-shadow:0 3px 12px rgba(0,0,0,0.08);
+          max-width:420px;
+          width:100%;
         ">
 
-          <div>
+          <h2 style="margin-top:0;">
+            Access Denied
+          </h2>
 
-            <h2>
-              Access Denied
-            </h2>
+          <p>
+            Main Administrator access is required.
+          </p>
 
-            <p>
-              Administrator access is required.
-            </p>
-
-            <button
-              onclick="window.location.href='home.html'"
-              style="
-                background:#c59b45;
-                color:white;
-                border:none;
-                padding:12px 20px;
-                border-radius:8px;
-              "
-            >
-              Back to Home
-            </button>
-
-          </div>
+          <button
+            onclick="window.location.href='home.html'"
+            style="
+              background:#c59b45;
+              color:white;
+              border:none;
+              padding:12px 20px;
+              border-radius:8px;
+              font-weight:bold;
+              cursor:pointer;
+            "
+          >
+            Back to Home
+          </button>
 
         </div>
 
-      `;
+      </div>
 
-      return false;
+    `;
 
-    }
-
-
-    return true;
+    return false;
 
   }
+
+  return true;
+
+}
 
 
   /* =========================================================

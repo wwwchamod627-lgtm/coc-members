@@ -155,6 +155,24 @@
       color: var(--button-text-color) !important;
     }
 
+    /* =====================================================
+       DIAGNOSTIC BOX
+    ====================================================== */
+
+    #dashboardDebug {
+      display: none;
+      margin-top: 15px;
+      padding: 12px;
+      border-radius: 10px;
+      background: #fff8df;
+      border: 1px solid #d4af37;
+      color: #6b5310;
+      font-size: 13px;
+      line-height: 1.5;
+      text-align: left;
+      word-break: break-word;
+    }
+
     .logout {
       margin-top: 25px;
       width: 100%;
@@ -276,7 +294,6 @@
 
       <!-- =================================================
            DASHBOARD
-           ONLY MAIN ADMIN + DASHBOARD STAFF
       ================================================== -->
 
       <button
@@ -289,7 +306,6 @@
 
       <!-- =================================================
            ADMIN PANEL
-           ADMIN ONLY
       ================================================== -->
 
       <button
@@ -301,6 +317,13 @@
       </button>
 
     </div>
+
+
+    <!-- =====================================================
+         DIAGNOSTIC INFORMATION
+    ====================================================== -->
+
+    <div id="dashboardDebug"></div>
 
 
     <!-- =====================================================
@@ -409,6 +432,26 @@
 
 
   /* =========================================================
+     DEBUG MESSAGE
+  ========================================================= */
+
+  function showDashboardDebug(message) {
+
+    const debug =
+      document.getElementById(
+        "dashboardDebug"
+      );
+
+    debug.style.display =
+      "block";
+
+    debug.innerHTML =
+      message;
+
+  }
+
+
+  /* =========================================================
      CHECK LOGIN
   ========================================================= */
 
@@ -453,7 +496,7 @@
 
 
       /* ================================================
-         SHOW LOGGED-IN USER EMAIL
+         SHOW USER EMAIL
       ================================================= */
 
       document.getElementById(
@@ -463,13 +506,7 @@
 
 
       /* ================================================
-         ADMIN PANEL VISIBILITY
-
-         Only users with:
-
-         app_metadata.role = "admin"
-
-         can see the Admin Panel button.
+         ADMIN PANEL
       ================================================= */
 
       const adminPanelButton =
@@ -519,8 +556,10 @@
         error
       );
 
-      window.location.href =
-        "index.html";
+      showDashboardDebug(
+        "LOGIN CHECK ERROR: " +
+        error.message
+      );
 
     }
 
@@ -529,11 +568,6 @@
 
   /* =========================================================
      DASHBOARD ACCESS CONTROL
-
-     Allowed users:
-
-     1. main_admin
-     2. dashboard_staff
   ========================================================= */
 
   async function checkDashboardAccess(user) {
@@ -544,13 +578,24 @@
       );
 
 
-    /* Default: hidden */
+    /* Default hidden */
 
     dashboardButton.style.display =
       "none";
 
 
+    showDashboardDebug(
+      "Checking Dashboard access..."
+    );
+
+
     try {
+
+      console.log(
+        "Dashboard access user:",
+        user
+      );
+
 
       const {
         data,
@@ -568,49 +613,34 @@
           .maybeSingle();
 
 
+      console.log(
+        "Dashboard access DATA:",
+        data
+      );
+
+
+      console.log(
+        "Dashboard access ERROR:",
+        error
+      );
+
+
+      /* ================================================
+         QUERY ERROR
+      ================================================= */
+
       if (error) {
 
-        console.error(
-          "Dashboard access check error:",
-          error
-        );
-
-        return;
-
-      }
-
-
-      if (!data) {
-
-        console.log(
-          "Dashboard access: NO ACCESS"
-        );
-
-        return;
-
-      }
-
-
-      if (
-        data.is_active !== true
-      ) {
-
-        console.log(
-          "Dashboard access: INACTIVE"
-        );
-
-        return;
-
-      }
-
-
-      if (
-        data.role !== "main_admin" &&
-        data.role !== "dashboard_staff"
-      ) {
-
-        console.log(
-          "Dashboard access: INVALID ROLE"
+        showDashboardDebug(
+          "<b>Dashboard Access Error</b><br>" +
+          "Code: " +
+          (error.code || "N/A") +
+          "<br>" +
+          "Message: " +
+          (error.message || "N/A") +
+          "<br>" +
+          "Details: " +
+          (error.details || "N/A")
         );
 
         return;
@@ -619,15 +649,82 @@
 
 
       /* ================================================
-         USER HAS DASHBOARD ACCESS
+         NO ROW
+      ================================================= */
+
+      if (!data) {
+
+        showDashboardDebug(
+          "<b>No Dashboard Access</b><br>" +
+          "No permission record was found for:<br>" +
+          user.email
+        );
+
+        return;
+
+      }
+
+
+      /* ================================================
+         INACTIVE
+      ================================================= */
+
+      if (
+        data.is_active !== true
+      ) {
+
+        showDashboardDebug(
+          "<b>Dashboard Inactive</b><br>" +
+          "Your dashboard access is currently inactive."
+        );
+
+        return;
+
+      }
+
+
+      /* ================================================
+         INVALID ROLE
+      ================================================= */
+
+      if (
+        data.role !== "main_admin" &&
+        data.role !== "dashboard_staff"
+      ) {
+
+        showDashboardDebug(
+          "<b>Invalid Dashboard Role</b><br>" +
+          "Role returned: " +
+          data.role
+        );
+
+        return;
+
+      }
+
+
+      /* ================================================
+         ACCESS GRANTED
       ================================================= */
 
       dashboardButton.style.display =
         "block";
 
 
+      showDashboardDebug(
+        "<b>Dashboard Access Granted</b><br>" +
+        "User: " +
+        user.email +
+        "<br>" +
+        "Role: " +
+        data.role +
+        "<br>" +
+        "Status: Active"
+      );
+
+
       console.log(
-        "Dashboard access granted:",
+        "DASHBOARD ACCESS GRANTED:",
         data.role
       );
 
@@ -640,6 +737,12 @@
         error
       );
 
+
+      showDashboardDebug(
+        "<b>Dashboard Access Exception</b><br>" +
+        error.message
+      );
+
     }
 
   }
@@ -647,15 +750,6 @@
 
   /* =========================================================
      LOAD SETTINGS
-
-     MAIN SOURCE:
-     app_config
-
-     THEME SOURCE:
-     app_settings
-
-     FALLBACK:
-     DEFAULT SETTINGS / DEFAULT THEME
   ========================================================= */
 
   async function loadSettings() {
@@ -671,8 +765,7 @@
 
 
     /* =====================================================
-       STEP 1
-       LOAD APP CONFIG
+       APP CONFIG
     ===================================================== */
 
     try {
@@ -695,17 +788,6 @@
           error
         );
 
-
-        showMessage(
-          "APP_CONFIG ERROR: " +
-          error.message +
-          " | CODE: " +
-          (error.code || "N/A") +
-          " | DETAILS: " +
-          (error.details || "N/A"),
-          "error"
-        );
-
       }
 
 
@@ -715,16 +797,8 @@
         data.length > 0
       ) {
 
-        console.log(
-          "APP_CONFIG LOADED:",
-          data
-        );
-
-
         data.forEach(
           function(item) {
-
-            /* Ignore inactive settings */
 
             if (
               item.is_active !== true
@@ -742,8 +816,6 @@
               item.setting_value;
 
 
-            /* Ignore empty values */
-
             if (
               value === null ||
               value === undefined
@@ -753,10 +825,6 @@
 
             }
 
-
-            /* =============================================
-               BOOLEAN SETTINGS
-            ============================================= */
 
             if (
               key === "show_register_button" ||
@@ -771,10 +839,6 @@
 
             }
 
-
-            /* =============================================
-               TEXT SETTINGS
-            ============================================= */
 
             const textValue =
               String(value).trim();
@@ -798,7 +862,6 @@
 
             }
 
-
             else if (
               key === "church_name"
             ) {
@@ -807,7 +870,6 @@
                 textValue;
 
             }
-
 
             else if (
               key === "subtitle"
@@ -818,7 +880,6 @@
 
             }
 
-
             else if (
               key === "welcome_text"
             ) {
@@ -827,7 +888,6 @@
                 textValue;
 
             }
-
 
             else if (
               key === "register_button_text"
@@ -838,7 +898,6 @@
 
             }
 
-
             else if (
               key === "members_button_text"
             ) {
@@ -847,7 +906,6 @@
                 "👥 " + textValue;
 
             }
-
 
             else if (
               key === "search_button_text"
@@ -872,21 +930,11 @@
         error
       );
 
-
-      showMessage(
-        "APP_CONFIG EXCEPTION: " +
-        error.message,
-        "error"
-      );
-
     }
 
 
     /* =====================================================
-       STEP 2
-       LOAD APP SETTINGS
-
-       Logo + Theme
+       APP SETTINGS
     ===================================================== */
 
     try {
@@ -918,18 +966,10 @@
         data
       ) {
 
-        /* ===============================================
-           LOAD LOGO
-        =============================================== */
-
         loadLogo(
           data.logo_url
         );
 
-
-        /* ===============================================
-           LOAD THEME COLORS
-        =============================================== */
 
         if (
           data.primary_color
@@ -1000,22 +1040,6 @@
 
         }
 
-
-        console.log(
-          "THEME LOADED:",
-          finalTheme
-        );
-
-      }
-
-
-      if (error) {
-
-        console.error(
-          "APP_SETTINGS ERROR:",
-          error
-        );
-
       }
 
     }
@@ -1030,24 +1054,8 @@
     }
 
 
-    /* =====================================================
-       STEP 3
-       APPLY THEME
-    ===================================================== */
-
     applyTheme(
       finalTheme
-    );
-
-
-    /* =====================================================
-       STEP 4
-       APPLY APP SETTINGS
-    ===================================================== */
-
-    console.log(
-      "FINAL HOME SETTINGS:",
-      finalSettings
     );
 
 
@@ -1073,46 +1081,34 @@
       theme.primary_color
     );
 
-
     root.style.setProperty(
       "--secondary-color",
       theme.secondary_color
     );
-
 
     root.style.setProperty(
       "--accent-color",
       theme.accent_color
     );
 
-
     root.style.setProperty(
       "--background-color",
       theme.background_color
     );
-
 
     root.style.setProperty(
       "--card-color",
       theme.card_color
     );
 
-
     root.style.setProperty(
       "--text-color",
       theme.text_color
     );
 
-
     root.style.setProperty(
       "--button-text-color",
       theme.button_text_color
-    );
-
-
-    console.log(
-      "HOME THEME APPLIED:",
-      theme
     );
 
   }
@@ -1124,9 +1120,6 @@
 
   function applySettings(settings) {
 
-
-    /* APP NAME */
-
     document.getElementById(
       "appName"
     ).textContent =
@@ -1136,15 +1129,11 @@
       settings.app_name;
 
 
-    /* CHURCH NAME */
-
     document.getElementById(
       "churchName"
     ).textContent =
       settings.church_name;
 
-
-    /* SUBTITLE */
 
     document.getElementById(
       "subtitle"
@@ -1152,25 +1141,19 @@
       settings.subtitle;
 
 
-    /* WELCOME TEXT */
-
     document.getElementById(
       "welcomeText"
     ).textContent =
       settings.welcome_text;
 
 
-    /* REGISTER BUTTON */
-
     const registerButton =
       document.getElementById(
         "registerButton"
       );
 
-
     registerButton.textContent =
       settings.register_button_text;
-
 
     registerButton.style.display =
       settings.show_register_button
@@ -1178,17 +1161,13 @@
         : "none";
 
 
-    /* MEMBERS BUTTON */
-
     const membersButton =
       document.getElementById(
         "membersButton"
       );
 
-
     membersButton.textContent =
       settings.members_button_text;
-
 
     membersButton.style.display =
       settings.show_members_button
@@ -1196,17 +1175,13 @@
         : "none";
 
 
-    /* SEARCH BUTTON */
-
     const searchButton =
       document.getElementById(
         "searchButton"
       );
 
-
     searchButton.textContent =
       settings.search_button_text;
-
 
     searchButton.style.display =
       settings.show_search_button
@@ -1252,10 +1227,6 @@
     logoImage.onload =
       function() {
 
-        console.log(
-          "Home logo loaded successfully."
-        );
-
         logoImage.style.display =
           "block";
 
@@ -1267,11 +1238,6 @@
 
     logoImage.onerror =
       function() {
-
-        console.error(
-          "Home logo could not be loaded:",
-          url
-        );
 
         logoImage.style.display =
           "none";
@@ -1311,26 +1277,8 @@
         "message"
       );
 
-
     message.textContent =
       text;
-
-
-    if (
-      type === "error"
-    ) {
-
-      message.style.color =
-        "var(--secondary-color)";
-
-    }
-
-    else {
-
-      message.style.color =
-        "var(--primary-color)";
-
-    }
 
   }
 
@@ -1363,10 +1311,6 @@
   }
 
 
-  /* =========================================================
-     DASHBOARD NAVIGATION
-  ========================================================= */
-
   function openDashboard() {
 
     window.location.href =
@@ -1374,10 +1318,6 @@
 
   }
 
-
-  /* =========================================================
-     ADMIN PANEL NAVIGATION
-  ========================================================= */
 
   function adminPanel() {
 

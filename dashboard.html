@@ -1,14 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>COC Members - Dashboard</title>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-  <style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>COC Members - Dashboard</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <style>
     * {
       box-sizing: border-box;
     }
@@ -102,6 +95,22 @@
     button:disabled {
       opacity: 0.6;
       cursor: not-allowed;
+    }
+
+    /* ==========================================
+       BACK TO HOME BUTTON
+    ========================================== */
+
+    .back-home-btn {
+      margin-top: 12px;
+      background: white;
+      color: #9d7a0c;
+      border: 1px solid #c9a227;
+    }
+
+    .back-home-btn:hover {
+      background: #fff8df;
+      color: #8e6d08;
     }
 
     .logout-btn {
@@ -256,170 +265,163 @@
         align-items: flex-start;
       }
     }
-  </style>
-</head>
-
-<body>
-
-  <!-- HEADER -->
-
-  <div class="header">
+  </style></head><body>  <!-- HEADER -->  <div class="header">
     <h1>COC Members</h1>
     <p>Church Of Christ Sri Lanka</p>
-  </div>
+  </div>  <!-- LOGIN -->  <div id="loginSection" class="login-container"><div class="login-card">
 
+  <h2>Dashboard Login</h2>
 
-  <!-- LOGIN -->
+  <p>
+    Please sign in to access the members dashboard.
+  </p>
 
-  <div id="loginSection" class="login-container">
+  <form id="loginForm">
 
-    <div class="login-card">
+    <label for="email">Email Address</label>
 
-      <h2>Dashboard Login</h2>
+    <input
+      type="email"
+      id="email"
+      placeholder="Enter your email"
+      required
+    >
 
-      <p>
-        Please sign in to access the members dashboard.
-      </p>
+    <label for="password">Password</label>
 
-      <form id="loginForm">
+    <input
+      type="password"
+      id="password"
+      placeholder="Enter your password"
+      required
+    >
 
-        <label for="email">Email Address</label>
+    <button
+      type="submit"
+      id="loginButton"
+    >
+      Login
+    </button>
 
-        <input
-          type="email"
-          id="email"
-          placeholder="Enter your email"
-          required
-        >
+  </form>
 
-        <label for="password">Password</label>
+  <!-- BACK TO HOME -->
 
-        <input
-          type="password"
-          id="password"
-          placeholder="Enter your password"
-          required
-        >
+  <button
+    type="button"
+    id="backHomeButton"
+    class="back-home-btn"
+    onclick="goHome()"
+  >
+    ← Back to Home
+  </button>
 
-        <button type="submit" id="loginButton">
-          Login
-        </button>
+  <div id="loginError" class="error"></div>
 
-      </form>
+</div>
 
-      <div id="loginError" class="error"></div>
-
-    </div>
-
-  </div>
-
-
-  <!-- ACCESS DENIED -->
-
-  <div
+  </div>  <!-- ACCESS DENIED -->  <div
     id="accessDeniedSection"
     class="access-denied hidden"
+  ><div class="access-denied-card">
+
+  <h2>Access Denied</h2>
+
+  <p>
+    Your account does not have permission to access
+    the COC Members Dashboard.
+  </p>
+
+  <p id="accessDeniedEmail"></p>
+
+  <button id="accessDeniedLogoutButton">
+    Logout
+  </button>
+
+  <!-- BACK TO HOME -->
+
+  <button
+    type="button"
+    class="back-home-btn"
+    onclick="goHome()"
   >
+    ← Back to Home
+  </button>
 
-    <div class="access-denied-card">
+</div>
 
-      <h2>Access Denied</h2>
-
-      <p>
-        Your account does not have permission to access
-        the COC Members Dashboard.
-      </p>
-
-      <p id="accessDeniedEmail"></p>
-
-      <button id="accessDeniedLogoutButton">
-        Logout
-      </button>
-
-    </div>
-
-  </div>
-
-
-  <!-- DASHBOARD -->
-
-  <div
+  </div>  <!-- DASHBOARD -->  <div
     id="dashboardSection"
     class="dashboard-container hidden"
-  >
+  ><div class="welcome">
 
-    <div class="welcome">
+  <div>
 
-      <div>
+    <h2>Members Dashboard</h2>
 
-        <h2>Members Dashboard</h2>
-
-        <p id="userEmail"></p>
-
-        <div
-          id="userRole"
-          class="role-badge"
-        >
-          —
-        </div>
-
-      </div>
-
-      <button
-        id="logoutButton"
-        class="logout-btn"
-      >
-        Logout
-      </button>
-
-    </div>
-
-
-    <!-- DASHBOARD STATISTICS -->
-
-    <div class="stats">
-
-      <div class="stat-card">
-
-        <h3>Total Members</h3>
-
-        <div
-          id="totalMembers"
-          class="number"
-        >
-          —
-        </div>
-
-      </div>
-
-
-      <div class="stat-card">
-
-        <h3>Registered Today</h3>
-
-        <div
-          id="todayMembers"
-          class="number"
-        >
-          —
-        </div>
-
-      </div>
-
-    </div>
-
+    <p id="userEmail"></p>
 
     <div
-      id="dashboardStatus"
-      class="status"
+      id="userRole"
+      class="role-badge"
     >
-      Loading dashboard...
+      —
+    </div>
+
+  </div>
+
+  <button
+    id="logoutButton"
+    class="logout-btn"
+  >
+    Logout
+  </button>
+
+</div>
+
+
+<!-- DASHBOARD STATISTICS -->
+
+<div class="stats">
+
+  <div class="stat-card">
+
+    <h3>Total Members</h3>
+
+    <div
+      id="totalMembers"
+      class="number"
+    >
+      —
     </div>
 
   </div>
 
 
-<script>
+  <div class="stat-card">
+
+    <h3>Registered Today</h3>
+
+    <div
+      id="todayMembers"
+      class="number"
+    >
+      —
+    </div>
+
+  </div>
+
+</div>
+
+
+<div
+  id="dashboardStatus"
+  class="status"
+>
+  Loading dashboard...
+</div>
+
+  </div><script>
 
   /* ==========================================
      SUPABASE CONFIGURATION
@@ -487,6 +489,18 @@
 
   const dashboardStatus =
     document.getElementById("dashboardStatus");
+
+
+  /* ==========================================
+     BACK TO HOME
+  ========================================== */
+
+  function goHome() {
+
+    window.location.href =
+      "home.html";
+
+  }
 
 
   /* ==========================================
@@ -1089,7 +1103,5 @@
 
   checkSession();
 
-</script>
-
-</body>
+</script></body>
 </html>

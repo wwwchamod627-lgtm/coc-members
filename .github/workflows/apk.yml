@@ -57,17 +57,17 @@ jobs:
       - name: Sync Android
         run: npx cap sync android
 
-      # ----------------------------------------------------
-      # GET THE EXACT APP LOGO FROM SUPABASE
-      # ----------------------------------------------------
+      # ==================================================
+      # GET THE CURRENT COC MEMBERS LOGO FROM SUPABASE
+      # ==================================================
 
-      - name: Get COC Members logo
+      - name: Get app logo URL
         env:
           SUPABASE_URL: https://djxpqggcpaofkpvcqgvd.supabase.co
-          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          SUPABASE_KEY: sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c
         run: |
 
-          echo "Getting logo URL from Supabase..."
+          echo "Getting COC Members logo URL..."
 
           RESPONSE=$(curl -s \
             -H "apikey: $SUPABASE_KEY" \
@@ -77,47 +77,76 @@ jobs:
           echo "Supabase response:"
           echo "$RESPONSE"
 
-          LOGO_URL=$(echo "$RESPONSE" | python3 -c '
-          import sys,json
+          LOGO_URL=$(python3 -c '
+          import json
+          import sys
+
           try:
-              data=json.load(sys.stdin)
-              if data and data[0].get("logo_url"):
-                  print(data[0]["logo_url"])
-          except:
-              pass
-          ')
+              data = json.loads(sys.argv[1])
+
+              if isinstance(data, list) and len(data) > 0:
+                  value = data[0].get("logo_url")
+
+                  if value:
+                      print(value)
+
+          except Exception as e:
+              print("", end="")
+          ' "$RESPONSE")
 
           if [ -z "$LOGO_URL" ]; then
-            echo "ERROR: Logo URL was not found."
+            echo "ERROR: Could not find logo_url in Supabase."
             exit 1
           fi
 
-          echo "Logo URL found:"
-          echo "$LOGO_URL"
+          echo "Logo URL found successfully."
 
-          echo "LOGO_URL=$LOGO_URL" >> $GITHUB_ENV
+          echo "LOGO_URL=$LOGO_URL" >> "$GITHUB_ENV"
 
-      # ----------------------------------------------------
+      # ==================================================
       # DOWNLOAD LOGO
-      # ----------------------------------------------------
+      # ==================================================
 
-      - name: Download app logo
+      - name: Download logo
         run: |
 
           mkdir -p android/app/src/main/res/drawable
 
           curl -L \
+            --fail \
             "$LOGO_URL" \
-            -o android/app/src/main/res/drawable/coc_members_icon.png
+            -o /tmp/coc_members_logo
 
-          echo "Downloaded logo:"
+          echo "Downloaded logo file:"
+          file /tmp/coc_members_logo
+
+      # ==================================================
+      # CONVERT LOGO TO PNG
+      # ==================================================
+
+      - name: Convert logo to PNG
+        run: |
+
+          sudo apt-get update
+
+          sudo apt-get install -y imagemagick
+
+          magick /tmp/coc_members_logo \
+            -background none \
+            -resize 512x512 \
+            -gravity center \
+            -extent 512x512 \
+            android/app/src/main/res/drawable/coc_members_icon.png
+
+          echo "PNG logo created successfully."
+
           file android/app/src/main/res/drawable/coc_members_icon.png
 
-      # ----------------------------------------------------
-      # PREPARE ANDROID ICON
-      # ----------------------------------------------------
+      # ==================================================
+      # CREATE ANDROID LAUNCHER ICONS
+      # ==================================================
 
-      - name: Prepare launcher icons
+      - name: Create launcher icons
         run: |
 
           mkdir -p android/app/src/main/res/mipmap-mdpi
@@ -126,41 +155,48 @@ jobs:
           mkdir -p android/app/src/main/res/mipmap-xxhdpi
           mkdir -p android/app/src/main/res/mipmap-xxxhdpi
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          magick android/app/src/main/res/drawable/coc_members_icon.png \
+            -resize 48x48 \
             android/app/src/main/res/mipmap-mdpi/ic_launcher.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          magick android/app/src/main/res/drawable/coc_members_icon.png \
+            -resize 72x72 \
             android/app/src/main/res/mipmap-hdpi/ic_launcher.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          magick android/app/src/main/res/drawable/coc_members_icon.png \
+            -resize 96x96 \
             android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          magick android/app/src/main/res/drawable/coc_members_icon.png \
+            -resize 144x144 \
             android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          magick android/app/src/main/res/drawable/coc_members_icon.png \
+            -resize 192x192 \
             android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          cp android/app/src/main/res/mipmap-mdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          cp android/app/src/main/res/mipmap-hdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          cp android/app/src/main/res/mipmap-xhdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          cp android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
 
-          cp android/app/src/main/res/drawable/coc_members_icon.png \
+          cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      # ----------------------------------------------------
-      # FORCE ANDROID TO USE OUR LOGO
-      # ----------------------------------------------------
+          echo "Launcher icons created."
 
-      - name: Configure Android launcher icon
+      # ==================================================
+      # FORCE ANDROID TO USE COC MEMBERS LOGO
+      # ==================================================
+
+      - name: Configure Android launcher
         run: |
 
           python3 - <<'PY'
@@ -185,13 +221,13 @@ jobs:
 
           manifest.write_text(text)
 
-          print("Android launcher icon configured.")
+          print("COC Members logo configured as Android app icon.")
 
           PY
 
-      # ----------------------------------------------------
+      # ==================================================
       # BUILD APK
-      # ----------------------------------------------------
+      # ==================================================
 
       - name: Build APK
         run: |
@@ -200,11 +236,13 @@ jobs:
 
           chmod +x gradlew
 
+          ./gradlew clean
+
           ./gradlew assembleDebug
 
-      # ----------------------------------------------------
+      # ==================================================
       # UPLOAD APK
-      # ----------------------------------------------------
+      # ==================================================
 
       - name: Upload APK
         uses: actions/upload-artifact@v4

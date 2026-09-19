@@ -452,6 +452,10 @@
 
   /* =========================================================
      CHECK LOGIN
+     
+     IMPORTANT:
+     Home page can now open even when there is no session.
+     Protected pages must continue checking their own session.
   ========================================================= */
 
   async function checkLogin() {
@@ -472,18 +476,54 @@
           error
         );
 
-        window.location.href =
-          "index.html";
+        document.getElementById(
+          "userEmail"
+        ).textContent =
+          "Not logged in";
+
+        document.getElementById(
+          "dashboardButton"
+        ).style.display =
+          "none";
+
+        document.getElementById(
+          "adminPanelButton"
+        ).style.display =
+          "none";
 
         return;
 
       }
 
 
+      /* =====================================================
+         NO ACTIVE SESSION
+         
+         DO NOT REDIRECT TO index.html.
+         Keep the user on Home page.
+      ====================================================== */
+
       if (!data.session) {
 
-        window.location.href =
-          "index.html";
+        document.getElementById(
+          "userEmail"
+        ).textContent =
+          "Not logged in";
+
+
+        document.getElementById(
+          "dashboardButton"
+        ).style.display =
+          "none";
+
+
+        document.getElementById(
+          "adminPanelButton"
+        ).style.display =
+          "none";
+
+
+        await loadSettings();
 
         return;
 

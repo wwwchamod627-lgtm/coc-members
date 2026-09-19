@@ -39,25 +39,25 @@
       text-align: center;
     }
 
+    /* =====================================================
+       LOGO
+       LOCAL GITHUB LOGO
+    ====================================================== */
+
     .logo {
-      min-height: 110px;
-      margin-bottom: 8px;
+      width: 110px;
+      height: 110px;
+      margin: 0 auto 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-    }
-
-    #defaultLogo {
-      font-size: 45px;
-      display: block;
     }
 
     #logoImage {
       width: 110px;
       height: 110px;
       object-fit: contain;
-      display: none;
-      border-radius: 12px;
+      display: block;
     }
 
     .header h1 {
@@ -212,11 +212,10 @@
 
     <div class="logo">
 
-      <span id="defaultLogo">✔️</span>
-
       <img
         id="logoImage"
-        alt="App Logo"
+        src="coc_members_icon.png"
+        alt="COC Members Logo"
       >
 
     </div>
@@ -578,8 +577,6 @@
       );
 
 
-    /* Default hidden */
-
     dashboardButton.style.display =
       "none";
 
@@ -625,10 +622,6 @@
       );
 
 
-      /* ================================================
-         QUERY ERROR
-      ================================================= */
-
       if (error) {
 
         showDashboardDebug(
@@ -648,10 +641,6 @@
       }
 
 
-      /* ================================================
-         NO ROW
-      ================================================= */
-
       if (!data) {
 
         showDashboardDebug(
@@ -664,10 +653,6 @@
 
       }
 
-
-      /* ================================================
-         INACTIVE
-      ================================================= */
 
       if (
         data.is_active !== true
@@ -682,10 +667,6 @@
 
       }
 
-
-      /* ================================================
-         INVALID ROLE
-      ================================================= */
 
       if (
         data.role !== "main_admin" &&
@@ -702,10 +683,6 @@
 
       }
 
-
-      /* ================================================
-         ACCESS GRANTED
-      ================================================= */
 
       dashboardButton.style.display =
         "block";
@@ -935,6 +912,9 @@
 
     /* =====================================================
        APP SETTINGS
+       
+       Only colour settings are loaded here.
+       Logo is intentionally NOT loaded from Supabase.
     ===================================================== */
 
     try {
@@ -947,7 +927,6 @@
           .from("app_settings")
           .select(
             `
-              logo_url,
               primary_color,
               secondary_color,
               accent_color,
@@ -965,11 +944,6 @@
         !error &&
         data
       ) {
-
-        loadLogo(
-          data.logo_url
-        );
-
 
         if (
           data.primary_color
@@ -1187,98 +1161,6 @@
       settings.show_search_button
         ? "block"
         : "none";
-
-  }
-
-
-  /* =========================================================
-     LOAD LOGO
-  ========================================================= */
-
-  function loadLogo(url) {
-
-    const logoImage =
-      document.getElementById(
-        "logoImage"
-      );
-
-    const defaultLogo =
-      document.getElementById(
-        "defaultLogo"
-      );
-
-
-    if (
-      !url ||
-      String(url).trim() === ""
-    ) {
-
-      logoImage.style.display =
-        "none";
-
-      defaultLogo.style.display =
-        "block";
-
-      return;
-
-    }
-
-
-    logoImage.onload =
-      function() {
-
-        logoImage.style.display =
-          "block";
-
-        defaultLogo.style.display =
-          "none";
-
-      };
-
-
-    logoImage.onerror =
-      function() {
-
-        logoImage.style.display =
-          "none";
-
-        defaultLogo.style.display =
-          "block";
-
-      };
-
-
-    const separator =
-      url.includes("?")
-        ? "&"
-        : "?";
-
-
-    logoImage.src =
-      url +
-      separator +
-      "v=" +
-      Date.now();
-
-  }
-
-
-  /* =========================================================
-     SHOW MESSAGE
-  ========================================================= */
-
-  function showMessage(
-    text,
-    type
-  ) {
-
-    const message =
-      document.getElementById(
-        "message"
-      );
-
-    message.textContent =
-      text;
 
   }
 

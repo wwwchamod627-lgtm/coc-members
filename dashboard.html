@@ -332,9 +332,7 @@
 
       <p id="accessDeniedEmail"></p>
 
-      <button
-        id="accessDeniedLogoutButton"
-      >
+      <button id="accessDeniedLogoutButton">
         Logout
       </button>
 
@@ -376,6 +374,8 @@
 
     </div>
 
+
+    <!-- DASHBOARD STATISTICS -->
 
     <div class="stats">
 
@@ -421,9 +421,9 @@
 
 <script>
 
-  /* =========================
-     SUPABASE CONFIG
-  ========================= */
+  /* ==========================================
+     SUPABASE CONFIGURATION
+  ========================================== */
 
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
@@ -438,9 +438,9 @@
     );
 
 
-  /* =========================
-     ELEMENTS
-  ========================= */
+  /* ==========================================
+     PAGE ELEMENTS
+  ========================================== */
 
   const loginSection =
     document.getElementById("loginSection");
@@ -489,9 +489,9 @@
     document.getElementById("dashboardStatus");
 
 
-  /* =========================
-     RESET UI
-  ========================= */
+  /* ==========================================
+     SHOW LOGIN
+  ========================================== */
 
   function showLogin() {
 
@@ -505,6 +505,10 @@
 
   }
 
+
+  /* ==========================================
+     SHOW ACCESS DENIED
+  ========================================== */
 
   function showAccessDenied(user) {
 
@@ -522,9 +526,9 @@
   }
 
 
-  /* =========================
+  /* ==========================================
      CHECK DASHBOARD ACCESS
-  ========================= */
+  ========================================== */
 
   async function checkDashboardAccess(user) {
 
@@ -567,10 +571,6 @@
     }
 
 
-    /*
-      No access record
-    */
-
     if (!data) {
 
       return {
@@ -581,10 +581,6 @@
     }
 
 
-    /*
-      Access disabled
-    */
-
     if (data.is_active !== true) {
 
       return {
@@ -594,10 +590,6 @@
 
     }
 
-
-    /*
-      Valid roles only
-    */
 
     if (
       data.role !== "main_admin" &&
@@ -620,9 +612,9 @@
   }
 
 
-  /* =========================
+  /* ==========================================
      LOGIN
-  ========================= */
+  ========================================== */
 
   loginForm.addEventListener(
     "submit",
@@ -696,23 +688,18 @@
   );
 
 
-  /* =========================
+  /* ==========================================
      SHOW DASHBOARD
-     WITH ACCESS CONTROL
-  ========================= */
+  ========================================== */
 
   async function showDashboard(user) {
-
-    /*
-      First check permission
-    */
 
     const access =
       await checkDashboardAccess(user);
 
 
     /*
-      Database / permission error
+      Permission verification failed
     */
 
     if (access.error) {
@@ -738,7 +725,7 @@
 
 
     /*
-      User is NOT allowed
+      No permission
     */
 
     if (!access.allowed) {
@@ -751,7 +738,7 @@
 
 
     /*
-      User IS allowed
+      Permission granted
     */
 
     loginSection.classList.add(
@@ -773,7 +760,7 @@
 
 
     /*
-      Display role
+      ROLE DISPLAY
     */
 
     if (access.role === "main_admin") {
@@ -781,14 +768,18 @@
       userRole.textContent =
         "Main Admin";
 
-    } else if (
+    }
+
+    else if (
       access.role === "dashboard_staff"
     ) {
 
       userRole.textContent =
         "Dashboard Staff";
 
-    } else {
+    }
+
+    else {
 
       userRole.textContent =
         "Dashboard User";
@@ -796,14 +787,73 @@
     }
 
 
+    /*
+      Apply role permissions
+    */
+
+    applyRolePermissions(
+      access.role
+    );
+
+
+    /*
+      Load dashboard
+    */
+
     await loadDashboard();
 
   }
 
 
-  /* =========================
+  /* ==========================================
+     ROLE PERMISSIONS
+  ========================================== */
+
+  function applyRolePermissions(role) {
+
+    /*
+      Main Admin
+      ------------------------------------------
+      Full dashboard permission.
+    */
+
+    if (role === "main_admin") {
+
+      console.log(
+        "Main Admin permissions enabled."
+      );
+
+      return;
+
+    }
+
+
+    /*
+      Dashboard Staff
+      ------------------------------------------
+      Dashboard viewing permission only.
+      Future admin-only controls should
+      remain hidden for this role.
+    */
+
+    if (
+      role === "dashboard_staff"
+    ) {
+
+      console.log(
+        "Dashboard Staff permissions enabled."
+      );
+
+      return;
+
+    }
+
+  }
+
+
+  /* ==========================================
      LOAD DASHBOARD DATA
-  ========================= */
+  ========================================== */
 
   async function loadDashboard() {
 
@@ -854,7 +904,7 @@
 
 
     /*
-      TODAY'S DATE
+      TODAY
     */
 
     const now =
@@ -936,9 +986,9 @@
   }
 
 
-  /* =========================
+  /* ==========================================
      LOGOUT
-  ========================= */
+  ========================================== */
 
   async function logoutUser() {
 
@@ -969,9 +1019,9 @@
   );
 
 
-  /* =========================
+  /* ==========================================
      CHECK EXISTING SESSION
-  ========================= */
+  ========================================== */
 
   async function checkSession() {
 
@@ -990,7 +1040,9 @@
         session.user
       );
 
-    } else {
+    }
+
+    else {
 
       showLogin();
 
@@ -999,9 +1051,9 @@
   }
 
 
-  /* =========================
+  /* ==========================================
      AUTH STATE LISTENER
-  ========================= */
+  ========================================== */
 
   supabaseClient.auth.onAuthStateChange(
     async function(event, session) {
@@ -1031,9 +1083,9 @@
   );
 
 
-  /* =========================
-     START
-  ========================= */
+  /* ==========================================
+     START APPLICATION
+  ========================================== */
 
   checkSession();
 

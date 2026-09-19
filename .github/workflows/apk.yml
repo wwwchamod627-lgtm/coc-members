@@ -58,87 +58,35 @@ jobs:
         run: npx cap sync android
 
       # ==================================================
-      # GET THE CURRENT COC MEMBERS LOGO FROM SUPABASE
+      # USE THE LOGO STORED DIRECTLY IN GITHUB
       # ==================================================
 
-      - name: Get app logo URL
-        env:
-          SUPABASE_URL: https://djxpqggcpaofkpvcqgvd.supabase.co
-          SUPABASE_KEY: sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c
+      - name: Prepare COC Members app icon
         run: |
 
-          echo "Getting COC Members logo URL..."
+          echo "Checking COC Members logo..."
 
-          RESPONSE=$(curl -s \
-            -H "apikey: $SUPABASE_KEY" \
-            -H "Authorization: Bearer $SUPABASE_KEY" \
-            "$SUPABASE_URL/rest/v1/app_settings?select=logo_url&limit=1")
-
-          echo "Supabase response:"
-          echo "$RESPONSE"
-
-          LOGO_URL=$(python3 -c '
-          import json
-          import sys
-
-          try:
-              data = json.loads(sys.argv[1])
-
-              if isinstance(data, list) and len(data) > 0:
-                  value = data[0].get("logo_url")
-
-                  if value:
-                      print(value)
-
-          except Exception as e:
-              print("", end="")
-          ' "$RESPONSE")
-
-          if [ -z "$LOGO_URL" ]; then
-            echo "ERROR: Could not find logo_url in Supabase."
+          if [ ! -f "coc_members_icon.png" ]; then
+            echo "ERROR: coc_members_icon.png was not found in the repository root."
             exit 1
           fi
 
-          echo "Logo URL found successfully."
-
-          echo "LOGO_URL=$LOGO_URL" >> "$GITHUB_ENV"
-
-      # ==================================================
-      # DOWNLOAD LOGO
-      # ==================================================
-
-      - name: Download logo
-        run: |
+          echo "Logo found:"
+          file coc_members_icon.png
 
           mkdir -p android/app/src/main/res/drawable
 
-          curl -L \
-            --fail \
-            "$LOGO_URL" \
-            -o /tmp/coc_members_logo
-
-          echo "Downloaded logo file:"
-          file /tmp/coc_members_logo
-
-      # ==================================================
-      # CONVERT LOGO TO PNG
-      # ==================================================
-
-      - name: Convert logo to PNG
-        run: |
-
           sudo apt-get update
-
           sudo apt-get install -y imagemagick
 
-          magick /tmp/coc_members_logo \
+          magick coc_members_icon.png \
             -background none \
             -resize 512x512 \
             -gravity center \
             -extent 512x512 \
             android/app/src/main/res/drawable/coc_members_icon.png
 
-          echo "PNG logo created successfully."
+          echo "COC Members logo prepared successfully."
 
           file android/app/src/main/res/drawable/coc_members_icon.png
 
@@ -190,7 +138,7 @@ jobs:
           cp android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png \
             android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-          echo "Launcher icons created."
+          echo "Launcher icons created successfully."
 
       # ==================================================
       # FORCE ANDROID TO USE COC MEMBERS LOGO

@@ -1,7 +1,23 @@
-<!DOCTYPE html><html lang="en">
+<!DOCTYPE html>
+<html lang="en">
+
 <head>
+
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">  <title>Member Profile - COC Members</title>  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>  <style>
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Member Profile - COC Members</title>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+  <style>
+
     * {
       box-sizing: border-box;
     }
@@ -577,67 +593,89 @@
         height: 132px;
       }
     }
-  </style></head><body>  <div class="header"><div class="header-content">
 
-  <div
-    class="logo-wrapper"
-    id="logoWrapper"
-  >
-    <img
-      id="appLogo"
-      src=""
-      alt="App Logo"
-    >
+  </style>
+
+</head>
+
+<body>
+
+  <div class="header">
+
+    <div class="header-content">
+
+      <div
+        class="logo-wrapper"
+        id="logoWrapper"
+      >
+
+        <img
+          id="appLogo"
+          src=""
+          alt="App Logo"
+        >
+
+      </div>
+
+      <h1 id="appName">
+        COC Members
+      </h1>
+
+      <p
+        class="church-name"
+        id="churchName"
+      >
+        Church Of Christ Sri Lanka
+      </p>
+
+      <p
+        class="subtitle"
+        id="subtitle"
+      >
+        Members Registration
+      </p>
+
+    </div>
+
   </div>
 
-  <h1 id="appName">
-    COC Members
-  </h1>
 
-  <p
-    class="church-name"
-    id="churchName"
-  >
-    Church Of Christ Sri Lanka
-  </p>
+  <div class="container">
 
-  <p
-    class="subtitle"
-    id="subtitle"
-  >
-    Members Registration
-  </p>
+    <button
+      class="back-btn"
+      onclick="window.location.href='members.html'"
+    >
+      ← Back to Members
+    </button>
 
-</div>
 
-  </div>  <div class="container"><button
-  class="back-btn"
-  onclick="window.location.href='members.html'"
->
-  ← Back to Members
-</button>
+    <div id="messageBox"></div>
 
-<div id="messageBox"></div>
 
-<div id="profileArea">
+    <div id="profileArea">
 
-  <div class="profile-card">
+      <div class="profile-card">
 
-    <div class="loading-card">
+        <div class="loading-card">
 
-      <div class="loading-spinner"></div>
+          <div class="loading-spinner"></div>
 
-      <div class="loading-text">
-        Loading member profile...
+          <div class="loading-text">
+            Loading member profile...
+          </div>
+
+        </div>
+
       </div>
 
     </div>
 
   </div>
 
-</div>
 
-  </div><script>
+<script>
+
 
   /* =========================================================
      SUPABASE
@@ -646,8 +684,10 @@
   const SUPABASE_URL =
     "https://djxpqggcpaofkpvcqgvd.supabase.co";
 
+
   const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_CNFFKEPixquJzd83jnyNEw_lAsIvU_c";
+
 
   const supabaseClient =
     supabase.createClient(
@@ -681,6 +721,7 @@
 
   const profileArea =
     document.getElementById("profileArea");
+
 
   const messageBox =
     document.getElementById("messageBox");
@@ -738,6 +779,7 @@
 
     }
 
+
     if (appSettings.secondary_color) {
 
       root.style.setProperty(
@@ -746,6 +788,7 @@
       );
 
     }
+
 
     if (appSettings.accent_color) {
 
@@ -756,6 +799,7 @@
 
     }
 
+
     if (appSettings.background_color) {
 
       root.style.setProperty(
@@ -764,6 +808,7 @@
       );
 
     }
+
 
     if (appSettings.card_color) {
 
@@ -774,6 +819,7 @@
 
     }
 
+
     if (appSettings.text_color) {
 
       root.style.setProperty(
@@ -782,6 +828,7 @@
       );
 
     }
+
 
     if (appSettings.button_text_color) {
 
@@ -836,28 +883,13 @@
 
   async function loadUserPermissions(user) {
 
-    /*
-      Main Admin
-      ----------
-      Main Admin is identified through dashboard_access
-      with role = main_admin.
-
-      Dashboard Staff
-      ---------------
-      Dashboard Staff is also identified through
-      dashboard_access.
-
-      Staff
-      -----
-      Staff is identified through staff_permissions.
-    */
-
-
     currentUserRole =
       "unknown";
 
+
     canEditMember =
       false;
+
 
     canDeleteMember =
       false;
@@ -911,11 +943,14 @@
       currentUserRole =
         "main_admin";
 
+
       canEditMember =
         true;
 
+
       canDeleteMember =
         true;
+
 
       return;
 
@@ -931,16 +966,14 @@
       currentUserRole =
         "dashboard_staff";
 
-      /*
-        Dashboard Staff is not included in the
-        Staff editing permissions.
-      */
 
       canEditMember =
         false;
 
+
       canDeleteMember =
         false;
+
 
       return;
 
@@ -995,27 +1028,19 @@
       currentUserRole =
         "staff";
 
+
       canEditMember =
         staffPermission.can_edit_own_member === true;
 
-      /*
-        Delete permission was NOT part of the
-        agreed Staff permissions.
-
-        Therefore Staff cannot delete members.
-      */
 
       canDeleteMember =
         false;
+
 
       return;
 
     }
 
-
-    /*
-      Authenticated user without a known role.
-    */
 
     currentUserRole =
       "unknown";
@@ -1102,6 +1127,7 @@
         document.getElementById(
           "logoWrapper"
         );
+
 
       const logo =
         document.getElementById(
@@ -1368,6 +1394,7 @@
     const row =
       document.createElement("div");
 
+
     row.className =
       "detail-row";
 
@@ -1375,8 +1402,10 @@
     const labelDiv =
       document.createElement("div");
 
+
     labelDiv.className =
       "detail-label";
+
 
     labelDiv.textContent =
       label;
@@ -1385,8 +1414,10 @@
     const valueDiv =
       document.createElement("div");
 
+
     valueDiv.className =
       "detail-value";
+
 
     valueDiv.textContent =
       value;
@@ -1395,6 +1426,7 @@
     row.appendChild(
       labelDiv
     );
+
 
     row.appendChild(
       valueDiv
@@ -1417,11 +1449,14 @@
     const title =
       document.createElement("div");
 
+
     title.className =
       "section-title";
 
+
     title.textContent =
       text;
+
 
     return title;
 
@@ -1438,25 +1473,13 @@
       member;
 
 
-    /*
-      Final ownership check for Staff.
-
-      Main Admin:
-      Can edit/delete every member.
-
-      Staff:
-      Can edit ONLY if created_by equals
-      current authenticated user's ID.
-
-      Staff cannot delete.
-    */
-
     if (
       currentUserRole === "main_admin"
     ) {
 
       canEditMember =
         true;
+
 
       canDeleteMember =
         true;
@@ -1470,6 +1493,7 @@
         member.created_by ===
         currentUser.id;
 
+
       canDeleteMember =
         false;
 
@@ -1477,6 +1501,7 @@
 
       canEditMember =
         false;
+
 
       canDeleteMember =
         false;
@@ -1491,6 +1516,7 @@
     const card =
       document.createElement("div");
 
+
     card.className =
       "profile-card";
 
@@ -1501,6 +1527,7 @@
 
     const header =
       document.createElement("div");
+
 
     header.className =
       "profile-header";
@@ -1525,6 +1552,7 @@
       const photoFrame =
         document.createElement("div");
 
+
       photoFrame.className =
         "photo-frame";
 
@@ -1532,8 +1560,10 @@
       const photo =
         document.createElement("img");
 
+
       photo.className =
         "profile-photo";
+
 
       photo.alt =
         "Member Photo";
@@ -1582,6 +1612,7 @@
         photo
       );
 
+
       header.appendChild(
         photoFrame
       );
@@ -1605,8 +1636,10 @@
       const id =
         document.createElement("div");
 
+
       id.className =
         "member-id";
+
 
       id.textContent =
         "ID  •  " +
@@ -1614,6 +1647,7 @@
           member,
           "member_id"
         );
+
 
       header.appendChild(
         id
@@ -1638,14 +1672,17 @@
       const name =
         document.createElement("div");
 
+
       name.className =
         "member-name";
+
 
       name.textContent =
         getFieldValue(
           member,
           "full_name"
         );
+
 
       header.appendChild(
         name
@@ -1670,14 +1707,17 @@
       const type =
         document.createElement("div");
 
+
       type.className =
         "member-type";
+
 
       type.textContent =
         getFieldValue(
           member,
           "member_type"
         );
+
 
       header.appendChild(
         type
@@ -1728,6 +1768,7 @@
 
       const details =
         document.createElement("div");
+
 
       details.className =
         "details";
@@ -1780,6 +1821,7 @@
       const notes =
         document.createElement("div");
 
+
       notes.className =
         "notes";
 
@@ -1787,8 +1829,10 @@
       const notesTitle =
         document.createElement("div");
 
+
       notesTitle.className =
         "notes-title";
+
 
       notesTitle.textContent =
         notesField.field_label ||
@@ -1798,8 +1842,10 @@
       const notesText =
         document.createElement("div");
 
+
       notesText.className =
         "notes-text";
+
 
       notesText.textContent =
         getFieldValue(
@@ -1811,6 +1857,7 @@
       notes.appendChild(
         notesTitle
       );
+
 
       notes.appendChild(
         notesText
@@ -1831,6 +1878,7 @@
     const actionSection =
       document.createElement("div");
 
+
     actionSection.className =
       "action-section";
 
@@ -1845,6 +1893,7 @@
     const buttons =
       document.createElement("div");
 
+
     buttons.className =
       "buttons";
 
@@ -1858,8 +1907,10 @@
       const editButton =
         document.createElement("button");
 
+
       editButton.className =
         "edit-btn";
+
 
       editButton.textContent =
         "✏️  Edit Member";
@@ -1891,8 +1942,10 @@
     const pdfButton =
       document.createElement("button");
 
+
     pdfButton.className =
       "pdf-btn";
+
 
     pdfButton.textContent =
       "📄  Download PDF";
@@ -1920,8 +1973,10 @@
       const deleteButton =
         document.createElement("button");
 
+
       deleteButton.className =
         "delete-btn";
+
 
       deleteButton.textContent =
         "🗑️  Delete Member";
@@ -1943,10 +1998,6 @@
 
     }
 
-
-    /*
-      If only PDF is available, make it full width.
-    */
 
     if (
       buttons.children.length === 1
@@ -1998,7 +2049,9 @@
         user
       );
 
+
       await loadAppSettings();
+
 
       await loadMemberListFields();
 
@@ -2029,39 +2082,33 @@
       }
 
 
-      /*
-        IMPORTANT:
-        created_by is loaded here so that Staff
-        ownership can be checked.
-      */
-
       const {
         data,
         error
       } =
-        await supabaseClient
-          .from("members")
-          .select(`
-            id,
-            member_id,
-            member_type,
-            full_name,
-            nic_number,
-            date_of_birth,
-            gender,
-            phone_whatsapp,
-            address,
-            marital_status,
-            date_of_salvation,
-            photo_url,
-            additional_notes,
-            created_by
-          `)
-          .eq(
-            "id",
-            memberId
-          )
-          .single();
+      await supabaseClient
+        .from("members")
+        .select(`
+          id,
+          member_id,
+          member_type,
+          full_name,
+          nic_number,
+          date_of_birth,
+          gender,
+          phone_whatsapp,
+          address,
+          marital_status,
+          date_of_salvation,
+          photo_url,
+          additional_notes,
+          created_by
+        `)
+        .eq(
+          "id",
+          memberId
+        )
+        .single();
 
 
       if (error) {
@@ -2145,11 +2192,13 @@
     const div =
       document.createElement("div");
 
+
     div.textContent =
       value === undefined ||
       value === null
         ? ""
         : String(value);
+
 
     return div.innerHTML;
 
@@ -2223,6 +2272,7 @@
         error
       );
 
+
       return null;
 
     }
@@ -2294,8 +2344,10 @@
     const pageWidth =
       pdf.internal.pageSize.getWidth();
 
+
     const pageHeight =
       pdf.internal.pageSize.getHeight();
+
 
     const margin = 18;
 
@@ -2320,7 +2372,9 @@
       "normal"
     );
 
+
     pdf.setFontSize(8);
+
 
     pdf.setTextColor(
       100,
@@ -2355,6 +2409,212 @@
         align: "center"
       }
     );
+
+  }
+
+
+  /* =========================================================
+     CAPACITOR HELPERS
+  ========================================================= */
+
+  function isNativeApp() {
+
+    return !!(
+      window.Capacitor &&
+      typeof window.Capacitor.isNativePlatform ===
+      "function" &&
+      window.Capacitor.isNativePlatform()
+    );
+
+  }
+
+
+  function getCapacitorPlugin(
+    name
+  ) {
+
+    if (
+      !window.Capacitor ||
+      !window.Capacitor.Plugins
+    ) {
+
+      return null;
+
+    }
+
+
+    return (
+      window.Capacitor.Plugins[name] ||
+      null
+    );
+
+  }
+
+
+  /* =========================================================
+     BLOB → BASE64
+  ========================================================= */
+
+  async function blobToBase64(
+    blob
+  ) {
+
+    return await new Promise(
+      function(resolve, reject) {
+
+        const reader =
+          new FileReader();
+
+
+        reader.onloadend =
+          function() {
+
+            const result =
+              reader.result;
+
+
+            if (
+              typeof result !== "string"
+            ) {
+
+              reject(
+                new Error(
+                  "Could not convert PDF to base64."
+                )
+              );
+
+              return;
+
+            }
+
+
+            const commaIndex =
+              result.indexOf(",");
+
+
+            if (
+              commaIndex === -1
+            ) {
+
+              reject(
+                new Error(
+                  "Invalid PDF data."
+                )
+              );
+
+              return;
+
+            }
+
+
+            resolve(
+              result.substring(
+                commaIndex + 1
+              )
+            );
+
+          };
+
+
+        reader.onerror =
+          function() {
+
+            reject(
+              new Error(
+                "Could not read PDF file."
+              )
+            );
+
+          };
+
+
+        reader.readAsDataURL(
+          blob
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     SAVE PDF TO ANDROID DEVICE
+  ========================================================= */
+
+  async function savePDFToDevice(
+    pdf,
+    filename
+  ) {
+
+    /*
+      Android APK
+      ------------
+      Use Capacitor Filesystem.
+
+      Browser
+      -------
+      Use normal jsPDF download.
+    */
+
+    if (!isNativeApp()) {
+
+      pdf.save(
+        filename
+      );
+
+      return {
+        native: false
+      };
+
+    }
+
+
+    const Filesystem =
+      getCapacitorPlugin(
+        "Filesystem"
+      );
+
+
+    if (!Filesystem) {
+
+      throw new Error(
+        "Filesystem plugin is not available in this APK. Please rebuild the APK after adding @capacitor/filesystem."
+      );
+
+    }
+
+
+    const blob =
+      pdf.output("blob");
+
+
+    const base64 =
+      await blobToBase64(
+        blob
+      );
+
+
+    await Filesystem.writeFile({
+
+      path:
+        filename,
+
+      data:
+        base64,
+
+      directory:
+        "DOCUMENTS",
+
+      recursive:
+        true
+
+    });
+
+
+    return {
+      native: true
+    };
 
   }
 
@@ -2410,11 +2670,17 @@
       const pageWidth =
         pdf.internal.pageSize.getWidth();
 
+
       const pageHeight =
         pdf.internal.pageSize.getHeight();
 
+
       const margin = 18;
 
+
+      /* =====================================================
+         PDF HEADER
+      ===================================================== */
 
       pdf.setFillColor(
         176,
@@ -2444,6 +2710,7 @@
         "bold"
       );
 
+
       pdf.setFontSize(20);
 
 
@@ -2464,6 +2731,7 @@
         "helvetica",
         "normal"
       );
+
 
       pdf.setFontSize(10);
 
@@ -2492,6 +2760,10 @@
 
       let currentY = 47;
 
+
+      /* =====================================================
+         PHOTO
+      ===================================================== */
 
       const photoField =
         getField(
@@ -2547,6 +2819,10 @@
       }
 
 
+      /* =====================================================
+         NAME
+      ===================================================== */
+
       const nameField =
         getField(
           "full_name"
@@ -2574,10 +2850,12 @@
           45
         );
 
+
         pdf.setFont(
           "helvetica",
           "bold"
         );
+
 
         pdf.setFontSize(18);
 
@@ -2605,6 +2883,10 @@
       }
 
 
+      /* =====================================================
+         MEMBER ID
+      ===================================================== */
+
       const idField =
         getField(
           "member_id"
@@ -2621,7 +2903,9 @@
           "normal"
         );
 
+
         pdf.setFontSize(11);
+
 
         pdf.setTextColor(
           90,
@@ -2648,6 +2932,10 @@
       }
 
 
+      /* =====================================================
+         MEMBER TYPE
+      ===================================================== */
+
       const typeField =
         getField(
           "member_type"
@@ -2663,6 +2951,7 @@
           "helvetica",
           "normal"
         );
+
 
         pdf.setFontSize(11);
 
@@ -2688,6 +2977,10 @@
       currentY += 7;
 
 
+      /* =====================================================
+         MEMBER INFORMATION HEADER
+      ===================================================== */
+
       pdf.setFillColor(
         176,
         141,
@@ -2712,10 +3005,12 @@
         255
       );
 
+
       pdf.setFont(
         "helvetica",
         "bold"
       );
+
 
       pdf.setFontSize(10);
 
@@ -2729,6 +3024,10 @@
 
       currentY += 13;
 
+
+      /* =====================================================
+         PDF FIELDS
+      ===================================================== */
 
       const pdfFields =
         getPdfFields();
@@ -2795,6 +3094,7 @@
 
           pdf.addPage();
 
+
           currentY = 25;
 
         }
@@ -2823,7 +3123,9 @@
           "bold"
         );
 
+
         pdf.setFontSize(8.5);
+
 
         pdf.setTextColor(
           140,
@@ -2843,6 +3145,7 @@
           "helvetica",
           "normal"
         );
+
 
         pdf.setTextColor(
           34,
@@ -2864,6 +3167,10 @@
       }
 
 
+      /* =====================================================
+         ADDITIONAL NOTES
+      ===================================================== */
+
       const notesField =
         getField(
           "additional_notes"
@@ -2884,6 +3191,7 @@
         ) {
 
           pdf.addPage();
+
 
           currentY = 25;
 
@@ -2920,6 +3228,7 @@
           "bold"
         );
 
+
         pdf.setFontSize(10);
 
 
@@ -2939,11 +3248,13 @@
           "normal"
         );
 
+
         pdf.setTextColor(
           34,
           34,
           34
         );
+
 
         pdf.setFontSize(9);
 
@@ -2978,6 +3289,7 @@
 
           pdf.addPage();
 
+
           currentY = 25;
 
         }
@@ -3010,6 +3322,10 @@
       }
 
 
+      /* =====================================================
+         ADD FOOTER TO ALL PAGES
+      ===================================================== */
+
       const totalPages =
         pdf.getNumberOfPages();
 
@@ -3022,12 +3338,17 @@
 
         pdf.setPage(i);
 
+
         addPDFFooter(
           pdf
         );
 
       }
 
+
+      /* =====================================================
+         FILE NAME
+      ===================================================== */
 
       const safeName =
         (
@@ -3040,16 +3361,37 @@
         );
 
 
-      pdf.save(
+      const filename =
         safeName +
-        "_Member_Profile.pdf"
-      );
+        "_Member_Profile.pdf";
 
 
-      messageBox.innerHTML =
-        '<div class="success">' +
-        'PDF downloaded successfully.' +
-        '</div>';
+      /* =====================================================
+         SAVE
+      ===================================================== */
+
+      const result =
+        await savePDFToDevice(
+          pdf,
+          filename
+        );
+
+
+      if (result.native) {
+
+        messageBox.innerHTML =
+          '<div class="success">' +
+          'PDF saved to device successfully.' +
+          '</div>';
+
+      } else {
+
+        messageBox.innerHTML =
+          '<div class="success">' +
+          'PDF downloaded successfully.' +
+          '</div>';
+
+      }
 
 
       setTimeout(
@@ -3092,10 +3434,6 @@
     id
   ) {
 
-    /*
-      Extra client-side safety check.
-    */
-
     if (
       currentUserRole !==
       "main_admin"
@@ -3105,6 +3443,7 @@
         '<div class="error">' +
         'You do not have permission to delete members.' +
         '</div>';
+
 
       return;
 
@@ -3158,6 +3497,7 @@
         ) +
         '</div>';
 
+
       return;
 
     }
@@ -3188,5 +3528,8 @@
 
   loadMember();
 
-</script></body>
+</script>
+
+</body>
+
 </html>

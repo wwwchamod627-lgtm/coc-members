@@ -99,6 +99,11 @@
       background: #ad8918;
     }
 
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .logout-btn {
       width: auto;
       padding: 10px 18px;
@@ -158,6 +163,18 @@
       font-size: 14px;
     }
 
+    .role-badge {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 12px;
+      border-radius: 20px;
+      background: #fff8df;
+      color: #8e6d08;
+      font-size: 12px;
+      font-weight: bold;
+      border: 1px solid #ead58a;
+    }
+
     .stats {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
@@ -194,6 +211,34 @@
       text-align: center;
     }
 
+    .access-denied {
+      max-width: 500px;
+      margin: 60px auto;
+      padding: 20px;
+    }
+
+    .access-denied-card {
+      background: white;
+      border-radius: 16px;
+      padding: 30px;
+      box-shadow: 0 4px 18px rgba(0,0,0,0.08);
+      text-align: center;
+    }
+
+    .access-denied-card h2 {
+      color: #b00020;
+      margin-top: 0;
+    }
+
+    .access-denied-card p {
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .access-denied-card button {
+      margin-top: 10px;
+    }
+
     .hidden {
       display: none !important;
     }
@@ -216,6 +261,8 @@
 
 <body>
 
+  <!-- HEADER -->
+
   <div class="header">
     <h1>COC Members</h1>
     <p>Church Of Christ Sri Lanka</p>
@@ -223,6 +270,7 @@
 
 
   <!-- LOGIN -->
+
   <div id="loginSection" class="login-container">
 
     <div class="login-card">
@@ -236,6 +284,7 @@
       <form id="loginForm">
 
         <label for="email">Email Address</label>
+
         <input
           type="email"
           id="email"
@@ -244,6 +293,7 @@
         >
 
         <label for="password">Password</label>
+
         <input
           type="password"
           id="password"
@@ -264,14 +314,57 @@
   </div>
 
 
+  <!-- ACCESS DENIED -->
+
+  <div
+    id="accessDeniedSection"
+    class="access-denied hidden"
+  >
+
+    <div class="access-denied-card">
+
+      <h2>Access Denied</h2>
+
+      <p>
+        Your account does not have permission to access
+        the COC Members Dashboard.
+      </p>
+
+      <p id="accessDeniedEmail"></p>
+
+      <button
+        id="accessDeniedLogoutButton"
+      >
+        Logout
+      </button>
+
+    </div>
+
+  </div>
+
+
   <!-- DASHBOARD -->
-  <div id="dashboardSection" class="dashboard-container hidden">
+
+  <div
+    id="dashboardSection"
+    class="dashboard-container hidden"
+  >
 
     <div class="welcome">
 
       <div>
+
         <h2>Members Dashboard</h2>
+
         <p id="userEmail"></p>
+
+        <div
+          id="userRole"
+          class="role-badge"
+        >
+          —
+        </div>
+
       </div>
 
       <button
@@ -355,6 +448,9 @@
   const dashboardSection =
     document.getElementById("dashboardSection");
 
+  const accessDeniedSection =
+    document.getElementById("accessDeniedSection");
+
   const loginForm =
     document.getElementById("loginForm");
 
@@ -367,8 +463,21 @@
   const logoutButton =
     document.getElementById("logoutButton");
 
+  const accessDeniedLogoutButton =
+    document.getElementById(
+      "accessDeniedLogoutButton"
+    );
+
+  const accessDeniedEmail =
+    document.getElementById(
+      "accessDeniedEmail"
+    );
+
   const userEmail =
     document.getElementById("userEmail");
+
+  const userRole =
+    document.getElementById("userRole");
 
   const totalMembers =
     document.getElementById("totalMembers");
@@ -381,70 +490,311 @@
 
 
   /* =========================
-     LOGIN
+     RESET UI
   ========================= */
 
-  loginForm.addEventListener("submit", async function(event) {
+  function showLogin() {
 
-    event.preventDefault();
+    loginSection.classList.remove("hidden");
+
+    dashboardSection.classList.add("hidden");
+
+    accessDeniedSection.classList.add("hidden");
 
     loginError.style.display = "none";
 
-    const email =
-      document.getElementById("email").value.trim();
+  }
 
-    const password =
-      document.getElementById("password").value;
 
-    loginButton.disabled = true;
-    loginButton.textContent = "Logging in...";
+  function showAccessDenied(user) {
+
+    loginSection.classList.add("hidden");
+
+    dashboardSection.classList.add("hidden");
+
+    accessDeniedSection.classList.remove("hidden");
+
+    accessDeniedEmail.textContent =
+      user && user.email
+        ? user.email
+        : "";
+
+  }
+
+
+  /* =========================
+     CHECK DASHBOARD ACCESS
+  ========================= */
+
+  async function checkDashboardAccess(user) {
+
+    if (!user || !user.id) {
+
+      return {
+        allowed: false,
+        role: null
+      };
+
+    }
 
 
     const { data, error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+      await supabaseClient
+        .from("dashboard_access")
+        .select(
+          "user_id, role, is_active"
+        )
+        .eq(
+          "user_id",
+          user.id
+        )
+        .maybeSingle();
 
 
     if (error) {
 
-      loginError.textContent =
-        error.message;
+      console.error(
+        "Dashboard access error:",
+        error
+      );
 
-      loginError.style.display = "block";
+      return {
+        allowed: false,
+        role: null,
+        error: error
+      };
+
+    }
+
+
+    /*
+      No access record
+    */
+
+    if (!data) {
+
+      return {
+        allowed: false,
+        role: null
+      };
+
+    }
+
+
+    /*
+      Access disabled
+    */
+
+    if (data.is_active !== true) {
+
+      return {
+        allowed: false,
+        role: data.role
+      };
+
+    }
+
+
+    /*
+      Valid roles only
+    */
+
+    if (
+      data.role !== "main_admin" &&
+      data.role !== "dashboard_staff"
+    ) {
+
+      return {
+        allowed: false,
+        role: data.role
+      };
+
+    }
+
+
+    return {
+      allowed: true,
+      role: data.role
+    };
+
+  }
+
+
+  /* =========================
+     LOGIN
+  ========================= */
+
+  loginForm.addEventListener(
+    "submit",
+    async function(event) {
+
+      event.preventDefault();
+
+      loginError.style.display = "none";
+
+      const email =
+        document
+          .getElementById("email")
+          .value
+          .trim();
+
+      const password =
+        document.getElementById(
+          "password"
+        ).value;
+
+
+      loginButton.disabled = true;
+
+      loginButton.textContent =
+        "Logging in...";
+
+
+      const { data, error } =
+        await supabaseClient.auth.signInWithPassword({
+
+          email: email,
+
+          password: password
+
+        });
+
+
+      if (error) {
+
+        loginError.textContent =
+          error.message;
+
+        loginError.style.display =
+          "block";
+
+        loginButton.disabled = false;
+
+        loginButton.textContent =
+          "Login";
+
+        return;
+
+      }
+
+
+      if (data && data.user) {
+
+        await showDashboard(
+          data.user
+        );
+
+      }
+
 
       loginButton.disabled = false;
-      loginButton.textContent = "Login";
 
-      return;
-    }
-
-
-    if (data && data.user) {
-
-      showDashboard(data.user);
+      loginButton.textContent =
+        "Login";
 
     }
-
-    loginButton.disabled = false;
-    loginButton.textContent = "Login";
-
-  });
+  );
 
 
   /* =========================
      SHOW DASHBOARD
+     WITH ACCESS CONTROL
   ========================= */
 
   async function showDashboard(user) {
 
-    loginSection.classList.add("hidden");
+    /*
+      First check permission
+    */
 
-    dashboardSection.classList.remove("hidden");
+    const access =
+      await checkDashboardAccess(user);
+
+
+    /*
+      Database / permission error
+    */
+
+    if (access.error) {
+
+      loginSection.classList.add(
+        "hidden"
+      );
+
+      dashboardSection.classList.add(
+        "hidden"
+      );
+
+      accessDeniedSection.classList.remove(
+        "hidden"
+      );
+
+      accessDeniedEmail.textContent =
+        "Unable to verify dashboard permission.";
+
+      return;
+
+    }
+
+
+    /*
+      User is NOT allowed
+    */
+
+    if (!access.allowed) {
+
+      showAccessDenied(user);
+
+      return;
+
+    }
+
+
+    /*
+      User IS allowed
+    */
+
+    loginSection.classList.add(
+      "hidden"
+    );
+
+    accessDeniedSection.classList.add(
+      "hidden"
+    );
+
+    dashboardSection.classList.remove(
+      "hidden"
+    );
+
 
     userEmail.textContent =
-      user.email || "Logged in user";
+      user.email ||
+      "Logged in user";
+
+
+    /*
+      Display role
+    */
+
+    if (access.role === "main_admin") {
+
+      userRole.textContent =
+        "Main Admin";
+
+    } else if (
+      access.role === "dashboard_staff"
+    ) {
+
+      userRole.textContent =
+        "Dashboard Staff";
+
+    } else {
+
+      userRole.textContent =
+        "Dashboard User";
+
+    }
+
 
     await loadDashboard();
 
@@ -468,10 +818,13 @@
     const totalResult =
       await supabaseClient
         .from("members")
-        .select("id", {
-          count: "exact",
-          head: true
-        });
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        );
 
 
     if (totalResult.error) {
@@ -480,8 +833,11 @@
         "Database error: " +
         totalResult.error.message;
 
-      totalMembers.textContent = "—";
-      todayMembers.textContent = "—";
+      totalMembers.textContent =
+        "—";
+
+      todayMembers.textContent =
+        "—";
 
       console.error(
         "Total members error:",
@@ -489,6 +845,7 @@
       );
 
       return;
+
     }
 
 
@@ -500,22 +857,29 @@
       TODAY'S DATE
     */
 
-    const now = new Date();
+    const now =
+      new Date();
+
 
     const startOfToday =
       new Date(
         now.getFullYear(),
         now.getMonth(),
         now.getDate(),
-        0, 0, 0
+        0,
+        0,
+        0
       );
+
 
     const startOfTomorrow =
       new Date(
         now.getFullYear(),
         now.getMonth(),
         now.getDate() + 1,
-        0, 0, 0
+        0,
+        0,
+        0
       );
 
 
@@ -526,10 +890,13 @@
     const todayResult =
       await supabaseClient
         .from("members")
-        .select("id", {
-          count: "exact",
-          head: true
-        })
+        .select(
+          "id",
+          {
+            count: "exact",
+            head: true
+          }
+        )
         .gte(
           "created_at",
           startOfToday.toISOString()
@@ -546,7 +913,8 @@
         "Total members loaded, but today's count failed: " +
         todayResult.error.message;
 
-      todayMembers.textContent = "—";
+      todayMembers.textContent =
+        "—";
 
       console.error(
         "Today members error:",
@@ -554,6 +922,7 @@
       );
 
       return;
+
     }
 
 
@@ -571,19 +940,32 @@
      LOGOUT
   ========================= */
 
+  async function logoutUser() {
+
+    await supabaseClient.auth.signOut();
+
+    showLogin();
+
+    document.getElementById(
+      "password"
+    ).value = "";
+
+    document.getElementById(
+      "email"
+    ).value = "";
+
+  }
+
+
   logoutButton.addEventListener(
     "click",
-    async function() {
+    logoutUser
+  );
 
-      await supabaseClient.auth.signOut();
 
-      dashboardSection.classList.add("hidden");
-
-      loginSection.classList.remove("hidden");
-
-      document.getElementById("password").value = "";
-
-    }
+  accessDeniedLogoutButton.addEventListener(
+    "click",
+    logoutUser
   );
 
 
@@ -599,15 +981,18 @@
       await supabaseClient.auth.getSession();
 
 
-    if (session && session.user) {
+    if (
+      session &&
+      session.user
+    ) {
 
-      showDashboard(session.user);
+      await showDashboard(
+        session.user
+      );
 
     } else {
 
-      loginSection.classList.remove("hidden");
-
-      dashboardSection.classList.add("hidden");
+      showLogin();
 
     }
 
@@ -627,15 +1012,18 @@
         session.user
       ) {
 
-        showDashboard(session.user);
+        await showDashboard(
+          session.user
+        );
 
       }
 
-      if (event === "SIGNED_OUT") {
 
-        loginSection.classList.remove("hidden");
+      if (
+        event === "SIGNED_OUT"
+      ) {
 
-        dashboardSection.classList.add("hidden");
+        showLogin();
 
       }
 

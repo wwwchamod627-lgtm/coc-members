@@ -123,6 +123,21 @@
     }
 
     /* =====================================================
+       DASHBOARD BUTTON
+    ====================================================== */
+
+    #dashboardButton {
+      display: none;
+      border: 2px solid var(--primary-color);
+      color: var(--secondary-color);
+    }
+
+    #dashboardButton:hover {
+      background: var(--primary-color);
+      color: var(--button-text-color);
+    }
+
+    /* =====================================================
        ADMIN PANEL BUTTON
     ====================================================== */
 
@@ -242,6 +257,7 @@
         ➕ Register New Member
       </button>
 
+
       <button
         id="membersButton"
         onclick="membersList()"
@@ -249,12 +265,27 @@
         👥 Members List
       </button>
 
+
       <button
         id="searchButton"
         onclick="searchMembers()"
       >
         🔍 Search Members
       </button>
+
+
+      <!-- =================================================
+           DASHBOARD
+           ONLY MAIN ADMIN + DASHBOARD STAFF
+      ================================================== -->
+
+      <button
+        id="dashboardButton"
+        onclick="openDashboard()"
+      >
+        📊 Dashboard
+      </button>
+
 
       <!-- =================================================
            ADMIN PANEL
@@ -468,6 +499,15 @@
       }
 
 
+      /* ================================================
+         CHECK DASHBOARD ACCESS
+      ================================================= */
+
+      await checkDashboardAccess(
+        user
+      );
+
+
       await loadSettings();
 
     }
@@ -481,6 +521,124 @@
 
       window.location.href =
         "index.html";
+
+    }
+
+  }
+
+
+  /* =========================================================
+     DASHBOARD ACCESS CONTROL
+
+     Allowed users:
+
+     1. main_admin
+     2. dashboard_staff
+  ========================================================= */
+
+  async function checkDashboardAccess(user) {
+
+    const dashboardButton =
+      document.getElementById(
+        "dashboardButton"
+      );
+
+
+    /* Default: hidden */
+
+    dashboardButton.style.display =
+      "none";
+
+
+    try {
+
+      const {
+        data,
+        error
+      } =
+        await supabaseClient
+          .from("dashboard_access")
+          .select(
+            "user_id, role, is_active"
+          )
+          .eq(
+            "user_id",
+            user.id
+          )
+          .maybeSingle();
+
+
+      if (error) {
+
+        console.error(
+          "Dashboard access check error:",
+          error
+        );
+
+        return;
+
+      }
+
+
+      if (!data) {
+
+        console.log(
+          "Dashboard access: NO ACCESS"
+        );
+
+        return;
+
+      }
+
+
+      if (
+        data.is_active !== true
+      ) {
+
+        console.log(
+          "Dashboard access: INACTIVE"
+        );
+
+        return;
+
+      }
+
+
+      if (
+        data.role !== "main_admin" &&
+        data.role !== "dashboard_staff"
+      ) {
+
+        console.log(
+          "Dashboard access: INVALID ROLE"
+        );
+
+        return;
+
+      }
+
+
+      /* ================================================
+         USER HAS DASHBOARD ACCESS
+      ================================================= */
+
+      dashboardButton.style.display =
+        "block";
+
+
+      console.log(
+        "Dashboard access granted:",
+        data.role
+      );
+
+    }
+
+    catch (error) {
+
+      console.error(
+        "Dashboard access exception:",
+        error
+      );
 
     }
 
@@ -1201,6 +1359,18 @@
 
     window.location.href =
       "members.html";
+
+  }
+
+
+  /* =========================================================
+     DASHBOARD NAVIGATION
+  ========================================================= */
+
+  function openDashboard() {
+
+    window.location.href =
+      "dashboard.html";
 
   }
 

@@ -279,7 +279,7 @@
     }
 
     /* =========================================================
-       PDF BUTTON
+       PDF BUTTONS
     ========================================================= */
 
     .pdf-all-btn {
@@ -299,7 +299,7 @@
       font-size: 15px;
       font-weight: 800;
       cursor: pointer;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
       box-shadow:
         0 7px 18px
         color-mix(
@@ -732,13 +732,23 @@
       </div>
 
 
-      <!-- PDF -->
+      <!-- PDF DOWNLOAD -->
 
       <button
         id="pdfAllButton"
         class="pdf-all-btn"
       >
         📚 Download All Members PDF
+      </button>
+
+
+      <!-- PDF SHARE -->
+
+      <button
+        id="pdfShareButton"
+        class="pdf-all-btn"
+      >
+        📤 Share All Members PDF
       </button>
 
 
@@ -803,6 +813,11 @@
   const pdfAllButton =
     document.getElementById(
       "pdfAllButton"
+    );
+
+  const pdfShareButton =
+    document.getElementById(
+      "pdfShareButton"
     );
 
   const logoWrap =
@@ -1925,6 +1940,387 @@
 
 
   /* =========================================================
+     CAPACITOR / NATIVE APP HELPERS
+  ========================================================= */
+
+  function isNativeApp() {
+
+    return !!(
+      window.Capacitor &&
+      typeof window.Capacitor.isNativePlatform ===
+        "function" &&
+      window.Capacitor.isNativePlatform()
+    );
+
+  }
+
+
+  function getNativePlugin(
+    name
+  ) {
+
+    if (
+      !window.Capacitor ||
+      !window.Capacitor.Plugins
+    ) {
+
+      return null;
+
+    }
+
+
+    return (
+      window.Capacitor.Plugins[name] ||
+      null
+    );
+
+  }
+
+
+  /* =========================================================
+     BLOB → BASE64
+  ========================================================= */
+
+  async function blobToBase64(
+    blob
+  ) {
+
+    return await new Promise(
+      function(
+        resolve,
+        reject
+      ) {
+
+        const reader =
+          new FileReader();
+
+
+        reader.onloadend =
+          function() {
+
+            try {
+
+              const result =
+                reader.result;
+
+
+              if (
+                typeof result !==
+                "string"
+              ) {
+
+                reject(
+                  new Error(
+                    "Could not convert PDF to Base64."
+                  )
+                );
+
+                return;
+
+              }
+
+
+              const base64 =
+                result.split(",")[1];
+
+
+              resolve(
+                base64
+              );
+
+
+            } catch (error) {
+
+              reject(
+                error
+              );
+
+            }
+
+          };
+
+
+        reader.onerror =
+          function() {
+
+            reject(
+              new Error(
+                "Could not read PDF file."
+              )
+            );
+
+          };
+
+
+        reader.readAsDataURL(
+          blob
+        );
+
+      }
+    );
+
+  }
+
+
+  /* =========================================================
+     SAVE PDF TO DEVICE
+  ========================================================= */
+
+  async function savePDFToDevice(
+    pdf,
+    fileName
+  ) {
+
+    /* =====================================================
+       ANDROID / CAPACITOR
+    ===================================================== */
+
+    if (
+      isNativeApp()
+    ) {
+
+      const Filesystem =
+        getNativePlugin(
+          "Filesystem"
+        );
+
+
+      if (!Filesystem) {
+
+        throw new Error(
+          "Filesystem plugin is not available in the APK."
+        );
+
+      }
+
+
+      const pdfBlob =
+        pdf.output(
+          "blob"
+        );
+
+
+      const base64 =
+        await blobToBase64(
+          pdfBlob
+        );
+
+
+      await Filesystem.writeFile({
+
+        path:
+          fileName,
+
+        data:
+          base64,
+
+        directory:
+          "DOCUMENTS",
+
+        recursive:
+          true
+
+      });
+
+
+      return true;
+
+    }
+
+
+    /* =====================================================
+       BROWSER FALLBACK
+    ===================================================== */
+
+    pdf.save(
+      fileName
+    );
+
+
+    return true;
+
+  }
+
+
+  /* =========================================================
+     SHARE PDF
+  ========================================================= */
+
+  async function sharePDFFile(
+    pdf,
+    fileName
+  ) {
+
+    /* =====================================================
+       ANDROID / CAPACITOR
+    ===================================================== */
+
+    if (
+      isNativeApp()
+    ) {
+
+      const Filesystem =
+        getNativePlugin(
+          "Filesystem"
+        );
+
+
+      const Share =
+        getNativePlugin(
+          "Share"
+        );
+
+
+      if (!Filesystem) {
+
+        throw new Error(
+          "Filesystem plugin is not available in the APK."
+        );
+
+      }
+
+
+      if (!Share) {
+
+        throw new Error(
+          "Share plugin is not available in the APK."
+        );
+
+      }
+
+
+      const pdfBlob =
+        pdf.output(
+          "blob"
+        );
+
+
+      const base64 =
+        await blobToBase64(
+          pdfBlob
+        );
+
+
+      /*
+        Save a copy in CACHE for Android sharing.
+      */
+
+      await Filesystem.writeFile({
+
+        path:
+          fileName,
+
+        data:
+          base64,
+
+        directory:
+          "CACHE",
+
+        recursive:
+          true
+
+      });
+
+
+      const uriResult =
+        await Filesystem.getUri({
+
+          directory:
+            "CACHE",
+
+          path:
+            fileName
+
+        });
+
+
+      await Share.share({
+
+        title:
+          "COC Members PDF",
+
+        text:
+          "COC Members - All Members",
+
+        url:
+          uriResult.uri,
+
+        dialogTitle:
+          "Share COC Members PDF"
+
+      });
+
+
+      return true;
+
+    }
+
+
+    /* =====================================================
+       BROWSER FALLBACK
+    ===================================================== */
+
+    const blob =
+      pdf.output(
+        "blob"
+      );
+
+
+    const file =
+      new File(
+        [blob],
+        fileName,
+        {
+          type:
+            "application/pdf"
+        }
+      );
+
+
+    if (
+      navigator.share &&
+      navigator.canShare &&
+      navigator.canShare({
+        files:
+          [file]
+      })
+    ) {
+
+      await navigator.share({
+
+        title:
+          "COC Members PDF",
+
+        text:
+          "COC Members - All Members",
+
+        files:
+          [file]
+
+      });
+
+
+      return true;
+
+    }
+
+
+    /*
+      Browser does not support file sharing.
+      Use normal browser download.
+    */
+
+    pdf.save(
+      fileName
+    );
+
+
+    return true;
+
+  }
+
+
+  /* =========================================================
      FOOTER
   ========================================================= */
 
@@ -2784,6 +3180,84 @@
 
 
   /* =========================================================
+     CREATE ALL MEMBERS PDF
+  ========================================================= */
+
+  async function createAllMembersPDF() {
+
+    const {
+      jsPDF
+    } =
+      window.jspdf;
+
+
+    if (!jsPDF) {
+
+      throw new Error(
+        "PDF library could not be loaded."
+      );
+
+    }
+
+
+    const pdf =
+      new jsPDF({
+
+        orientation:
+          "portrait",
+
+        unit:
+          "mm",
+
+        format:
+          "a4"
+
+      });
+
+
+    const totalProfiles =
+      allMembers.length;
+
+
+    for (
+      let i = 0;
+      i < totalProfiles;
+      i++
+    ) {
+
+      if (i > 0) {
+
+        pdf.addPage();
+
+      }
+
+
+      errorBox.innerHTML =
+        '<div class="success">' +
+        'Creating PDF: Member ' +
+        (i + 1) +
+        ' of ' +
+        totalProfiles +
+        '...' +
+        '</div>';
+
+
+      await addMemberToPDF(
+        pdf,
+        allMembers[i],
+        i + 1,
+        totalProfiles
+      );
+
+    }
+
+
+    return pdf;
+
+  }
+
+
+  /* =========================================================
      DOWNLOAD ALL MEMBERS PDF
   ========================================================= */
 
@@ -2807,6 +3281,10 @@
       true;
 
 
+    pdfShareButton.disabled =
+      true;
+
+
     pdfAllButton.textContent =
       "⏳ Creating PDF...";
 
@@ -2819,77 +3297,23 @@
 
     try {
 
-      const {
-        jsPDF
-      } =
-      window.jspdf;
-
-
-      if (!jsPDF) {
-
-        throw new Error(
-          "PDF library could not be loaded."
-        );
-
-      }
-
-
       const pdf =
-        new jsPDF({
-          orientation:
-            "portrait",
-          unit:
-            "mm",
-          format:
-            "a4"
-        });
+        await createAllMembersPDF();
 
 
-      const totalProfiles =
-        allMembers.length;
-
-
-      for (
-        let i = 0;
-        i < totalProfiles;
-        i++
-      ) {
-
-        if (i > 0) {
-
-          pdf.addPage();
-
-        }
-
-
-        errorBox.innerHTML =
-          '<div class="success">' +
-          'Creating PDF: Member ' +
-          (i + 1) +
-          ' of ' +
-          totalProfiles +
-          '...' +
-          '</div>';
-
-
-        await addMemberToPDF(
-          pdf,
-          allMembers[i],
-          i + 1,
-          totalProfiles
-        );
-
-      }
-
-
-      pdf.save(
+      await savePDFToDevice(
+        pdf,
         "COC_Members_All_Members.pdf"
       );
 
 
       errorBox.innerHTML =
         '<div class="success">' +
-        'All Members PDF downloaded successfully.' +
+        (
+          isNativeApp()
+            ? "All Members PDF saved successfully to your device."
+            : "All Members PDF downloaded successfully."
+        ) +
         '</div>';
 
 
@@ -2903,7 +3327,7 @@
 
       errorBox.innerHTML =
         '<div class="error">' +
-        'PDF creation failed: ' +
+        'PDF creation/download failed: ' +
         error.message +
         '</div>';
 
@@ -2914,8 +3338,123 @@
       false;
 
 
+    pdfShareButton.disabled =
+      false;
+
+
     pdfAllButton.textContent =
       "📚 Download All Members PDF";
+
+  }
+
+
+  /* =========================================================
+     SHARE ALL MEMBERS PDF
+  ========================================================= */
+
+  async function shareAllMembersPDF() {
+
+    if (
+      !allMembers ||
+      allMembers.length === 0
+    ) {
+
+      alert(
+        "There are no members to export."
+      );
+
+      return;
+
+    }
+
+
+    pdfShareButton.disabled =
+      true;
+
+
+    pdfAllButton.disabled =
+      true;
+
+
+    pdfShareButton.textContent =
+      "⏳ Creating PDF...";
+
+
+    errorBox.innerHTML =
+      '<div class="success">' +
+      'Creating All Members PDF for sharing. Please wait...' +
+      '</div>';
+
+
+    try {
+
+      const pdf =
+        await createAllMembersPDF();
+
+
+      await sharePDFFile(
+        pdf,
+        "COC_Members_All_Members.pdf"
+      );
+
+
+      errorBox.innerHTML =
+        '<div class="success">' +
+        'All Members PDF is ready to share.' +
+        '</div>';
+
+
+    } catch (error) {
+
+      console.error(
+        "PDF Share Error:",
+        error
+      );
+
+
+      /*
+        User cancelling Android share dialog
+        should not be treated as a serious error.
+      */
+
+      if (
+        error &&
+        (
+          error.message ===
+            "Share canceled" ||
+          error.message ===
+            "User canceled"
+        )
+      ) {
+
+        errorBox.innerHTML =
+          '<div class="success">' +
+          'PDF sharing was canceled.' +
+          '</div>';
+
+      } else {
+
+        errorBox.innerHTML =
+          '<div class="error">' +
+          'PDF sharing failed: ' +
+          error.message +
+          '</div>';
+
+      }
+
+    }
+
+
+    pdfShareButton.disabled =
+      false;
+
+
+    pdfAllButton.disabled =
+      false;
+
+
+    pdfShareButton.textContent =
+      "📤 Share All Members PDF";
 
   }
 
@@ -2933,6 +3472,12 @@
   pdfAllButton.addEventListener(
     "click",
     downloadAllMembersPDF
+  );
+
+
+  pdfShareButton.addEventListener(
+    "click",
+    shareAllMembersPDF
   );
 
 

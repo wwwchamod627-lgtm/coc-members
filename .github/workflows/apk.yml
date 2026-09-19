@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-24.04
 
     steps:
+
       - name: Checkout
         uses: actions/checkout@v4
 
@@ -31,6 +32,7 @@ jobs:
         run: |
           mkdir -p www
           cp -r ./* www/ 2>/dev/null || true
+
           rm -rf www/.git
           rm -rf www/.github
           rm -rf www/node_modules
@@ -55,60 +57,119 @@ jobs:
       - name: Sync Android
         run: npx cap sync android
 
-      - name: Find existing logo
+      # ----------------------------------------------------
+      # GET THE EXACT APP LOGO FROM SUPABASE
+      # ----------------------------------------------------
+
+      - name: Get COC Members logo
+        env:
+          SUPABASE_URL: https://djxpqggcpaofkpvcqgvd.supabase.co
+          SUPABASE_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
         run: |
-          echo "Searching repository for logo..."
 
-          LOGO=$(find . \
-            -type f \
-            \( -iname "*logo*.png" -o \
-               -iname "*logo*.jpg" -o \
-               -iname "*logo*.jpeg" -o \
-               -iname "*logo*.webp" \
-            \) \
-            ! -path "./.git/*" \
-            ! -path "./android/*" \
-            ! -path "./www/*" \
-            | head -1)
+          echo "Getting logo URL from Supabase..."
 
-          if [ -z "$LOGO" ]; then
-            LOGO=$(find . \
-              -type f \
-              \( -iname "*.png" -o \
-                 -iname "*.jpg" -o \
-                 -iname "*.jpeg" -o \
-                 -iname "*.webp" \
-              \) \
-              ! -path "./.git/*" \
-              ! -path "./android/*" \
-              ! -path "./www/*" \
-              | head -1)
-          fi
+          RESPONSE=$(curl -s \
+            -H "apikey: $SUPABASE_KEY" \
+            -H "Authorization: Bearer $SUPABASE_KEY" \
+            "$SUPABASE_URL/rest/v1/app_settings?select=logo_url&limit=1")
 
-          if [ -z "$LOGO" ]; then
-            echo "ERROR: No suitable logo image found."
+          echo "Supabase response:"
+          echo "$RESPONSE"
+
+          LOGO_URL=$(echo "$RESPONSE" | python3 -c '
+          import sys,json
+          try:
+              data=json.load(sys.stdin)
+              if data and data[0].get("logo_url"):
+                  print(data[0]["logo_url"])
+          except:
+              pass
+          ')
+
+          if [ -z "$LOGO_URL" ]; then
+            echo "ERROR: Logo URL was not found."
             exit 1
           fi
 
-          echo "Logo found: $LOGO"
+          echo "Logo URL found:"
+          echo "$LOGO_URL"
 
-          echo "LOGO=$LOGO" >> "$GITHUB_ENV"
+          echo "LOGO_URL=$LOGO_URL" >> $GITHUB_ENV
 
-      - name: Prepare Android icon
+      # ----------------------------------------------------
+      # DOWNLOAD LOGO
+      # ----------------------------------------------------
+
+      - name: Download app logo
         run: |
+
           mkdir -p android/app/src/main/res/drawable
 
-          cp "$LOGO" \
-            android/app/src/main/res/drawable/coc_members_icon.png
+          curl -L \
+            "$LOGO_URL" \
+            -o android/app/src/main/res/drawable/coc_members_icon.png
 
-          echo "Android icon created successfully."
+          echo "Downloaded logo:"
+          file android/app/src/main/res/drawable/coc_members_icon.png
+
+      # ----------------------------------------------------
+      # PREPARE ANDROID ICON
+      # ----------------------------------------------------
+
+      - name: Prepare launcher icons
+        run: |
+
+          mkdir -p android/app/src/main/res/mipmap-mdpi
+          mkdir -p android/app/src/main/res/mipmap-hdpi
+          mkdir -p android/app/src/main/res/mipmap-xhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxhdpi
+          mkdir -p android/app/src/main/res/mipmap-xxxhdpi
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-mdpi/ic_launcher.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-hdpi/ic_launcher.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xhdpi/ic_launcher.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+
+          cp android/app/src/main/res/drawable/coc_members_icon.png \
+            android/app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+
+      # ----------------------------------------------------
+      # FORCE ANDROID TO USE OUR LOGO
+      # ----------------------------------------------------
 
       - name: Configure Android launcher icon
         run: |
+
           python3 - <<'PY'
+
           from pathlib import Path
 
-          manifest = Path("android/app/src/main/AndroidManifest.xml")
+          manifest = Path(
+              "android/app/src/main/AndroidManifest.xml"
+          )
 
           text = manifest.read_text()
 
@@ -125,13 +186,25 @@ jobs:
           manifest.write_text(text)
 
           print("Android launcher icon configured.")
+
           PY
+
+      # ----------------------------------------------------
+      # BUILD APK
+      # ----------------------------------------------------
 
       - name: Build APK
         run: |
+
           cd android
+
           chmod +x gradlew
+
           ./gradlew assembleDebug
+
+      # ----------------------------------------------------
+      # UPLOAD APK
+      # ----------------------------------------------------
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
